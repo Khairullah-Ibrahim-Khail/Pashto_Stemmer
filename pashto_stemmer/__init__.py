@@ -2,7 +2,7 @@
 """
 pashto_stemmer
 ==============
-A dictionary-enhanced, rule-based stemmer for the Pashto language.
+A grammar-driven, rule-based stemmer for the Pashto language.
 
 100% rule-based + lexicon — no machine learning. Designed for information
 retrieval, indexing, and NLP preprocessing of Pashto text, and as a

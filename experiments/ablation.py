@@ -2,7 +2,7 @@
 """
 ablation.py
 ===========
-Leave-one-out ablation of the dictionary-enhanced stemmer.
+Leave-one-out ablation, over a wider set of switches than the paper uses.
 
 Start from the full system, disable ONE component at a time, and measure the
 change. A component that earns its place shows a drop when removed; one that

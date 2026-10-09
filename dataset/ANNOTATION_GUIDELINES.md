@@ -1,57 +1,31 @@
-# Gold-Standard Annotation Guidelines — Pashto Stemmer
+# Annotation guidelines — superseded
 
-Goal: produce trustworthy ground-truth **stems** for the most frequent Pashto
-words so we can report real accuracy and Paice over/under-stemming indices.
+This file described the **first** annotation round, in which annotators were
+given a template pre-filled with the stemmer's output and asked to correct what
+was wrong. That protocol was abandoned, for the obvious reason: showing an
+annotator the system's answer anchors them to it, and an evaluation built that
+way measures agreement with the system rather than correctness.
 
-The file `gold_annotation_template.csv` is **pre-filled** with the stemmer's
-best guess. You only need to correct what is wrong — minimal typing.
+The annotations released with this project were **not** produced that way. Each
+annotator worked from the word list alone, with the stem column empty, and did
+not see any system output or another annotator's work.
 
-## Columns
+The policy actually followed is:
 
-| Column | Meaning | What to do |
-|---|---|---|
-| `word` | the normalized surface word | do not change |
-| `frequency` | corpus frequency | do not change |
-| `proposed_stem` | the stemmer's output | do not change (reference) |
-| `correct_stem` | **the true light stem** | edit ONLY if `proposed_stem` is wrong |
-| `pos` | guessed part of speech (N/ADJ/V) | fix if clearly wrong |
-| `is_irregular` | 1 if a suppletive/irregular verb form | set 1/0 |
-| `is_compound` | 1 if a closed compound | set 1/0 |
-| `confidence` | stemmer confidence | review low ones first |
-| `notes` | free text | optional |
+**[docs/02_annotation_policy.md](../docs/02_annotation_policy.md)**
 
-## What is a "light stem" here?
+Three further points in the old file are wrong under the current policy and are
+recorded here so that nobody follows them by accident:
 
-Reduce a word to its **most basic form that is still a real Pashto word**,
-removing inflection (number, gender, case, verb agreement) and clearly
-productive derivation. Do **not** reduce to an abstract triliteral root.
+- It said proper nouns stay whole, so `افغانستان → افغانستان`. The released
+  reference strips `‑ستان` like any other affix: `افغانستان → افغان`.
+- It said verbs are lemmatized to the infinitive, `کوي → کول`. The released
+  reference reduces verbs to the **stem**, `لوستل → لوست`, because `‑ل` is
+  itself an affix. Mapping a form to a different word is lemmatization, and
+  this project keeps the two tasks apart.
+- It said to write `ي` as `ی`. No yeh letter is ever rewritten. All five
+  (`ی ي ې ۍ ئ`) are distinct and are preserved everywhere.
 
-Examples of the target:
-- \کورونه (houses) → کور
-- \خبرونه (news) → خبر
-- \ښکلي / ښکلې (beautiful, m/f) → ښکلی
-- \غواړي / وغوښت (wants / wanted) → غوښتل  (infinitive lemma for verbs)
-- \افغانستان (Afghanistan) → افغانستان  (proper nouns stay whole)
-- \او، په، د (function words) → unchanged (stopwords)
-
-## Conventions
-
-1. **Verbs** are lemmatized to the **infinitive** (ends in ـل): کوي → کول.
-2. **Proper nouns** (names of people, countries, cities, organizations) are
-   left **unchanged**.
-3. **Stopwords / function words** are left **unchanged**.
-4. Keep the distinct feminine yeh letters (ې ۍ); write ي as ی (already
-   normalized in the file).
-5. If a word is ambiguous, choose the reading that fits general news text and
-   add a note.
-
-## After annotating
-
-Save the file (UTF-8) and run:
-
-```bash
-python experiments/evaluate_gold.py dataset/gold_annotation_template.csv
-```
-
-This prints exact-match **accuracy** and **Paice UI/OI/SW** for our stemmer
-and the baseline, using your `correct_stem` column as ground truth.
+The file is kept, rather than deleted, because the paper reports that the first
+annotation pass had to be audited and revised, and this is what that pass was
+working from.

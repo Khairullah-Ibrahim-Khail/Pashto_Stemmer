@@ -24,7 +24,7 @@ digraph pipeline {
     stop [label="2.  Stopword, or 3 letters\l"];
     det  [label="3.  Deterministic groups\l-tiya  -tob  -waley  -tun\l-edal  -awal  -gharey  -stan\l"];
     len  [label="4.  Length rules\lR1  R2  R4\l"];
-    gen  [label="5.  Generate candidates\lall 93 strippable rules\lthat fit, and the word itself\l"];
+    gen  [label="5.  Generate candidates\lall 92 strippable rules\lthat fit, and the word itself\l"];
     sel  [label="6.  Score and select\laffix mass, corpus support,\lattestation, which never gates\l"];
     trim [label="7.  Final trim\l"];
 

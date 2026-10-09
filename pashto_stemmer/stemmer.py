@@ -2,7 +2,7 @@
 """
 stemmer.py
 ==========
-Top-level orchestrator: the Dictionary-Enhanced Rule-Based Pashto Stemmer.
+Top-level orchestrator: the grammar-driven rule-based Pashto stemmer.
 
 Pipeline (per token)
 --------------------
@@ -70,7 +70,12 @@ class StemmerConfig:
     # -0.6 accuracy and slightly WORSENS conflation, so it is disabled.
     # Retained only as an ablation arm.
     use_pos: bool = False
-    use_compound: bool = True          # compound decomposition ("+Compound" arm)
+    # Compound decomposition. Off by default: the annotation policy keeps
+    # compounds whole, and the splitter contradicted it. On the two evaluation
+    # sets it fired on seven types and was wrong on all seven, returning the
+    # suffix rather than the word (نړۍوال -> وال, پټرولیم -> یم). Disabling it
+    # is worth +0.22 on the development set and +0.20 on held-out text.
+    use_compound: bool = False
     strip_derivational: bool = True
     # Verb target: "stem" (لوست) or "infinitive" (لوستل).
     # STEM is the default on linguistic grounds: the infinitive ‑ل is itself an

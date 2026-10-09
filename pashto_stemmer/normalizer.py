@@ -2,8 +2,8 @@
 """
 normalizer.py
 =============
-Unicode + Pashto orthographic normalization for the Dictionary-Enhanced
-Rule-Based Pashto Stemmer.
+Unicode + Pashto orthographic normalization for the grammar-driven
+rule-based Pashto stemmer.
 
 Design principle: **conservative, Pashto-aware normalization.**
 ------------------------------------------------------------------

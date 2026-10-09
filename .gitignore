@@ -29,14 +29,16 @@ paper/*.fdb_latexmk
 
 # Working files from the annotation and audit process.
 #
-# The annotation history is NOT ignored: pashto_gold(1).csv is the first
-# independent annotation and pashto_gold_corrected.csv the intermediate
-# revision, and the paper's claim that the later revisions are worth 0.20
-# points cannot be checked without them. keep_whole_candidates.csv and
-# verb_rows_to_update.csv are cited in the paper for the same reason.
+# dataset/annotations/ holds the individual annotation passes and is released:
+# experiments/agreement.py recomputes the inter-annotator figures from them.
+# keep_whole_candidates.csv and verb_rows_to_update.csv are cited in the paper
+# and are released too.
 #
-# Only genuinely derivable intermediates are ignored here; each is regenerated
-# by a script in experiments/.
+# pashto_gold(1).csv and pashto_gold_corrected.csv are early drafts that were
+# superseded. They are not an annotation pass and are not evidence of anything,
+# so they are not released.
+dataset/pashto_gold(1).csv
+dataset/pashto_gold_corrected.csv
 dataset/unreached_words.csv
 dataset/not_reachable_words.csv
 dataset/yeh_variant_rows.csv

@@ -27,7 +27,7 @@ from .stemmer import PashtoStemmer, StemmerConfig
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="pashto-stem",
-        description="Dictionary-enhanced rule-based Pashto stemmer.",
+        description="A grammar-driven rule-based Pashto stemmer.",
     )
     p.add_argument("words", nargs="*", help="words to stem")
     p.add_argument("-f", "--file", help="stem all tokens in this UTF-8 text file")

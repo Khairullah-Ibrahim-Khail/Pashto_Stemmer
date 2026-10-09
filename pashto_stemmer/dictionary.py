@@ -2,7 +2,8 @@
 """
 dictionary.py
 =============
-The lexical backbone of the dictionary-enhanced stemmer.
+The lexical backbone of the stemmer: the frequency list the selection
+stage consults.
 
 `PashtoLexicon` loads a word-frequency list (default:
 ``stemming/pashto_dictionary.txt`` — one ``word<TAB>count`` per line) and
@@ -15,7 +16,7 @@ exposes the queries the rule engine needs:
 
 Why a frequency-weighted lexicon (and not a plain word set)?
 ------------------------------------------------------------
-The dictionary-enhanced hybrid stemmers of Persian (Rahimi 2015) and
+The hybrid stemmers of Persian (Rahimi 2015) and
 Urdu (Khan 2018) resolve the over-stemming problem by *validating* each
 rule-generated candidate against a lexicon and preferring the candidate
 the corpus actually attests. Frequency lets us break ties between two

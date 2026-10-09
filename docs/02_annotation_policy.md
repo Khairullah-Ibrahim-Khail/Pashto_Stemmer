@@ -1,8 +1,11 @@
 # Pashto Stemming — Gold-Standard Annotation Policy (v1)
 
 **Purpose.** A single, fixed definition of what a *stem* is, so every annotator
-produces the same answer. (The absence of such a policy is why two independent
-annotations diverged by 42%.) Written for **standard/academic Pashto**.
+produces the same answer. Written for **standard/academic Pashto**.
+
+On the development set, the two released annotation passes agree on 96.88% of
+types (Cohen's κ 0.969) under this policy. Run `python experiments/agreement.py`
+to recompute it.
 
 ---
 
@@ -21,11 +24,13 @@ annotations diverged by 42%.) Written for **standard/academic Pashto**.
 - **Preserve the original form.** The original surface word is always kept; the
   stem is recorded *alongside* it, never overwriting it.
 - **Normalization = standardization**, never merging distinct words:
-  - `ي` (U+064A, Arabic yeh) → `ی` (U+06CC) — the Arabic yeh is not a standard
-    Pashto letter; this is a keyboard artefact.
-  - `ك` → `ک`; `ة`/`ۀ` → `ه`; remove diacritics, tatweel, ZWNJ.
-- **Never merge** `ې` (U+06D0), `ۍ` (U+06CD), `ئ` (U+0626) into `ی`.
-  They are **distinct standard Pashto letters** carrying gender/number/person.
+  - `ك` → `ک`; `ة`/`ۀ` → `ه`; Urdu `ٹ ڈ ڑ ے` and Persian `گ` → their Pashto
+    counterparts; remove diacritics, tatweel, ZWNJ.
+- **No yeh letter is ever rewritten.** `ی ي ې ۍ ئ` all survive normalization
+  untouched — verified on every cell of both evaluation sets. They are distinct
+  standard Pashto letters carrying gender, number and person.
+- Rule *matching* folds the five together so that a rule written with `ی` also
+  fires on `ي`, but the letters written out are never altered.
 
 ## 3. Nouns and adjectives — remove inflection (always)
 
@@ -33,11 +38,13 @@ annotations diverged by 42%.) Written for **standard/academic Pashto**.
 |---|---|---|
 | Plural | ‑ونه، ‑ان، ‑ګان | کورونه → کور |
 | Oblique / case | ‑ونو، ‑انو، ‑ګانو، ‑و | کورونو → کور |
-| Feminine / plural | ‑ې، ‑ۍ (when inflectional) | سیمې → سیمه |
-| Adjective agreement | ‑ه، ‑ې، ‑و | لنډه → لنډ، نوې → نوی |
+| Feminine / plural | ‑ې، ‑ۍ (when inflectional) | سیمې → سیم |
+| Adjective agreement | ‑ه، ‑ې، ‑و | لنډه → لنډ |
 
-**Base-form restoration.** Where inflection *replaced* a letter, restore the
-base: `خبرو → خبره`، `سیمو → سیمه`، `چارو → چاره` (feminine bases in ‑ه).
+**No letter is added back.** Stemming removes material; it does not restore a
+base form. `خبرو → خبر`، `سیمو → سیم`، `چارو → چار` — not `خبره`، `سیمه`،
+`چاره`. An earlier draft of this policy called for restoration; the released
+reference does not do it, and the stemmer does not either.
 
 ## 4. Derivation — remove *productive* Pashto derivational suffixes
 
