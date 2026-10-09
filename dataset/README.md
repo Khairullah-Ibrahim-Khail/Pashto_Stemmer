@@ -62,6 +62,15 @@ analysis, and 81 of those match the reading the system itself produces — 3.0%
 of the stemming types. The paper states this dependency rather than leaving it
 to be found.
 
+## External word lists
+
+`external/` holds two independently annotated lists, 5,000 and 10,000 types,
+that were **not** produced by this project and do not follow its annotation
+policy. They are a generalisation check, reported in the paper as Table IX and
+reproduced by `experiments/evaluate_external.py`. See
+[external/README.md](external/README.md) for what to watch for before quoting
+their numbers.
+
 ## Audit output
 
 `experiments/audit_annotation.py` writes `unsupported_removals_*.csv`: every

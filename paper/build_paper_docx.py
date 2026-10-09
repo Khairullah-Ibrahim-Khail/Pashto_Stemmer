@@ -949,14 +949,54 @@ def build():
     para(doc, "Table VII reports the development set. The figure is higher than the "
               "held-out result. The revisions described in Section V.B account for 0.07 "
               "points of that gap, so the explanation lies elsewhere: it is "
-              "orthographic, and Section VII.D gives it. The development set is "
+              "orthographic, and Section VII.E gives it. The development set is "
               "reported for comparability with the baseline, which is scored "
               "identically, and because Paice's indices are more stable on the larger "
               "set. On the types requiring a strip the margin is wider still: 77.0% "
               "against 12.2%, a factor of six.")
 
-    h2(doc, "C. Component study")
-    wide_table(doc, "TABLE VIII.  EACH COMPONENT REMOVED IN TURN",
+    h2(doc, "C. Two external datasets")
+    para(doc, "After the system was finalised, it was run against two independently "
+              "annotated Pashto word lists of 5,000 and 10,000 types. Neither was "
+              "produced by this project, and 96% of their entries appear in neither of "
+              "our evaluation sets. Exact-match accuracy is 71.96% and 70.39%, against "
+              "51.24% and 47.95% for the baseline. Those figures sit beside the 71.34% "
+              "measured on held-out news text, which is the point: the system does not "
+              "depend on the data it was built against.")
+    wide_table(doc, "TABLE IX.  TWO INDEPENDENTLY ANNOTATED WORD LISTS",
+               ["Dataset", "Types", "Exact", "Folded"],
+               [["External, 5,000 types", "5,000", "**71.96%", "**80.14%"],
+                ["    Aslamzai & Saad", "", "51.24%", "57.36%"],
+                ["External, 10,000 types", "10,000", "**70.39%", "**77.69%"],
+                ["    Aslamzai & Saad", "", "47.95%", "53.68%"],
+                ["Our held-out set", "499", "71.34%", "72.14%"],
+                ["Our development set", "2,717", "79.43%", "80.93%"]],
+               widths=[2.6, 1.1, 1.3, 1.3],
+               note="The folded column compares with the five ye letters treated as "
+                    "equal; the stemmer's output is never rewritten.")
+    para(doc, [P("Both lists carry a reference column normalised to "), S("ی"),
+                P(" while their word column retains "), S("ي"), P(", so a stem is "
+                  "scored wrong whenever it preserves the letter the word actually "
+                  "has. Folding the five ye letters together for the comparison alone "
+                  "raises the two figures to 80.14% and 77.69%. The same folded "
+                  "comparison is worth 1.51 points on our development set and 0.80 on "
+                  "our held-out set, both of which are internally consistent in their "
+                  "orthography. The size of that difference is what the measurement "
+                  "shows: seven to eight points on the external lists against one on "
+                  "ours places the disagreement in how they spell the reference rather "
+                  "than in the stemming.")])
+    para(doc, [P("One caveat limits what these lists establish. On the words they "
+                 "share with our development set the two references agree 70.8% and "
+                 "64.1% of the time, and the differences are systematic rather than "
+                 "scattered: "), S("اخلی"), P(" is stemmed to "), S("اخ"),
+                P(" there and "), S("اخیستل"), P(" here, "), S("بدلولو"), P(" to "),
+                S("بدلول"), P(" rather than "), S("بدل"), P(". They follow a different "
+                  "annotation policy, particularly for verbs, so they test whether the "
+                  "system generalises, not whether it is correct under ours.")],
+         first_line=0.18)
+
+    h2(doc, "D. Component study")
+    wide_table(doc, "TABLE X.  EACH COMPONENT REMOVED IN TURN",
           ["Configuration", "Development", "Held-out"],
           [["**Full system", "**79.43%", "**71.34%"],
            ["− suffix rules", "71.99% (−7.43)", "58.92% (−12.42)"],
@@ -996,7 +1036,7 @@ def build():
               "8 without it.",
          first_line=0.18)
 
-    h2(doc, "D. Orthography")
+    h2(doc, "E. Orthography")
     para(doc, [P("The gap between the two evaluation sets has one dominant cause. Of the "
                  "500 held-out news types, 118 contain the hard ye "), S("ي"),
                 P("; of the 2,912 development types, none do. The inventory contained "

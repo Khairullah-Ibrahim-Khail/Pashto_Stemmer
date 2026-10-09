@@ -119,6 +119,27 @@ consulted during development:
 | Aslamzai & Saad (2015) | 50.68% | 12.2% | 92.8% | 0.919 |
 | **This stemmer** | **79.43%** | **77.0%** | 82.0% | **0.314** |
 
+**Two external word lists** — 5,000 and 10,000 types, independently annotated,
+neither produced by this project, 96% of them unseen:
+
+| Dataset | Types | Exact | ye-folded |
+|---|---:|:---:|:---:|
+| External 5k | 5,000 | **71.96%** | **80.14%** |
+| — Aslamzai & Saad (2015) | | 51.24% | 57.36% |
+| External 10k | 10,000 | **70.39%** | **77.69%** |
+| — Aslamzai & Saad (2015) | | 47.95% | 53.68% |
+
+Three sets at 70–72% exact is the generalisation evidence. Both lists
+ye-normalise their reference column while leaving `ي` in the word column, so a
+stem is scored wrong for keeping the letter the word actually has; folding the
+five ye letters for the comparison alone — the output is never rewritten —
+gives the second column. The same folding is worth 1.51 points on our
+development set and 0.80 on our held-out set, which are internally consistent.
+They also follow a different annotation policy, agreeing with our reference on
+70.8% and 64.1% of shared words, so they test generalisation rather than
+correctness under our policy. See
+[dataset/external/README.md](dataset/external/README.md).
+
 ### How to read these numbers
 
 **Accuracy alone rewards doing nothing.** A stemmer that returns every word
@@ -201,6 +222,7 @@ one sample.
 
 ```bash
 python experiments/reproduce_paper.py     # every results table in the paper
+python experiments/evaluate_external.py   # the two external word lists
 python experiments/agreement.py           # inter-annotator agreement and kappa
 python experiments/audit_annotation.py    # removals matching no documented affix
 python experiments/compare_stemmers.py    # the development-set comparison
@@ -326,6 +348,7 @@ dataset/            both annotated sets and the correction log
 docs/               the affix inventory, annotation policy, verb dictionary
 experiments/
   reproduce_paper.py  regenerates every results table in the paper
+  evaluate_external.py  the two independently annotated word lists
   agreement.py        inter-annotator agreement and Cohen's kappa
   audit_annotation.py checks annotations against the affix inventory
   compare_stemmers.py the development-set comparison
@@ -341,6 +364,7 @@ tests/              38 tests
 | `dataset/pashto_gold_corrected_v2.csv` | development set, 2,912 word types (`word,stem`) |
 | `dataset/test_500_news_corrected.csv` | held-out set, 500 news word types (`no,word,frequency,stem,note`) |
 | `dataset/annotations/` | two of the three independent annotation passes |
+| `dataset/external/` | two independently annotated word lists, 5k and 10k, not ours |
 | `dataset/pashto_gold_changes(1).md` | every hand correction and the reason for it |
 | `dataset/ANNOTATION_GUIDELINES.md` | what counts as a stem |
 

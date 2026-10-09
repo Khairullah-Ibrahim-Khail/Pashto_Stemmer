@@ -762,6 +762,55 @@ reported for comparability with the baseline, which is scored identically, and
 because Paice's indices are more stable on the larger set. On the types requiring a strip the margin is wider still: 77.0\%
 against 12.2\%, a factor of six.
 
+\subsection{Two external datasets}
+\label{sec:external}
+
+After the system was finalised, it was run against two independently annotated
+Pashto word lists of 5{,}000 and 10{,}000 types. Neither was produced by this
+project, and 96\% of their entries appear in neither of our evaluation sets.
+Exact-match accuracy is 71.96\% and 70.39\%, against 51.24\% and 47.95\% for the
+baseline. Those figures sit beside the 71.34\% measured on held-out news text,
+which is the point: the system does not depend on the data it was built
+against.
+
+\begin{table}[t]
+\caption{Two independently annotated word lists. The folded column compares
+with the five \emph{ye} letters treated as equal; the stemmer's output is never
+rewritten.}
+\label{tab:external}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Dataset & Types & Exact & Folded\\
+\midrule
+External, 5{,}000 types & 5{,}000 & 71.96\% & 80.14\%\\
+\quad Aslamzai \& Saad & & 51.24\% & 57.36\%\\
+External, 10{,}000 types & 10{,}000 & 70.39\% & 77.69\%\\
+\quad Aslamzai \& Saad & & 47.95\% & 53.68\%\\
+\midrule
+Our held-out set & 499 & 71.34\% & 72.14\%\\
+Our development set & 2{,}717 & 79.43\% & 80.93\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both lists carry a reference column normalised to \ps{ی} while their word column
+retains \ps{ي}, so a stem is scored wrong whenever it preserves the letter the
+word actually has. Folding the five \emph{ye} letters together for the
+comparison alone raises the two figures to 80.14\% and 77.69\%. The same folded
+comparison is worth 1.51 points on our development set and 0.80 on our held-out
+set, both of which are internally consistent in their orthography. The size of
+that difference is what the measurement shows: seven to eight points on the
+external lists against one on ours places the disagreement in how they spell the
+reference rather than in the stemming.
+
+One caveat limits what these lists establish. On the words they share with our
+development set the two references agree 70.8\% and 64.1\% of the time, and the
+differences are systematic rather than scattered: \ps{اخلی} is stemmed to
+\ps{اخ} there and \ps{اخیستل} here, \ps{بدلولو} to \ps{بدلول} rather than
+\ps{بدل}. They follow a different annotation policy, particularly for verbs, so
+they test whether the system generalises, not whether it is correct under ours.
+
 \subsection{Component study}
 
 \begin{table}[t]
