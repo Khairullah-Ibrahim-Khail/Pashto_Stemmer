@@ -506,8 +506,9 @@ against a printed grammar and 8 are marked unverified. The dictionary maps an
 inflected form to its verb: \ps{شو}~$\rightarrow$~\ps{کېدل}. That output is a
 lemma, and substituting one word for another is lemmatization rather than
 stemming. On the word types whose reference is a truncation, the dictionary
-decides 104 words and is correct for 47 of them, because it supplies the wrong
-kind of answer; it costs 1.07 points overall.
+changes the output on 59 of them and is right on 10, because it supplies the
+wrong kind of answer; it costs 1.07 points on the development set and 1.06 on
+held-out text.
 
 The dictionary is therefore disabled by default and provided as an explicit
 lemmatization mode. We report its contribution separately in
@@ -730,7 +731,7 @@ $-$ length rules & 76.68\% ($-$2.96) & 72.94\% ($-$2.11)\\
 $-$ corpus lexicon & 78.76\% ($-$0.89) & 75.69\% ($+$0.63)\\
 $-$ uniform-strip group & 79.35\% ($-$0.30) & 74.84\% ($-$0.21)\\
 $-$ prefix rules & 79.61\% ($-$0.04) & 75.26\% ($+$0.21)\\
-$+$ verb dictionary & 79.53\% ($-$0.11) & 73.57\% ($-$1.48)\\
+$+$ verb dictionary & 78.57\% ($-$1.07) & 74.00\% ($-$1.06)\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -757,9 +758,10 @@ held-out text. Its contribution is now marginal, because the uniform-strip and
 length rules decide most cases before the scorer is consulted. We report this
 plainly: the system should not be described as lexicon-driven.
 
-Enabling the verb dictionary costs 1.48 points on held-out text, for the reason
+Enabling the verb dictionary costs about one point on both sets, for the reason
 given in Section~\ref{sec:scope}. Its proper contribution is to the lemma
-types, where it resolves 69 of the 210 in the development set.
+types, where it answers 52 of the 210 in the development set against 8 without
+it.
 
 \subsection{Orthography}
 

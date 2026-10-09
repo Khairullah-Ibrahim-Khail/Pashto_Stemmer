@@ -732,8 +732,9 @@ def build():
                 P(" → "), S("کېدل"), P(". That output is a lemma, and substituting "
                   "one word for another is lemmatization rather than stemming. On the "
                   "word types whose reference is a truncation, the dictionary decides "
-                  "104 words and is correct for 47 of them, because it supplies the "
-                  "wrong kind of answer; it costs 1.07 points overall.")])
+                  "the output on 59 of them and is right on 10, because it supplies "
+                  "the wrong kind of answer; it costs 1.07 points on the development "
+                  "set and 1.06 on held-out text.")])
     para(doc, "The dictionary is therefore disabled by default and provided as an "
               "explicit lemmatization mode. We report its contribution separately in "
               "Section VII rather than folding it into the stemming result.",
@@ -913,7 +914,7 @@ def build():
            ["− corpus lexicon", "78.76% (−0.89)", "75.69% (+0.63)"],
            ["− uniform-strip group", "79.35% (−0.30)", "74.84% (−0.21)"],
            ["− prefix rules", "79.61% (−0.04)", "75.26% (+0.21)"],
-           ["+ verb dictionary", "79.53% (−0.11)", "73.57% (−1.48)"]],
+           ["+ verb dictionary", "78.57% (−1.07)", "74.00% (−1.06)"]],
           widths=[2.6, 1.95, 1.95],
           note="Changes in percentage points.")
     para(doc, "The suffix inventory does most of the work, and removing it costs 13.3 "
@@ -939,9 +940,10 @@ def build():
               "the uniform-strip and length rules decide most cases before the scorer is "
               "consulted. We report this plainly: the system should not be described as "
               "lexicon-driven.", first_line=0.18)
-    para(doc, "Enabling the verb dictionary costs 1.48 points on held-out text, for the "
+    para(doc, "Enabling the verb dictionary costs about one point on both sets, for the "
               "reason given in Section IV.F. Its proper contribution is to the lemma "
-              "types, where it resolves 69 of the 210 in the development set.",
+              "types, where it answers 52 of the 210 in the development set against "
+              "8 without it.",
          first_line=0.18)
 
     h2(doc, "D. Orthography")
