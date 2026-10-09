@@ -1,0 +1,55 @@
+// Figure 1 - the stemming pipeline.
+// Rendered by paper/make_figures.py into pipeline.pdf (LaTeX) and
+// pipeline.png (Word). The stage names match the branches of
+// PashtoStemmer.stem_word in pashto_stemmer/stemmer.py.
+//
+// Labels are kept short on purpose: the figure has to stay legible at the
+// width of one column, so the detail lives in the caption and in Section IV.
+// Each early exit gets its own terminal node rather than one shared node far
+// down the page, which is what keeps the edges short enough to follow.
+digraph pipeline {
+    rankdir = TB;
+    bgcolor = "white";
+    nodesep = 0.26;
+    ranksep = 0.3;
+    splines = polyline;
+    node [fontname="Times New Roman", fontsize=12, shape=box, style="filled",
+          fillcolor="#f2f2f2", color="#444444", margin="0.13,0.08"];
+    edge [fontname="Times New Roman", fontsize=10, color="#444444",
+          arrowsize=0.7];
+
+    word [label="word", shape=ellipse, fillcolor="#ffffff", width=0.75];
+
+    norm [label="1.  Normalize\lthe five ye letters survive\l"];
+    stop [label="2.  Stopword, or 3 letters\l"];
+    det  [label="3.  Deterministic groups\l-tiya  -tob  -waley  -tun\l-edal  -awal  -gharey  -stan\l"];
+    len  [label="4.  Length rules\lR1  R2  R4\l"];
+    gen  [label="5.  Generate candidates\lall 93 strippable rules\lthat fit, and the word itself\l"];
+    sel  [label="6.  Score and select\laffix mass, corpus support,\lattestation, which never gates\l"];
+    trim [label="7.  Final trim\l"];
+
+    out  [label="stem", shape=ellipse, fillcolor="#ffffff", width=0.75];
+    o1   [label="stem", shape=ellipse, fillcolor="#ffffff", width=0.75];
+    o2   [label="stem", shape=ellipse, fillcolor="#ffffff", width=0.75];
+    o3   [label="stem", shape=ellipse, fillcolor="#ffffff", width=0.75];
+
+    guard [label="Guards\la prefix is removed only\lif the remainder is attested\l",
+           fillcolor="#ffffff", style="filled,dashed", fontsize=11];
+    dict  [label="Verb dictionary\l42 strong verbs,\lgives a lemma,\loff by default\l",
+           fillcolor="#ffffff", style="filled,dashed", fontsize=11];
+
+    word -> norm -> stop -> det -> len -> gen -> sel -> trim -> out;
+
+    stop -> o1 [label=" unchanged"];
+    det  -> o2 [label=" matched"];
+    len  -> o3 [label=" matched"];
+
+    guard -> sel [style=dashed, arrowhead=none, constraint=false];
+    dict  -> gen [style=dashed, arrowhead=none, constraint=false];
+
+    { rank = same; stop; o1; }
+    { rank = same; det;  o2; }
+    { rank = same; len;  o3; }
+    { rank = same; gen;  dict; }
+    { rank = same; sel;  guard; }
+}

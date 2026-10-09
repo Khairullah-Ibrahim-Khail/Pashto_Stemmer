@@ -1,0 +1,149 @@
+# Pashto Stemming — Gold-Standard Annotation Policy (v1)
+
+**Purpose.** A single, fixed definition of what a *stem* is, so every annotator
+produces the same answer. (The absence of such a policy is why two independent
+annotations diverged by 42%.) Written for **standard/academic Pashto**.
+
+---
+
+## 1. Scope
+
+- **Target language:** standard/academic Pashto (Pashto Academy orthography).
+  **Dialectal variants are out of scope** — do not add dialect forms or rules.
+- **Task = STEMMING:** remove **Pashto affixes** from a surface form.
+  - It is **not** Arabic root extraction.
+  - It is **not** general lemmatization (one deliberate exception: verbs, §5).
+- A stem **need not be a meaningful standalone word**, but it **must be
+  reachable from the surface form by removing/adjusting Pashto affixes**.
+
+## 2. Orthography & normalization
+
+- **Preserve the original form.** The original surface word is always kept; the
+  stem is recorded *alongside* it, never overwriting it.
+- **Normalization = standardization**, never merging distinct words:
+  - `ي` (U+064A, Arabic yeh) → `ی` (U+06CC) — the Arabic yeh is not a standard
+    Pashto letter; this is a keyboard artefact.
+  - `ك` → `ک`; `ة`/`ۀ` → `ه`; remove diacritics, tatweel, ZWNJ.
+- **Never merge** `ې` (U+06D0), `ۍ` (U+06CD), `ئ` (U+0626) into `ی`.
+  They are **distinct standard Pashto letters** carrying gender/number/person.
+
+## 3. Nouns and adjectives — remove inflection (always)
+
+| Category | Affixes | Example |
+|---|---|---|
+| Plural | ‑ونه، ‑ان، ‑ګان | کورونه → کور |
+| Oblique / case | ‑ونو، ‑انو، ‑ګانو، ‑و | کورونو → کور |
+| Feminine / plural | ‑ې، ‑ۍ (when inflectional) | سیمې → سیمه |
+| Adjective agreement | ‑ه، ‑ې، ‑و | لنډه → لنډ، نوې → نوی |
+
+**Base-form restoration.** Where inflection *replaced* a letter, restore the
+base: `خبرو → خبره`، `سیمو → سیمه`، `چارو → چاره` (feminine bases in ‑ه).
+
+## 4. Derivation — remove *productive* Pashto derivational suffixes
+
+`‑توب، ‑تیا، ‑والی/‑والۍ، ‑ونکی، ‑ګر، ‑وال، ‑وان، ‑ي (nisba)، ‑یز`
+
+Examples: `هوښیارۍ → هوښیار`، `ځیرکتیا → ځېرک`، `پوځي → پوځ`،
+`سیاستوال → سیاست`.
+**Stop at the Pashto stem** — do not continue into an Arabic root.
+
+## 5. Verbs — reduce to the **stem** (infinitive minus ‑ل)
+
+- Regular: `لوستل → لوست`، `ووېشل → وېش`، `کولو → کو`
+- Suppletive/irregular (via the paradigm table):
+  `ځي / لاړ → تل`، `غواړي → غوښت`، `وینم → لید`، `شول → کېد`
+- Verbalizers are affixes too, so they come off as well (§4):
+  `کارول → کار`، `جوړېدل → جوړ`، `زیاتوی → زیات`
+
+**Rationale.** The infinitive ending ‑ل **is itself an affix**. The stem `لوست`
+is the base from which the whole family is built by adding affixes —
+`لوست` → `لوسته`، `لوستونکی`، `لوستل`، `لوستلو`. Reducing to `لوست` therefore
+conflates the entire family, which is the purpose of stemming, and it satisfies
+§10 (a stem must be reachable by removing affixes). The infinitive `لوستل`
+would *fail* §10, because it cannot be reached from `غواړي` by affix removal —
+that would be lemmatization, which is a different task (§1).
+
+> Revision note: an earlier draft targeted the infinitive. That was wrong: it
+> contradicted §10 and treated a lemma as a stem. Corrected on the ruling of
+> the native-speaker author.
+
+**Implementation.** Suppletion cannot be derived by any rule (`ځي` and `تلل`
+share no material), so a lexicon is linguistically *required*, not a shortcut.
+Irregular verbs are stored as a **paradigm table** —
+`lemma | present stem | past stem` (e.g. `تلل | ځ‑ | لاړ/تل‑`,
+`اخیستل | اخل‑ | اخیست‑`, `کول | کو‑ | کړ‑`) — with the regular agreement
+endings (‑م، ‑ې، ‑ي، ‑و، ‑ئ) applied by rule on top, rather than a flat list of
+surface forms. Entries are grounded in descriptive grammars (Tegey & Robson;
+A. B. David) and the Pashto Academy dictionary — not ad-hoc recall.
+
+## 6. Loanwords (Arabic / Persian)
+
+- Strip **only the Pashto affixes** attached to them: `مصنوعي → مصنوع`.
+- **No Arabic templatic root extraction:** ✗ `مصنوعي → صنع`، ✗ `جریمه → جرم`.
+- **Arabic broken plurals are handled as lexical exceptions**, exactly like
+  native Pashto irregular plurals (`کلونو → کال`، `نجونو → نجلۍ`):
+  `اثار → اثر`، `مطالب → مطلب`، `علوم → علم`.
+
+  They are **listed in an exception lexicon, never guessed by pattern.**
+  Rationale: Pashto text is unvowelled, so Arabic templates (فِعال، أفعال،
+  فُعُول…) are ambiguous and would misfire on native Pashto words. A bounded,
+  curated list gives precision with no false positives.
+
+  This stays consistent with §10: exceptions are **declared lexically**, never
+  inferred — which is why `اثار → اثر` is allowed while `مصنوعي → صنع` is not.
+
+## 7. Proper nouns — treated like any other word (revised)
+
+Proper nouns receive **no special treatment**: the ordinary affix rules apply,
+so `افغانستان → افغان`, `طالبان → طالب`.
+
+**Rationale (author's ruling).** An earlier draft froze proper nouns against a
+hand-written list. That was dropped because such a list can never be complete:
+with ~80 names listed and thousands in the language, the system would freeze
+the names we happened to include and strip every unseen one — inconsistent
+behaviour that is impossible to defend. A rule-based stemmer has no context
+model with which to recognise a name, so it applies the same rules to every
+word, and a stem that is not a meaningful word is acceptable output for a
+stemmer.
+
+**Known cost, accepted:** `پاکستان → پاک` merges the country with the unrelated
+word پاک. Measured impact of removing the freeze: −0.8 accuracy, and
+conflation slightly *better* (UI 0.240 → 0.237).
+
+## 8. Compounds — keep lexicalized compounds whole
+
+`مرګژوبله`، `سرچینه`، `لوبغاړی` are single lexical items. Strip only the outer
+inflection (`لوبغاړي → لوبغاړی`); **do not split** them into components.
+✗ `سرچینه → چینه`، ✗ `مرګژوبله → مرګ`.
+
+## 9. Function words — unchanged
+
+Postpositions, pronouns, conjunctions, particles: `په، له، چې، دې، کښې، او`.
+
+## 10. Tie-break rule (use when unsure)
+
+> If a proposed stem **cannot be reached** from the surface form by removing or
+> adjusting Pashto affixes, it is a **lemma or a root — not a stem**. Reject it.
+
+This single rule resolves most disagreements (e.g. rejects `صنع`, `جرم`, `لدره`,
+`کښل`, and `جر`).
+
+---
+
+## Annotation workflow
+
+1. Apply §§2–9 in order; use §10 when unsure.
+2. Record: `word` (original), `stem`, `pos`, `is_irregular`, `is_compound`, `notes`.
+3. Leave `notes` for anything debatable rather than guessing silently.
+4. A portion of the gold is held out and never used for tuning the system.
+
+**Version:** v1.2 — decisions in force:
+- **§5 verbs → STEM** (infinitive minus ‑ل), implemented as a paradigm table
+  (lemma / present stem / past stem) grounded in descriptive grammars.
+  *(Supersedes the v1.0 draft, which wrongly targeted the infinitive.)*
+- **§6 Arabic broken plurals** handled as a **lexical exception dictionary**;
+  templatic derivation was tested and measured at 40% precision, so rejected.
+- **§7 proper nouns are NOT frozen** — rules apply to every word, because a
+  hand-written name list can never cover unseen names.
+- **§8** lexicalized compounds kept whole.
+- Short-word rule: nothing is removed from a word of **3 characters or fewer**.

@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+.venv/
+venv/
+env/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# LaTeX build artefacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.toc
+paper/*.synctex.gz
+paper/*.fls
+paper/*.fdb_latexmk
+
+# Working files from the annotation and audit process. They are intermediate
+# analysis output, kept on disk for provenance but not part of the release.
+dataset/unreached_words.csv
+dataset/not_reachable_words.csv
+dataset/keep_whole_candidates.csv
+dataset/yeh_variant_rows.csv
+dataset/verb_rows_to_update.csv
+dataset/space_bug_fixes.csv
+dataset/pashto_gold(1).csv
+dataset/pashto_gold_corrected.csv
+
+# Generated documents: rebuild with the scripts in docs/ and paper/
+docs/*.docx
+
+# The paper itself ships in both formats, so the built Word and PDF versions
+# are tracked rather than ignored. Anything else generated in paper/ is not.
+paper/*.docx
+paper/*.pdf
+!paper/Pashto_Stemmer_Paper.docx
+!paper/Pashto_Stemmer_Paper.pdf

@@ -1,0 +1,34 @@
+# Arabic broken plurals — DICTIONARY (policy §6: lexical exceptions,
+# never guessed by pattern; Pashto text is unvowelled so templates misfire).
+# status: corpus = confirmed by corpus evidence + linguistic check
+#         curated = needs native-speaker verification
+# plural	singular	status
+مطالب	مطلب	corpus
+اسناد	سند	corpus
+امور	امر	corpus
+اصول	اصل	corpus
+اثار	اثر	curated
+اخبار	خبر	curated
+افکار	فکر	curated
+اعمال	عمل	curated
+احوال	حال	curated
+علوم	علم	curated
+حقوق	حق	curated
+شرایط	شرط	curated
+مراکز	مرکز	curated
+عوامل	عامل	curated
+مسائل	مسله	curated
+وسایل	وسیله	curated
+قوانین	قانون	curated
+مقامات	مقام	curated
+کتب	کتاب	curated
+طرق	طریق	curated
+انواع	نوع	curated
+اقوام	قوم	curated
+ابعاد	بعد	curated
+اسباب	سبب	curated
+اهداف	هدف	curated
+اصناف	صنف	curated
+اجزا	جزء	curated
+اطراف	طرف	curated
+امکانات	امکان	curated

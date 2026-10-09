@@ -1,0 +1,963 @@
+% ---------------------------------------------------------------------------
+%  A Grammar-Driven Rule-Based Stemmer for Pashto
+%
+%  BUILD WITH XeLaTeX (or LuaLaTeX). Pashto is written in an extended Arabic
+%  script, so a Unicode engine with a complex-script font is required;
+%  pdflatex will not do.
+%
+%      xelatex main.tex && xelatex main.tex
+%
+%  The references are typeset with thebibliography, so no bibtex pass is
+%  needed. Two passes resolve the cross-references.
+%
+%  Requirements:
+%    * IEEEtran.cls   - TeX Live package texlive-publishers
+%    * polyglossia, fontspec
+%    * the font Noto Naskh Arabic. Substitute any installed Naskh font by
+%      editing the \newfontfamily line below if it is not present.
+% ---------------------------------------------------------------------------
+\documentclass[conference]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+% ---- Pashto (right-to-left, Arabic script) ----
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{pashto}
+\newfontfamily\pashtofont[Script=Arabic]{Noto Naskh Arabic}
+\newcommand{\ps}[1]{{\pashtofont\textpashto{#1}}}
+
+\begin{document}
+
+\title{A Grammar-Driven Rule-Based Stemmer for Pashto}
+
+\author{\IEEEauthorblockN{Khairullah Ibrahim Khail}
+\IEEEauthorblockA{Institute of Management Sciences\\
+Peshawar, Pakistan\\
+ibrahimkhil976@gmail.com}}
+
+\maketitle
+
+% ===========================================================================
+\begin{abstract}
+Pashto has roughly forty million speakers and very few text-processing tools.
+The only stemmer published for the language applies nine affix rules without a
+lexicon and without any means of choosing between competing analyses. We
+present a rule-based Pashto stemmer built from an affix inventory of 118 rules
+drawn from published grammars, in which every rule records its source, its
+productivity, and whether it may be applied at all. Candidate stems are
+generated separately from the decision of which candidate to keep, so a
+shallower analysis can displace a deeper one. No machine learning is used.
+
+We also contribute two annotated evaluation sets, since none existed for
+Pashto stemming: a development set of 2{,}912 word types reviewed by
+two native-speaker Pashto educators, and a held-out set of 500 word
+types sampled from a news corpus, annotated with the reference field initially
+empty and never used during development. On the held-out set the proposed
+system reaches 75.05\% exact-match accuracy against 42.49\% for a faithful
+reimplementation of the prior system, and 77.00\% against 18.12\% on the
+subset of types that carry an affix. Paice's under-stemming index falls from
+0.846 to 0.385.
+
+A secondary finding concerns evaluation itself. The protocol used in the prior
+work---presenting system output to native speakers and asking whether it is
+acceptable---assigns a score of 100\% to a system that modifies no word at
+all. We report results under both that protocol and exact match against a
+reference fixed in advance, and recommend the latter for Pashto stemming.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Pashto, stemming, morphological analysis, rule-based methods, low-resource
+languages, evaluation methodology, information retrieval
+\end{IEEEkeywords}
+
+% ===========================================================================
+\section{Introduction}
+
+A reader searching for documents about houses does not distinguish between
+\emph{house}, \emph{houses} and \emph{of the houses}. A retrieval system does,
+because to the system these are three unrelated strings. Stemming removes that
+difference by stripping the endings a word carries, so that related forms
+collapse onto a single index term. For English the problem has been settled
+since Porter's algorithm~\cite{porter1980}, which remains in production use
+after four decades.
+
+For Pashto almost nothing exists. The language is spoken by approximately
+forty million people across Afghanistan and Pakistan, is one of the two
+official languages of Afghanistan, and has a growing volume of digital text in
+news and social media. It also has a rich inflectional system, which is
+precisely the condition under which stemming matters. A Pashto retrieval
+system without stemming will miss most relevant documents; a classifier will
+treat the singular and plural of a key term as unrelated features and learn
+each from less data than it has.
+
+The single published Pashto stemmer, by Aslamzai and Saad~\cite{aslamzai2015},
+applies nine affix rules in a fixed order with no lexicon and no selection
+stage. Our reimplementation of those rules leaves most words untouched, and
+damages a substantial fraction of the words it does modify.
+
+Three properties of Pashto make a naive approach fail.
+
+\subsection{Five letters for one sound}
+
+Pashto writes five distinct characters conventionally called \emph{ye}. They
+are not interchangeable; they carry gender, number and case:
+
+\begin{center}
+\begin{tabular}{llp{4.4cm}}
+\toprule
+Letter & Example & Function\\
+\midrule
+\ps{ی} & \ps{سړی} & masculine singular direct\\
+\ps{ي} & \ps{سړي} & masculine plural/oblique; 3rd person present\\
+\ps{ې} & \ps{ښکلې} & feminine; plural\\
+\ps{ۍ} & \ps{نجلۍ} & feminine singular, one noun class\\
+\ps{ئ} & \ps{ووایئ} & 2nd person plural imperative\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Normalization pipelines written for Persian or Urdu routinely merge these into
+a single character. For Pashto that destroys the information a stemmer needs:
+\ps{سړی} (man) and \ps{سړي} (men) become indistinguishable. Our system
+preserves all five.
+
+\subsection{Endings that are not endings}
+
+The same final letter may be an affix in one word and part of the root in
+another, with nothing in the surface form to separate the two cases:
+\ps{لنډه} reduces to \ps{لنډ}, where \ps{ه} marks agreement, while \ps{سیمه}
+must remain \ps{سیمه}, because there the \ps{ه} belongs to the word. A native
+speaker resolves this by knowing the word; a rule conditioned on the surface
+form cannot.
+
+\subsection{Verbs whose stems cannot be derived}
+
+Pashto distinguishes weak verbs, whose stems follow from the infinitive, from
+strong verbs, whose present stem must be known: \ps{لیدل} has the present stem
+\ps{وین}, and \ps{تلل} has \ps{ځ}. No affix rule derives \ps{وین} from
+\ps{لیدل}. These verbs are frequent and must be listed.
+
+\subsection{Contributions}
+
+\begin{itemize}
+\item An affix inventory of 118 rules in which each entry records its
+grammatical source, its productivity, a confidence level, and an explicit
+decision about whether it may be stripped. Twenty-five entries are documented
+but never applied.
+\item Two annotated evaluation sets for Pashto stemming, one of which was
+annotated blind and never used during development.
+\item An evaluation protocol that separates performance on word types carrying
+an affix from performance on types that do not, because overall accuracy alone
+rewards inactivity in a language where nearly half of word types are
+uninflected.
+\item A quantitative account of what each component contributes, including two
+components that we retain despite a measured cost and one rule that we
+implemented, measured and removed.
+\item The observation that the evaluation protocol used in prior Pashto
+stemming work cannot distinguish a working stemmer from an inert one.
+\end{itemize}
+
+% ===========================================================================
+\section{Related Work}
+
+\subsection{Rule-based stemming}
+
+Lovins~\cite{lovins1968} published the first English stemmer, a single-pass
+longest-match algorithm over 294 endings. Porter~\cite{porter1980} replaced it
+with a five-step procedure whose conditions depend on a measure of syllable
+count. Its durability is instructive: the algorithm is small, fast, entirely
+inspectable, and makes no claim to produce real words. Porter maps both
+\emph{relational} and \emph{relate} to \emph{relat}, which is not an English
+word. The output of a stemmer is a class label rather than a lemma, and
+confusing the two is a recurring error in work on morphologically rich
+languages.
+
+Paice~\cite{paice1990} contributed both an algorithm and, more consequentially
+for the present work, an evaluation method~\cite{paice1994}. His
+under-stemming index counts related word pairs a system fails to conflate, and
+his over-stemming index counts unrelated pairs it wrongly merges. Because the
+two move in opposite directions, reporting both is more informative than
+accuracy alone.
+
+\subsection{Arabic-script languages}
+
+Khoja and Garside~\cite{khoja1999} built an Arabic root extractor that strips
+affixes and matches the remainder against triliteral patterns. Larkey,
+Ballesteros and Connell~\cite{larkey2002} showed that light stemming, removing
+only a short list of prefixes and suffixes, outperforms aggressive root
+extraction for retrieval. Their conclusion shaped the design adopted here:
+removing less, but removing it reliably, is preferable to removing more. For
+Persian, Sharifloo and Shamsfard~\cite{sharifloo2008} used a bottom-up parser
+over a morpheme lexicon. The pattern common to these systems is that a lexicon
+resolves ambiguity that rules alone cannot.
+
+\subsection{Pashto}
+
+Work on Pashto stemming is confined, to our knowledge, to Aslamzai and
+Saad~\cite{aslamzai2015}. Because that system is the baseline for everything
+reported here, we describe it in full.
+
+Their algorithm applies nine rules, four removing suffixes and five removing
+prefixes, each with a length condition. Rule~1 removes one of eleven suffixes
+from words of five or more characters; Rule~2 replaces a final \ps{ي} with
+\ps{ه} in words of four or more; Rule~3 removes \ps{من}; Rule~4 removes
+\ps{یز} and appends \ps{ه}; Rules~5, 6, 7 and 9 remove prefixes; and Rule~8
+reduces a reduplicated word to one copy.
+
+Reproducing the baseline exactly mattered, since a comparison against a
+misimplementation would be worthless. Our implementation reproduces all eight
+worked examples given in the paper. Four points in the publication required a
+decision, and we record them so that they can be checked:
+
+\begin{itemize}
+\item The order of prefix and suffix removal is not stated. We remove suffixes
+first, because the paper's own example \ps{موتروان} $\rightarrow$ \ps{موتر}
+only succeeds in that order; with prefixes first, the Rule~5 prefix \ps{م}
+removes the first letter of \ps{موتر}.
+\item Rule~3 is stated for words of ``more than 5 characters'' but its example
+\ps{واکمن} has exactly five, so we implement the condition as five or more.
+\item The Rule~5 prefix list contains a bare \ps{م}, which contradicts the
+\ps{موتروان} example above. We exclude it, giving the baseline the reading its
+own example implies rather than the one that would lower its score.
+\item Rule~4 instructs the reader to remove \ps{یز} and append \ps{ه}. Its
+first example follows this, but its second gives \ps{دودیز} $\rightarrow$
+\ps{دود} with no \ps{ه}.
+\end{itemize}
+
+Rule~2 is also linguistically incorrect as published. It maps the masculine
+plural adjective \ps{ښکلي} to \ps{ښکله}, which is the feminine singular;
+Tegey and Robson~\cite{tegey1996} give the masculine singular \ps{ښکلی} as the
+base form of this class. The rule is corrected in our inventory.
+
+Finally, the reported accuracy of 87\% is not comparable with the figures in
+this paper, and the difference lies in the protocol rather than in the
+algorithm. We return to this in Section~\ref{sec:protocol}.
+
+\subsection{Grammatical sources}
+
+The affix inventory was assembled from published descriptions rather than by
+inspecting a corpus. Table~\ref{tab:sources} lists the sources used and the
+tag each carries in the released inventory file.
+
+Of the 118 rules, 39 cite one of those published descriptions directly. A
+further 30 reference a section of this project's own affix-inventory document,
+which collates the same literature but is not itself a publication, and 49
+carry no reference at all. We separate the three cases rather than report one
+citation figure, because only the first is a citation in the ordinary sense.
+
+\begin{table}[t]
+\caption{Sources for the affix inventory.}
+\label{tab:sources}
+\centering
+\begin{tabular}{p{4.4cm}l}
+\toprule
+Source & Tag\\
+\midrule
+Tegey \& Robson, \emph{A Reference Grammar of Pashto}~\cite{tegey1996} & [T\&R]\\
+Robson \& Tegey, ``Pashto''~\cite{robson2009} & [R\&T]\\
+David, \emph{Descriptive Grammar of Pashto}~\cite{david2014} & ---\\
+Naeem \& Khan, derivational morphology~\cite{naeem} & [N\&K]\\
+Khan, Pashto diminutives~\cite{khan2023} & [Khan23]\\
+Wiktionary / kaikki.org Pashto suffixes & [W]\\
+Apertium \texttt{apertium-pus} & [AP]\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===========================================================================
+\section{Pashto Morphology}
+
+This section covers the parts of the morphology that bear on the design. It is
+not a complete grammatical description.
+
+\subsection{Orthography}
+
+Beyond the Arabic inventory, Pashto adds retroflex and other consonants that
+occur in neither Arabic nor Persian: \ps{ټ ډ ړ ږ ښ ځ څ ڼ ګ}. A word containing
+any of these is certainly Pashto rather than a loan, and the system uses that
+fact.
+
+A complication became apparent only late in this work. The same suffix is
+written with different \emph{ye} letters in different registers: dictionary
+orthography prefers \ps{لومړی} where news orthography writes \ps{لومړي}. A
+rule spelled in one convention does not fire on the other. The system
+therefore compares a folded key when deciding whether a rule applies, while
+the letters it writes out are never altered. Section~\ref{sec:results}
+quantifies the effect.
+
+\subsection{Nominal inflection}
+
+Tegey and Robson divide Pashto nouns into masculine classes M1--M4 and
+feminine classes F1--F3, each with its own plural and oblique endings. The
+endings the system removes most often are \ps{ونه} and \ps{ونو} (masculine
+plural and its oblique), \ps{ان} and \ps{انو} (animate plural and oblique),
+\ps{ې} (feminine plural) and \ps{و} (oblique plural). Nominal inflection is
+not a simple suffix-substitution system: gender, number, noun class and the
+final shape of the stem can all trigger stem alternation.
+
+\subsection{Verbal morphology}
+
+Two productive patterns form verbs from nouns and adjectives. The
+\ps{ېدل}~intransitive and \ps{ول}~transitive patterns are regular, so both are
+handled by rule and neither appears in the dictionary:
+\ps{جوړېدل}~$\rightarrow$~\ps{جوړ} and \ps{جوړول}~$\rightarrow$~\ps{جوړ}. For
+strong verbs the present stem cannot be predicted, and these are listed:
+\ps{لیدل}~/~\ps{وین}, \ps{تلل}~/~\ps{ځ}, \ps{کول}~/~\ps{کو},
+\ps{غوښتل}~/~\ps{غواړ}.
+
+\subsection{Loanwords}
+
+Pashto has borrowed heavily from Arabic, Persian and English, and loanwords
+are the principal remaining source of error, because their endings frequently
+resemble Pashto affixes. The correct stem of \ps{منشي} is \ps{منشي}, not
+\ps{منش}; of \ps{کورس} is \ps{کورس}, not \ps{کور}, which is a different word
+meaning \emph{house}; and of \ps{بېجينګ} (Beijing) is the word itself, not
+\ps{جينګ}. Arabic broken plurals are a related problem, formed by changing the
+internal vowel pattern rather than by adding material, so that no suffix rule
+can reach them.
+
+% ===========================================================================
+\section{Method}
+
+Fig.~\ref{fig:pipeline} shows the order in which a word passes through the
+system. Three of the stages can return a stem on their own, and the remaining
+word goes to the generate-and-select stages that do the general work. Every
+stage can be disabled independently, which is what makes the component study in
+Section~\ref{sec:results} possible.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/pipeline.pdf}
+\caption{The pipeline. Stages 2--4 can each return a stem and stop; everything
+else reaches stage 5, where all applicable rules are applied and the results
+are then scored against one another. The two dashed boxes are not stages: the
+guards constrain which strips the earlier stages may make, and the
+irregular-verb dictionary is an optional lemmatization mode that is off by
+default. Affixes are transliterated in the figure for legibility and given in
+Pashto script in the text.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Normalization}
+
+Normalization removes differences that carry no information: Arabic
+diacritics, the tatweel elongation character, zero-width joiners, and the
+several Unicode encodings of the same letter. The Arabic kaf is mapped to the
+Pashto keheh, the alef-hamza forms to bare alef, and the Urdu letters common
+in Pashto written in Pakistan (\ps{ٹ ڈ ڑ ے} and the Persian \ps{گ}) to their
+Pashto counterparts. These are encoding corrections rather than changes of
+spelling.
+
+What normalization does not do is merge the \emph{ye} letters. We verified
+that no \emph{ye} character is altered in any cell of either evaluation set.
+The aggressive fold remains available behind a configuration flag so that the
+cost of the error reported in the literature can be measured rather than
+asserted.
+
+\subsection{The affix inventory}
+
+The inventory holds 108 suffix rules and 10 prefix rules. Each rule records
+the affix and the side it attaches to; whether it is inflectional or
+derivational; a minimum surviving stem length; the part of speech the affix
+signals, where known; its productivity (productive, restricted, lexicalized or
+borrowed); a confidence level; and whether it may be stripped at all.
+
+Table~\ref{tab:schema} gives the schema in full, with three entries written
+out. The last field does real work. Twenty-five entries are documented but
+never applied, because applying them was measured to be harmful or because the
+grammatical source provides no attested example. The lexicalized diminutive
+\ps{وکی}, the third column of Table~\ref{tab:schema}, is one: it survives only
+in fixed words such as \ps{وړوکی}, so removing it by rule damages them.
+Recording the affix and refusing to strip it is not the same as omitting it,
+because the inventory is also a description of the language. The minimum stem
+length does equally real work: without it the verb \ps{کېدل} reduces to the
+single letter \ps{ک}.
+
+\begin{table}[t]
+\caption{The rule schema, with three entries written out. The third is
+documented and never applied.}
+\label{tab:schema}
+\centering
+\begin{tabular}{llll}
+\toprule
+Field & \ps{ونه} & \ps{توب} & \ps{وکی}\\
+\midrule
+side          & suffix        & suffix        & suffix\\
+category      & inflectional  & derivational  & derivational\\
+min.\ stem    & 2             & 3             & 3\\
+POS signalled & N             & N             & N\\
+productivity  & productive    & productive    & lexicalized\\
+confidence    & high          & high          & low\\
+strip allowed & yes           & yes           & \textbf{no}\\
+source        & [T\&R] M2     & [N\&K]        & inventory \S4\\
+\midrule
+example       & \ps{کورونه}   & \ps{مینتوب}  & \ps{وړوکی}\\
+              & $\rightarrow$ \ps{کور} & $\rightarrow$ \ps{مین}
+              & unchanged\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:inventory} groups the 118 rules by what they do. Derivation
+accounts for 71 of them against 37 inflectional rules, which is the opposite of
+what a stemmer for English would need and follows from where Pashto puts its
+productive morphology. The grouping also shows where the gated entries are
+concentrated: 16 of the 25 are noun-forming derivational suffixes, which is the
+area where lexicalization is commonest and where a rule is most likely to be
+documented in a grammar and still be unsafe to apply.
+
+\begin{table}[t]
+\caption{The 118 rules by function. ``Published'' counts the rules citing a
+published grammar or lexical resource; ``kept'' counts those documented and
+never stripped. The full inventory is Appendix~A.}
+\label{tab:inventory}
+\centering
+\input{inventory_summary.tex}
+\end{table}
+
+\subsection{Length rules}
+
+Three rules were contributed by the author, a native speaker of Pashto, from
+his own judgement, and then tested against the annotated data. A word of three letters or fewer
+is returned unchanged. A word of four or five letters ending in one of the
+five \emph{ye} letters or in \ps{ه} loses that letter. A word ending in
+\ps{ستان} loses that suffix, and stripping stops there.
+
+The last condition is necessary: allowing the general rules to continue
+produced \ps{ترکمنستان}~$\rightarrow$~\ps{ترک} rather than \ps{ترکمن}. The
+second rule originally included \ps{ل}, which we removed after measuring it.
+On a verb \ps{ل} is the infinitive ending, but on a noun it is part of the
+root, and the rule could not distinguish the two: it reduced \ps{کابل} to
+\ps{کاب} and \ps{لامل} to \ps{لام}, accounting for 51 over-strips on its own.
+
+A fourth rule was proposed and rejected. It would have removed the last three
+characters of any non-Pashto word of seven characters or more. Measured against
+three independent references, removing a documented affix instead was more
+accurate in both careful annotations (45.0\% against 25.0\% on the development
+set, 51.6\% against 43.5\% on the held-out set). Every word the rule damaged
+carried a genuine affix: \ps{مسووليت} became \ps{مسوو} where the affix is
+\ps{یت}, and \ps{اعلانات} became \ps{اعلا} where the affix is \ps{ات}. The
+rule fired before the inventory was consulted and cut through the root.
+
+\subsection{Candidate generation and selection}
+
+Generation and selection are separate, which is the central design decision
+borrowed from the Persian and Urdu hybrid systems. The generator applies every
+rule that fits and returns all distinct forms reached, including the original
+word with nothing removed. For \ps{کورونو} the pool contains the untouched
+form, the result of removing \ps{ونو}, and the result of removing \ps{و}
+alone. Nothing is decided at this stage, which is what allows a shallower
+analysis to displace a deeper one.
+
+Selection scores each candidate on how much affix material was removed,
+whether other words in the corpus are built on the same stem, and whether the
+stem itself is attested. Two corrections to this stage were necessary during
+development and are worth recording, since both are easy to get wrong.
+
+First, an early version required the stem to be an attested Pashto word before
+accepting a strip. That is incorrect: the output of a stemmer is a class label,
+and Porter's \emph{relat} is not an English word either. Attestation now
+raises a candidate's score without gating it, and the system freely produces
+stems that are not words, including \ps{ښوون}, \ps{لوبغاړ} and \ps{پوهن}.
+
+Second, the unstripped input word is almost always present in the corpus, so
+awarding it the full attestation bonus made inaction the default winner and
+concealed every single-letter inflection. Presence in a corpus is evidence
+that a string is a word, not that it is a stem, and the no-strip candidate now
+receives a much smaller bonus.
+
+A small number of affix groups bypass the scorer entirely. The abstract-noun
+and place suffixes \ps{تیا}, \ps{توب}, \ps{والی} and \ps{تون} are long and
+unambiguous, so no competing analysis exists for the scorer to weigh; leaving
+them arbitrated meant that \ps{روغتیا} and \ps{پوهنتون} remained unchanged
+because \ps{روغ} and \ps{پوهن} are absent from the lexicon.
+
+\subsection{Guards}
+\label{sec:guards}
+
+Two guards were added after error analysis. A prefix is removed only when what
+remains is itself an attested word. Without it the system strips \ps{لا} from
+\ps{لانسیټ}, leaving \ps{نسیټ}, and from \ps{لاانتها}, leaving \ps{انتها};
+with it, both words are returned whole. The guard is conservative in both
+directions, since \ps{لاانتها} genuinely is \ps{لا}~+~\ps{انتها}, and we
+accept the missed strip in exchange for not cutting into loanwords.
+
+The second guard concerns the interaction between the prefix rules and the
+length rules. A word of four or five letters that begins with a removable
+prefix is passed to the full inventory instead of simply losing its last
+letter. Only a prefix that may actually be removed counts: \ps{نا} is kept
+rather than stripped, so \ps{ناوړه} is still handled by the length rule and
+becomes \ps{ناوړ}, which is what the annotation gives.
+
+\subsection{The verb dictionary and the scope of the task}
+\label{sec:scope}
+
+The system includes a dictionary of 42 strong verbs, of which 34 are checked
+against a printed grammar and 8 are marked unverified. The dictionary maps an
+inflected form to its verb: \ps{شو}~$\rightarrow$~\ps{کېدل}. That output is a
+lemma, and substituting one word for another is lemmatization rather than
+stemming. On the word types whose reference is a truncation, the dictionary
+decides 104 words and is correct for 47 of them, because it supplies the wrong
+kind of answer; it costs 1.07 points overall.
+
+The dictionary is therefore disabled by default and provided as an explicit
+lemmatization mode. We report its contribution separately in
+Section~\ref{sec:results} rather than folding it into the stemming result.
+
+% ===========================================================================
+\section{Data and Annotation}
+
+No annotated set for Pashto stemming was available, so two were constructed.
+The distinction between them determines how the results should be read.
+
+\subsection{Corpus}
+
+Word frequencies were taken from a corpus of Pashto news and general text
+assembled from VOA Pashto, BBC Pashto and a topic-labelled collection,
+totalling approximately 5.4 million tokens and 68{,}850 distinct word types.
+The lexicon shipped with the system is a 5{,}443-type frequency list drawn from
+this material.
+
+Building a larger lexicon from the full corpus was attempted and made results
+worse. The reason is instructive: a raw corpus contains inflected forms as
+well as base forms, so with 48{,}000 types the attestation signal ceased to
+mean ``this is a stem'' and began rewarding over-stripped forms that happened
+to occur. The smaller list was better by being sparser.
+
+\subsection{Development set}
+
+2{,}912 word types were annotated by the author, a native speaker of Pashto,
+and subsequently reviewed by two further native speakers: the principal of a
+Pashto-medium school and a university teacher of the language. The set
+passed through several revisions; the final reference column was produced by
+applying the author's documented rules to the word list and correcting the
+output by hand, with a written log of every correction and its reason.
+
+This construction has a consequence that must be stated plainly. Because the
+same rule set produced part of both the reference and the system's behaviour,
+high agreement between them measures faithfulness of implementation as well as
+linguistic correctness, and a mistake in a rule appears identically on both
+sides. That is why a second set was built.
+
+\subsection{Held-out set}
+
+500 word types were sampled at random from the news corpus under three
+constraints: a frequency of at least five, to exclude typographical noise; a
+length of at least three characters; and no overlap with the development set.
+The sample was annotated with the reference field initially empty, so that
+nothing anchored the annotator to any system's output, and it was not consulted
+during development. Every figure reported for it comes from a single run of the
+finished system.
+
+The first annotation pass of this set was carried out while the annotator was
+unwell. An audit comparing each removal against the affix inventory found that
+47\% of the removals corresponded to no documented affix: words such as
+\ps{مزاج} and \ps{حارث}, which carry no affix at all, had been shortened. The
+set was re-annotated and the audit repeated.
+
+That audit procedure is reusable and we recommend it. For each annotated pair,
+the material removed is compared against the affix inventory; a removal
+matching no affix is either an annotation error or evidence that the inventory
+is incomplete, and inspection separates the two. Applied to the development
+set, the same procedure identified six affixes the inventory lacked.
+
+\subsection{Annotation policy}
+
+The policy the annotations follow is released with the data. Its main
+provisions are that the output is a stem and need not be a word; that Arabic
+broken plurals are handled by dictionary lookup rather than by rule; that
+proper nouns receive no special treatment, so \ps{افغانستان} loses its
+\ps{ستان} like any other word; that compounds are kept whole; and that where
+two analyses are both defensible, the shallower is preferred.
+
+% ===========================================================================
+\section{Evaluation Protocol}
+\label{sec:protocol}
+
+\subsection{Why exact-match accuracy alone is insufficient}
+
+The natural measure is the proportion of word types for which the system
+produces the annotated stem. On its own it is misleading. Nearly half of
+Pashto word types carry no affix and should be returned unchanged, so a system
+that modifies nothing scores 48.04\% on the development set and 39.32\% on the
+held-out set. Every letter a system declines to remove earns it credit.
+
+Tuning against overall accuracy therefore drives a stemmer towards inactivity.
+During this work an apparent improvement of nearly three points proved, on
+inspection, to be exactly that: the system had become more conservative, losing
+seven points on the word types requiring a strip while gaining twelve on those
+requiring none.
+
+All results below report three figures: accuracy on the types the annotation
+strips, accuracy on the types it leaves unchanged, and overall accuracy. The
+first cannot be obtained by inaction.
+
+\subsection{The scope of the stemming task}
+
+Stemming removes characters; it cannot insert them. Where the reference is an
+Arabic broken plural or a suppletive form---\ps{اثارو}~$\rightarrow$~\ps{اثر},
+\ps{نجونو}~$\rightarrow$~\ps{نجلۍ}---the answer is a lemma that no affix rule
+can produce. Marking a truncating stemmer wrong on those types penalises it for
+not being a lemmatizer.
+
+We therefore score the two tasks separately. A type belongs to the stemming
+task when the reference can be obtained by removing characters from the word,
+comparison being insensitive to which \emph{ye} letter is written. By this
+criterion the development set contributes 2{,}702 stemming types and 210 lemma
+types, and the held-out set 473 and 27. Results for the lemma types are
+reported separately in Section~\ref{sec:results}.
+
+\subsection{Two protocols compared}
+
+Aslamzai and Saad report 87\% accuracy; our reimplementation of the same nine
+rules reaches 42.49\% on held-out data. The difference is entirely
+methodological, and the point is important enough to measure rather than
+assert.
+
+Protocol~A, used throughout this paper, fixes the reference before any system
+output is seen and counts a result only if it matches exactly. Protocol~B
+reproduces theirs: a judge is shown the output and decides whether it is an
+acceptable analysis. We implement Protocol~B reproducibly by counting an output
+as acceptable when nothing was removed that is not a documented affix, and by
+treating an unchanged word as always acceptable, which is how a judge shown an
+unchanged word would score it.
+
+\begin{table}[t]
+\caption{The same 473 held-out word types under both protocols. The final
+column gives the proportion of types the system modifies at all.}
+\label{tab:protocol}
+\centering
+\begin{tabular}{lccc}
+\toprule
+System & A: exact & B: judged & Modified\\
+\midrule
+Modifies nothing       & 39.32\% & \textbf{100.00\%} & 0.0\%\\
+Aslamzai \& Saad~\cite{aslamzai2015} & 42.49\% & 81.61\% & 37.0\%\\
+\textbf{Proposed}      & \textbf{75.05\%} & \textbf{98.31\%} & 67.9\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The first row of Table~\ref{tab:protocol} is the finding. Under Protocol~B a
+system that modifies no word scores 100\%, because every unchanged word is
+acceptable to a judge and it produces nothing else. The protocol cannot
+separate a working stemmer from an inert one, and a figure obtained under it
+cannot be compared with an exact-match figure.
+
+Nothing here shows the published 87\% to be incorrect. It shows that the
+measurement answers a different question. We note that the proposed system
+also outperforms the baseline under Protocol~B, by 98.31\% to 81.61\%, so the
+conclusion does not depend on the choice.
+
+% ===========================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Held-out evaluation}
+
+Table~\ref{tab:heldout} reports the held-out set, which is the primary result:
+473 word types from news text, annotated with the reference field initially
+empty and never used during development.
+
+\begin{table}[t]
+\caption{Held-out evaluation, 473 word types. ``Affixed'' and ``Bare'' are
+accuracy on the types the annotation changes and leaves unchanged.}
+\label{tab:heldout}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+System & Accuracy & Affixed & Bare & UI\\
+\midrule
+Modifies nothing & 39.32\% & 0.0\% & 100.0\% & 1.000\\
+Aslamzai \& Saad & 42.49\% & 18.1\% & 80.1\% & 0.846\\
+\textbf{Proposed} & \textbf{75.05\%} & \textbf{77.0\%} & 72.0\% & \textbf{0.385}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The proposed system improves on the baseline by 32.6 points overall. The
+separation of the two halves is more informative than the overall figure: on
+the types that require a strip the baseline reaches 18.1\% and the proposed
+system 77.0\%, a factor of four. Paice's under-stemming index falls from 0.846
+to 0.385, and over-stemming remains below $4\times10^{-5}$.
+
+\subsection{Development set}
+
+\begin{table}[t]
+\caption{Development set, 2{,}702 stemming types.}
+\label{tab:dev}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+System & Accuracy & Affixed & Bare & UI\\
+\midrule
+Modifies nothing & 48.04\% & 0.0\% & 100.0\% & 1.000\\
+Aslamzai \& Saad & 50.96\% & 12.3\% & 92.8\% & 0.914\\
+\textbf{Proposed} & \textbf{79.64\%} & \textbf{77.9\%} & 81.6\% & \textbf{0.279}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:dev} reports the development set. The figure is higher than the
+held-out result, and part of that difference is an artefact of construction, as
+Section~5.2 explains. It is reported for comparability with the baseline, which
+is scored identically, and because Paice's indices are more stable on the
+larger set. On the types requiring a strip the margin is wider still: 77.9\%
+against 12.3\%, a factor of six.
+
+\subsection{Component study}
+
+\begin{table}[t]
+\caption{Each component removed in turn. Changes in percentage points.}
+\label{tab:ablation}
+\centering
+\begin{tabular}{lcc}
+\toprule
+Configuration & Development & Held-out\\
+\midrule
+\textbf{Full system} & \textbf{79.64\%} & \textbf{75.05\%}\\
+$-$ suffix rules & 71.84\% ($-$7.81) & 61.73\% ($-$13.32)\\
+$-$ length rules & 76.68\% ($-$2.96) & 72.94\% ($-$2.11)\\
+$-$ corpus lexicon & 78.76\% ($-$0.89) & 75.69\% ($+$0.63)\\
+$-$ uniform-strip group & 79.35\% ($-$0.30) & 74.84\% ($-$0.21)\\
+$-$ prefix rules & 79.61\% ($-$0.04) & 75.26\% ($+$0.21)\\
+$+$ verb dictionary & 79.53\% ($-$0.11) & 73.57\% ($-$1.48)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The suffix inventory does most of the work, and removing it costs 13.3 points
+on held-out text. The author's length rules contribute between two and three
+points on both sets.
+
+Three rows record decisions taken against the measured score, and we state
+them explicitly rather than quietly adopting whichever setting scored best.
+
+Prefix stripping costs a few hundredths of a point on the development set. We
+retain it because \ps{هم}, \ps{بیا}, \ps{نیم} and \ps{لا} are genuine Pashto
+prefixes, and removing the rules would amount to claiming the language has
+none; the attestation guard described in Section~\ref{sec:guards} is what
+makes them safe. The small effect is itself explained by the inventory: of the
+ten prefix rules, four are documented and never stripped. \ps{نا}, \ps{بې} and
+\ps{غیر} are negation prefixes that the annotation policy keeps, because
+\ps{ناقانونه} is not an instance of \ps{قانون} but its opposite, and \ps{سر}
+is a free noun as often as it is a prefix.
+
+The corpus lexicon is worth 0.89 points on the development set and $-0.63$ on
+held-out text. Its contribution is now marginal, because the uniform-strip and
+length rules decide most cases before the scorer is consulted. We report this
+plainly: the system should not be described as lexicon-driven.
+
+Enabling the verb dictionary costs 1.48 points on held-out text, for the reason
+given in Section~\ref{sec:scope}. Its proper contribution is to the lemma
+types, where it resolves 69 of the 210 in the development set.
+
+\subsection{Orthography}
+
+The gap between the two evaluation sets has one dominant cause. Of the 500
+held-out news types, 118 contain the hard \emph{ye} \ps{ي}; of the 2{,}912
+development types, none do. The inventory contained thirteen rules ending in
+the narrow \emph{ye} \ps{ی} and none ending in \ps{ي}, so a large class of news
+words passed through untouched: \ps{لومړي} and \ps{تاریخي} were returned
+unchanged.
+
+Making rule matching insensitive to which \emph{ye} is written, while leaving
+the output letters untouched, corrected this. On the development set, which is
+written entirely in one convention, exact matching scores 0.41 points higher;
+on held-out news text the folded comparison is worth 1.06 points, so it earns
+its place on the set that reflects real text. This is the clearest instance in
+the project of a defect that a single-source evaluation set could not have
+revealed.
+
+% ===========================================================================
+\section{Discussion}
+
+\subsection{Correct rules and under-determined rules}
+
+A per-rule analysis separates two kinds of failure, and the distinction matters
+for how the remaining error should be addressed.
+
+Some rules are simply wrong. Three were identified and corrected during this
+work: a standalone rule for the verbal \ps{ل} was correct in 0 of 26 firings,
+because it only ever applied to nouns where \ps{ل} is root; a rule removing
+\ps{نی} as a unit was correct in 3 of 29, since the affix is usually the
+\ps{ی} alone; and a feminine restoration rule was correct in 29 of 84. These
+were defects, not ambiguity, and fixing them was worth roughly three points.
+
+Other rules are correct but under-determined. The rule removing a final \ps{ه}
+from a short word fires 226 times on the development set and is correct 161
+times. \ps{لنډه}~$\rightarrow$~\ps{لنډ} is right and
+\ps{خواړه}~$\rightarrow$~\ps{خواړ} is wrong, and the two words are
+indistinguishable in shape. Removing the rule loses more than it saves: overall
+accuracy falls by 1.63 points. No reformulation conditioned on the surface form
+can help; only a lexical resource can.
+
+\subsection{What limits the current accuracy}
+
+Of the remaining errors on the development set, roughly 43\% are over-strips
+and 29\% are types whose reference is a different word. Within the second
+group, 116 of 158 are verb forms that a more complete verb dictionary would
+cover, and only 5 types in the whole set resist every available method. The
+practical ceiling for a rule-based system on this data is therefore high, and
+the shortfall is attributable to the \ps{ه}/\ps{ی}/\ps{ې} ambiguity and to
+loanwords rather than to missing affixes.
+
+We tested the obvious remedy and report the result because it is negative. A
+257-entry list of development-set words that should be left unchanged raises
+development accuracy by 8.8 points and held-out accuracy by zero: of the 52
+held-out types needing the same treatment, none appear in the list. The list is
+pure memorisation of one sample. The generalizing form of the same idea is a
+named-entity and loanword lexicon, since the words concerned are overwhelmingly
+names and borrowings, and we leave that to future work.
+
+% ===========================================================================
+\section{Limitations}
+
+The evaluation is on word types rather than running text, so no measurement of
+retrieval effectiveness is reported, and the relationship between the intrinsic
+gains shown here and downstream performance remains untested.
+
+The annotation was produced by a single annotator and reviewed by two further
+native speakers, who corrected the cases they disagreed with rather than
+annotating the set independently. Inter-annotator agreement therefore cannot be
+computed, and systematic bias cannot be excluded.
+
+Of 118 affix rules, 39 cite a published description directly and 49 carry no
+reference at all. Of 42 verbs in the dictionary, 34 are checked against a
+printed grammar and 8 are marked unverified in the released documentation. We
+prefer to label these rather than to present them as settled.
+
+Compounds are kept whole, which is a policy choice rather than a solution. An
+audit of the development set found 47 types where the annotation itself split a
+compound, contrary to the stated policy.
+
+The corpus is drawn from news and general text, so the vocabulary of
+specialised domains is under-represented.
+
+% ===========================================================================
+\section{Conclusion}
+
+We presented a rule-based stemmer for Pashto built from an affix inventory of
+118 rules taken from published grammars, each recording its source, its
+productivity and an explicit decision about whether it may be applied. No
+machine learning is used, and every decision the system makes can be traced to
+a rule or a dictionary entry.
+
+On 473 held-out word types from news text, annotated blind and never used
+during development, the system reaches 75.05\% exact-match accuracy against
+42.49\% for the published baseline, and 77.0\% against 18.1\% on the types
+that require a strip. On a 2{,}702-type development set it reaches 79.64\%
+against 50.96\%, with Paice's under-stemming index falling from 0.914 to
+0.279.
+
+Three observations generalise beyond this particular system. Exact-match
+accuracy is not a sufficient measure for stemming in a language where a large
+share of word types carry no affix, because it rewards inactivity; reporting
+the two halves of the task separately costs nothing and prevents the error. An
+evaluation set drawn from a single orthographic convention will conceal defects
+that a second source exposes immediately, as the \emph{ye} variants did here.
+And when a rule-based system finds no affix, the useful response is to ask what
+the inventory is missing rather than to remove characters regardless: the one
+rule in this work that guessed a boundary instead of finding one was measured
+against three references, lost on both careful annotations, and was removed.
+
+The stemmer, the affix inventory with its sources, the verb dictionary, both
+annotated sets and the scripts that reproduce every figure in this paper are
+released under an MIT licence.
+
+% ===========================================================================
+\section*{Acknowledgment}
+
+The author thanks the two native speakers who reviewed the annotated data: the
+principal of a Pashto-medium school and a university teacher of Pashto.
+
+\begin{thebibliography}{99}
+
+\bibitem{aslamzai2015}
+S. Aslamzai and S. Saad, ``Pashto language stemming algorithm,''
+\emph{Asia-Pacific Journal of Information Technology and Multimedia},
+vol.~4, no.~1, pp.~25--37, 2015.
+
+\bibitem{porter1980}
+M.~F. Porter, ``An algorithm for suffix stripping,''
+\emph{Program}, vol.~14, no.~3, pp.~130--137, 1980.
+
+\bibitem{lovins1968}
+J.~B. Lovins, ``Development of a stemming algorithm,''
+\emph{Mechanical Translation and Computational Linguistics}, vol.~11,
+pp.~22--31, 1968.
+
+\bibitem{paice1990}
+C.~D. Paice, ``Another stemmer,'' \emph{ACM SIGIR Forum}, vol.~24, no.~3,
+pp.~56--61, 1990.
+
+\bibitem{paice1994}
+C.~D. Paice, ``An evaluation method for stemming algorithms,'' in
+\emph{Proc. 17th Annual International ACM SIGIR Conference}, 1994,
+pp.~42--50.
+
+\bibitem{khoja1999}
+S. Khoja and R. Garside, ``Stemming Arabic text,'' Computing Department,
+Lancaster University, Tech. Rep., 1999.
+
+\bibitem{larkey2002}
+L.~S. Larkey, L. Ballesteros, and M.~E. Connell, ``Improving stemming for
+Arabic information retrieval: light stemming and co-occurrence analysis,''
+in \emph{Proc. 25th Annual International ACM SIGIR Conference}, 2002,
+pp.~275--282.
+
+\bibitem{sharifloo2008}
+A.~A. Sharifloo and M. Shamsfard, ``A bottom up approach to Persian
+stemming,'' in \emph{Proc. 3rd International Joint Conference on Natural
+Language Processing}, 2008.
+
+\bibitem{tegey1996}
+H. Tegey and B. Robson, \emph{A Reference Grammar of Pashto}.
+Washington, DC: Center for Applied Linguistics, 1996.
+
+\bibitem{robson2009}
+B. Robson and H. Tegey, ``Pashto,'' in \emph{The Iranian Languages},
+G. Windfuhr, Ed. London: Routledge, 2009.
+
+\bibitem{david2014}
+A.~B. David, \emph{Descriptive Grammar of Pashto and its Dialects}.
+Berlin: De Gruyter Mouton, 2014.
+
+\bibitem{naeem}
+T. Naeem and M.~A. Khan, ``Automatic derivation of nouns from adjectives in
+Pashto,'' Center for Language Engineering, Pakistan.
+
+\bibitem{khan2023}
+A. Khan, ``The diminutive morphological function between English and
+Pashto,'' \emph{Humanities and Social Sciences Communications}, vol.~10,
+art.~536, 2023.
+
+\end{thebibliography}
+
+% ===========================================================================
+\onecolumn
+\appendix
+\section{The complete affix inventory}
+
+The 118 rules in full, in the order the engine holds them. ``Type'' gives the
+side and whether the rule is inflectional or derivational; ``min'' is the
+shortest stem the rule is allowed to leave; ``strip'' is whether the engine may
+remove the affix at all. The entries marked \emph{no} are documented and never
+applied, for the reasons given in Section~IV.B. This table is generated
+directly from the rule objects by \texttt{paper/make\_inventory\_tables.py},
+so it cannot drift from the implementation.
+
+\footnotesize
+\input{appendix_inventory.tex}
+\normalsize
+
+\end{document}
