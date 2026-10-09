@@ -9,7 +9,7 @@ audit output. Every figure quoted below is recomputed by a script in
 | file | rows | columns | what it is |
 |---|---|---|---|
 | `pashto_gold_corrected_v2.csv` | 2,912 | `word,stem` | the development set, the released reference |
-| `test_500_news_corrected.csv` | 500 | `no,word,frequency,gold_stem,note,expert_stem` | the held-out set, sampled from news text |
+| `test_500_news_corrected.csv` | 500 | `no,word,frequency,stem,note` | the held-out set, sampled from news text |
 | `test_500_news.csv` | 500 | same | the held-out set before its audit revision |
 
 Of the development set, 2,717 types are within the stemming task and 195 have a
@@ -38,13 +38,13 @@ identical to the school principal's pass and 94.98% to the university
 teacher's.
 
 On the held-out set all three agreed on the result, which is released as a
-single reference, so no coefficient is computed for it.
+single `stem` column, so no coefficient is computed for it.
 
-`test_500_news.csv` and `test_500_news_corrected.csv` carry two reference
-columns, `gold_stem` and `expert_stem`, whose contents are identical in all 500
-rows. They record that one agreed reference under two names; `expert_stem` is
-not a second, separate pass. We leave both in place rather than rewrite a
-released file.
+An earlier release of these two files carried the reference twice, as
+`gold_stem` and `expert_stem`, with identical contents in all 500 rows. The
+duplicate invited the reading that `expert_stem` was a second, independent
+pass, which it never was, so the files now carry one `stem` column like the
+development set. No label changed.
 
 ## The annotation history
 

@@ -155,7 +155,7 @@ def header(title):
 
 def main() -> int:
     dev_all, dev = load(DEV, "word", "stem")
-    held_all, held = load(HELD, "word", "expert_stem")
+    held_all, held = load(HELD, "word", "stem")
 
     ours = PashtoStemmer().stem
     base = AslamzaiBaseline().stem

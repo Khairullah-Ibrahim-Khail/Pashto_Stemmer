@@ -82,9 +82,9 @@ def audit(path, word_col, stem_col, out_name):
 
 def main() -> int:
     ds = os.path.join(ROOT, "dataset")
-    audit(os.path.join(ds, "test_500_news.csv"), "word", "expert_stem",
+    audit(os.path.join(ds, "test_500_news.csv"), "word", "stem",
           "unsupported_removals_heldout_firstpass.csv")
-    audit(os.path.join(ds, "test_500_news_corrected.csv"), "word", "expert_stem",
+    audit(os.path.join(ds, "test_500_news_corrected.csv"), "word", "stem",
           "unsupported_removals_heldout.csv")
     audit(os.path.join(ds, "pashto_gold_corrected_v2.csv"), "word", "stem",
           "unsupported_removals_dev.csv")

@@ -59,8 +59,8 @@ This project takes a different route and stays entirely rule-based:
 ## Quick start
 
 ```bash
-git clone https://github.com/Khairullah-Ibrahim-Khail/pashto-stemmer
-cd pashto-stemmer
+git clone https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stammer
+cd Pashto_Stammer
 pip install -e .
 python examples/quickstart.py
 ```
@@ -339,7 +339,7 @@ tests/              38 tests
 | File | Contents |
 |---|---|
 | `dataset/pashto_gold_corrected_v2.csv` | development set, 2,912 word types (`word,stem`) |
-| `dataset/test_500_news_corrected.csv` | held-out set, 500 news word types with frequency and the expert column |
+| `dataset/test_500_news_corrected.csv` | held-out set, 500 news word types (`no,word,frequency,stem,note`) |
 | `dataset/annotations/` | two of the three independent annotation passes |
 | `dataset/pashto_gold_changes(1).md` | every hand correction and the reason for it |
 | `dataset/ANNOTATION_GUIDELINES.md` | what counts as a stem |

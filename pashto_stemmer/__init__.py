@@ -14,10 +14,16 @@ Quick start
 >>> st = PashtoStemmer()
 >>> st.stem("کورونه")
 'کور'
->>> st.stem("افغانستان")     # proper nouns are frozen
-'افغانستان'
+>>> st.stem("افغانستان")     # ‑ستان is an affix like any other
+'افغان'
+>>> st.stem("پوهنتون")       # the stem need not be a word
+'پوهن'
 >>> [r.stem for r in st.stem_text("د کورونو خبرونه")]
 ['د', 'کور', 'خبر']
+
+Proper nouns get no special treatment: the annotation policy strips a
+documented affix wherever it appears, so ‑ستان comes off افغانستان. Loanwords
+whose ending only resembles an affix are left alone, کورس stays کورس.
 """
 
 from .stemmer import PashtoStemmer, StemmerConfig, StemResult
@@ -38,5 +44,5 @@ __all__ = [
 ]
 
 __version__ = "0.1.0"
-__author__ = "Khairullah"
+__author__ = "Khairullah Ibrahim Khail"
 __license__ = "MIT"
