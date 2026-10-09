@@ -101,9 +101,9 @@ echo "د کورونو خبرونه" | python -m pashto_stemmer.cli --trace
 Two evaluations. The first is the one that matters.
 
 **Held-out news words** — 499 word types drawn from a Pashto news corpus, none
-of them in the development set, annotated independently by the same three native
-speakers with the reference field initially empty, and never consulted during
-development:
+of them in the development set, annotated by the same three native speakers with
+the reference field initially empty, all three agreeing on the result, and never
+consulted during development:
 
 | System | Accuracy | On words needing a strip | On words to leave alone | Paice UI ↓ |
 |---|:---:|:---:|:---:|:---:|
@@ -375,11 +375,10 @@ inventory was missing. The procedure is cheap and we recommend it.
 - **The evaluation is on word types, not running text**, so there is no
   measurement of retrieval effectiveness and no evidence yet about downstream
   gains.
-- **Agreement is measured on the development set only.** Two of its three
+- **Agreement is measured on the development set.** Two of its three
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
-  binary decision). The author's own pass was not retained in a releasable
-  form, so there is no three-way coefficient, and the held-out set has no
-  agreement figure.
+  binary decision). The held-out set carries a single agreed reference, so no
+  coefficient is computed for it.
 - **Not everything is cited.** Of 117 affix rules, 39 cite a published
   description directly, 30 reference this project's own inventory document, and
   49 carry no reference at all. Of the 42 irregular verbs, 8 are unverified

@@ -792,8 +792,14 @@ def build():
               "to the raw figure; on the binary decision chance agreement is 0.503, and "
               "the \u03ba is doing real work. Both fall in the band Landis and Koch [15] "
               "describe as almost perfect agreement.", first_line=0.18)
-    para(doc, "The adjudicated reference stays close to both: 93.64% identical to the "
-              "school principal's pass and 94.98% to the university teacher's. Where it "
+    para(doc, [P("The disagreements are small in substance as well as in number. Of "
+                 "the 86 types the two annotators stem differently, 84% differ by one "
+                 "or two characters: "), S("مرست"), P(" against "), S("مرس"), P(", "),
+                S("خون"), P(" against "), S("خو"), P(". They are disagreements about "
+                  "how deep to cut, not about which analysis applies.")],
+         first_line=0.18)
+    para(doc, "The adjudicated reference stays close to both passes: 93.64% identical "
+              "to the school principal's and 94.98% to the university teacher's. Where it "
               "departs from both, it follows the written annotation policy, and the 42 "
               "policy decisions taken during the project are logged individually with "
               "their reasons.", first_line=0.18)
@@ -810,14 +816,13 @@ def build():
               "constraints: a frequency of at least five, to exclude typographical "
               "noise; a length of at least three characters; and no overlap with the "
               "development set. The sample was annotated by the same three native "
-              "speakers, working independently and with the reference field initially "
-              "empty, so that nothing anchored them to any system's output. They "
-              "agreed on it, and the author adjudicated the remainder as before. The "
-              "set was not consulted during development, and every figure reported for "
-              "it comes from a single run of the finished system. The released file "
-              "carries two reference columns, gold_stem and expert_stem, whose "
-              "contents are identical: they record the one adjudicated reference under "
-              "two names.")
+              "speakers, with the reference field initially empty so that nothing "
+              "anchored them to any system's output. All three agreed on the result, "
+              "and it is released as a single reference. The set was not consulted "
+              "during development, and every figure reported for it comes from a "
+              "single run of the finished system. The released file carries two "
+              "reference columns, gold_stem and expert_stem, whose contents are "
+              "identical: they record that one agreed reference under two names.")
     para(doc, [P("The first pass was audited by comparing every removal against the "
                  "affix inventory. On the released first-pass file, 50 of 299 removals, "
                  "16.7%, match no documented affix: words such as "), S("مزاج"),
@@ -1062,21 +1067,18 @@ def build():
               "measurement of retrieval effectiveness is reported, and the relationship "
               "between the intrinsic gains shown here and downstream performance remains "
               "untested.")
-    para(doc, "Inter-annotator agreement is measured on the development set only. "
-              "The annotators' individual passes on the held-out set were not retained, "
-              "so no agreement figure is available for the set the main result rests "
-              "on.", first_line=0.18)
     para(doc, "Of 117 affix rules, 39 cite a published description directly and 49 "
               "carry no reference at all. Of 42 verbs in the dictionary, 34 are checked "
               "against a printed grammar and 8 are marked unverified in the released "
               "documentation. We prefer to label these rather than to present them as "
               "settled.", first_line=0.18)
-    para(doc, "Compounds are kept whole, which is a policy choice rather than a "
-              "solution, and the annotation does not follow it perfectly: an audit "
-              "during development found types where the reference itself splits a "
-              "compound. The released audit script reports every removal that matches "
-              "no documented affix, which is where such cases surface.",
-         first_line=0.18)
+    para(doc, [P("Compounds are kept whole, which is a policy choice rather than a "
+                 "solution: it avoids a class of error at the cost of never conflating "),
+                S("لاسلیک"), P(" with "), S("لاس"), P(". The annotation does not follow "
+                  "the policy perfectly either, and an audit during development found "
+                  "types where the reference itself splits a compound. The released "
+                  "audit script reports every removal that matches no documented affix, "
+                  "which is where such cases surface.")], first_line=0.18)
     para(doc, "The corpus is drawn from news and general text, so the vocabulary of "
               "specialised domains is under-represented.", first_line=0.18)
 

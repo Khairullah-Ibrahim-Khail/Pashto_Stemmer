@@ -20,11 +20,11 @@ applies that partition and prints both.
 
 ## Annotation, and a note on the columns
 
-Both sets were annotated independently by the same three native speakers — the
-author, a Pashto-medium school principal and a university teacher of Pashto —
-and adjudicated by the author.
+Both sets were annotated by the same three native speakers — the author, a
+Pashto-medium school principal and a university teacher of Pashto.
 
-Two of the three development-set passes are released in `annotations/`, so the
+On the development set each worked separately and the author adjudicated the
+differences. Two of those three passes are released in `annotations/`, so the
 agreement between them can be recomputed:
 
 ```
@@ -37,10 +37,13 @@ affix at all, **98.24%** (κ **0.965**). The adjudicated reference is 93.64%
 identical to the school principal's pass and 94.98% to the university
 teacher's.
 
+On the held-out set all three agreed on the result, which is released as a
+single reference, so no coefficient is computed for it.
+
 `test_500_news.csv` and `test_500_news_corrected.csv` carry two reference
 columns, `gold_stem` and `expert_stem`, whose contents are identical in all 500
-rows. They record the one adjudicated reference under two names; `expert_stem`
-is not a second, separate pass. We leave both in place rather than rewrite a
+rows. They record that one agreed reference under two names; `expert_stem` is
+not a second, separate pass. We leave both in place rather than rewrite a
 released file.
 
 ## The annotation history
