@@ -11,7 +11,7 @@ between competing analyses.*
 
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-38%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-48%20passing-brightgreen.svg)](tests/)
 [![Pashto](https://img.shields.io/badge/language-پښتو-orange.svg)](#)
 
 </div>
@@ -118,36 +118,52 @@ python -m pashto_stemmer.cli --file article.txt
 Stopwords come back unchanged, which is what you want for an index. Add
 `--trace` to see the confidence and the rules that fired on each word.
 
-**A CSV column.** There is no CSV mode in the CLI; use `stem_text`, which
-tokenises and returns one result per token:
+**A dataset — CSV, TSV or Excel.** Point the CLI at the file and name the
+column. Every original column is written back with the stemmed text in a new
+one beside it:
+
+```bash
+python -m pashto_stemmer.cli --csv   articles.csv  --column text --out stemmed.csv
+python -m pashto_stemmer.cli --excel articles.xlsx --column text --out stemmed.xlsx
+```
+
+```
+id,text,note,text_stemmed
+1,د کورونو خبرونه,a,د کور خبر
+2,پوهنتون ته ولاړ,b,پوهن ته ولاړ
+3,افغانستان او پاکستان,c,افغان او پاک
+```
+
+`--csv`, `--excel` and `--table` are the same option under three names; what
+matters is the file extension. `.csv` and `.tsv` are read as text, `.xlsx` and
+`.xlsm` through openpyxl, and the output format follows the extension you give
+`--out` — so `--out stemmed.xlsx` writes a workbook, and leaving `--out` off
+prints CSV to stdout so it pipes. Use `--sheet` to pick a worksheet other than
+the first.
+
+Two details that matter in practice. CSV files are read as `utf-8-sig`, so a
+file exported from Excel works without stripping its byte-order mark. And if
+the named column is not there, the CLI lists the column names it did find and
+exits non-zero rather than writing a file with an empty column in it.
+
+Reading `.xlsx` needs openpyxl:
+
+```bash
+pip install openpyxl
+```
+
+From Python, if you want the result in memory rather than on disk:
 
 ```python
-import csv
 from pashto_stemmer import PashtoStemmer
 
 st = PashtoStemmer()
-
-with open("in.csv", encoding="utf-8-sig") as fin, \
-     open("out.csv", "w", encoding="utf-8", newline="") as fout:
-    reader = csv.DictReader(fin)
-    writer = csv.DictWriter(fout, fieldnames=reader.fieldnames + ["stemmed"])
-    writer.writeheader()
-    for row in reader:
-        row["stemmed"] = " ".join(r.stem for r in st.stem_text(row["text"]))
-        writer.writerow(row)
+" ".join(r.stem for r in st.stem_text("د کورونو خبرونه"))   # 'د کور خبر'
 ```
 
-```
-id,text,stemmed
-1,د کورونو خبرونه,د کور خبر
-2,پوهنتون ته ولاړ,پوهن ته ولاړ
-```
-
-Two things worth knowing. Read the file with `utf-8-sig`, because a CSV saved
-from Excel carries a byte-order mark that otherwise ends up glued to the first
-column name. And build one `PashtoStemmer()` outside the loop — it loads the
-rule inventory and the lexicon once, after which it stems about 7,000 word
-types per second.
+Build the `PashtoStemmer()` once and reuse it — it loads the rule inventory and
+the lexicon on construction, after which it stems about 7,000 word types per
+second.
 
 ## Results
 
@@ -328,6 +344,10 @@ Run the tests with:
 for f in tests/test_*.py; do python "$f"; done
 ```
 
+48 tests across five files: the stemmer end to end, the normalizer's treatment
+of the yeh letters, the irregular-verb dictionary, Paice's metrics, and the
+command line including both file modes.
+
 ## Stemming or lemmatization
 
 These are different tasks, and the distinction decides how the system is
@@ -435,7 +455,7 @@ experiments/
   compare_stemmers.py the development-set comparison
   ablation.py         a wider component sweep (not the paper's table)
 paper/              the paper: LaTeX source, Word, PDF, and its generators
-tests/              38 tests
+tests/              48 tests
 ```
 
 ## Data
