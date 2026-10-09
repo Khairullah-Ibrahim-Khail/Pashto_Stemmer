@@ -48,7 +48,7 @@ _NOMINAL_INFLECTIONAL: List[AffixRule] = [
     _s("انې", "inflectional", min_stem_len=3, pos=("N",), note="[T&R F2] alt. direct plural: کورنۍ→کورنیانې"),
     _s("یو", "inflectional", min_stem_len=3, pos=("N",), note="[T&R F2/F3] oblique plural: کورنیو، دوستیو"),
     _s("ګانو", "inflectional", min_stem_len=2, pos=("N",), note="[T&R M4/F3] oblique plural ‑ګانو"),
-    _s("ګانې", "inflectional", min_stem_len=2, pos=("N",), note="[T&R F2/F3] direct plural ‑ګانې"),
+    _s("ګانې", "inflectional", min_stem_len=2, pos=("N",), note="[T&R F2/F3] direct plural ‑ګانې; [inv §5.1] feminine plural of vowel-final stems: دعاګانې→دعا"),
     _s("ګان", "inflectional", min_stem_len=2, pos=("N",), note="plural -gān"),
     _s("انو", "inflectional", min_stem_len=2, pos=("N",), note="[T&R M1] oblique plural ‑انو"),
     _s("ان", "inflectional", min_stem_len=3, pos=("N",), note="[T&R M1] animate plural ‑ان"),
@@ -242,7 +242,10 @@ _FROM_FINAL_INVENTORY: List[AffixRule] = [
     _s("کوټی", "derivational", min_stem_len=3, pos=("N",), productivity="restricted", confidence="low", strip_allowed="no", note="[inv §4/§14] needs validation: no attested example"),
 
     # -- §5.1 plural, §5.3 vocative --------------------------------------- #
-    _s("ګانې", "inflectional", min_stem_len=2, pos=("N",), note="[inv §5.1] feminine plural of vowel-final stems: دعاګانې→دعا"),
+    # ‑ګانې was already in the sourced block above; its §5.1 gloss and example
+    # were merged into that entry rather than added as a second rule. The
+    # duplicate was harmless at run time -- the engine generated the same
+    # candidate twice -- but it made the inventory count one too high.
 ]
 
 SUFFIX_RULES: List[AffixRule] = sorted(

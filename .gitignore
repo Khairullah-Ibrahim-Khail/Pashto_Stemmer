@@ -27,16 +27,20 @@ paper/*.synctex.gz
 paper/*.fls
 paper/*.fdb_latexmk
 
-# Working files from the annotation and audit process. They are intermediate
-# analysis output, kept on disk for provenance but not part of the release.
+# Working files from the annotation and audit process.
+#
+# The annotation history is NOT ignored: pashto_gold(1).csv is the first
+# independent annotation and pashto_gold_corrected.csv the intermediate
+# revision, and the paper's claim that the later revisions are worth 0.20
+# points cannot be checked without them. keep_whole_candidates.csv and
+# verb_rows_to_update.csv are cited in the paper for the same reason.
+#
+# Only genuinely derivable intermediates are ignored here; each is regenerated
+# by a script in experiments/.
 dataset/unreached_words.csv
 dataset/not_reachable_words.csv
-dataset/keep_whole_candidates.csv
 dataset/yeh_variant_rows.csv
-dataset/verb_rows_to_update.csv
 dataset/space_bug_fixes.csv
-dataset/pashto_gold(1).csv
-dataset/pashto_gold_corrected.csv
 
 # Generated documents: rebuild with the scripts in docs/ and paper/
 docs/*.docx

@@ -4,7 +4,7 @@
 
 ### A Grammar-Driven Rule-Based Stemmer for Pashto
 
-*No machine learning anywhere in it. 118 affix rules taken from published
+*No machine learning anywhere in it. 117 affix rules taken from published
 grammars, each carrying its source, its productivity, and an explicit decision
 about whether it may be applied at all — and a scoring step that chooses
 between competing analyses.*
@@ -40,10 +40,10 @@ leaves most words untouched and damages many of the ones it does change.
 
 This project takes a different route and stays entirely rule-based:
 
-- **108 suffix rules and 10 prefix rules.** Each records the grammar it came
+- **107 suffix rules and 10 prefix rules.** Each records the grammar it came
   from, whether it is inflectional or derivational, a minimum surviving stem
   length, the part of speech it signals, its productivity, a confidence level,
-  and whether it may be stripped at all. **25 of the 118 are documented and
+  and whether it may be stripped at all. **25 of the 117 are documented and
   deliberately never applied** — recording an affix and refusing to strip it is
   not the same as omitting it, because the inventory is also a description of
   the language.
@@ -100,47 +100,49 @@ echo "د کورونو خبرونه" | python -m pashto_stemmer.cli --trace
 
 Two evaluations. The first is the one that matters.
 
-**Held-out news words** — 473 word types drawn from a Pashto news corpus, none
+**Held-out news words** — 499 word types drawn from a Pashto news corpus, none
 of them in the development set, annotated with the reference field initially
 empty and never consulted during development:
 
 | System | Accuracy | On words needing a strip | On words to leave alone | Paice UI ↓ |
 |---|:---:|:---:|:---:|:---:|
-| Do nothing | 39.32% | 0.0% | 100.0% | 1.000 |
-| Aslamzai & Saad (2015) | 42.49% | 18.1% | 80.1% | 0.846 |
-| **This stemmer** | **75.05%** | **77.0%** | 72.0% | **0.385** |
+| Do nothing | 37.27% | 0.0% | 100.0% | 1.000 |
+| Aslamzai & Saad (2015) | 40.48% | 16.9% | 80.1% | 0.889 |
+| **This stemmer** | **71.14%** | **70.6%** | 72.0% | **0.556** |
 
-**Development set** — 2,702 annotated word types:
+**Development set** — 2,717 annotated word types:
 
 | System | Accuracy | On words needing a strip | On words to leave alone | Paice UI ↓ |
 |---|:---:|:---:|:---:|:---:|
-| Do nothing | 48.04% | 0.0% | 100.0% | 1.000 |
-| Aslamzai & Saad (2015) | 50.96% | 12.3% | 92.8% | 0.914 |
-| **This stemmer** | **79.64%** | **77.9%** | 81.6% | **0.279** |
+| Do nothing | 47.77% | 0.0% | 100.0% | 1.000 |
+| Aslamzai & Saad (2015) | 50.68% | 12.2% | 92.8% | 0.919 |
+| **This stemmer** | **79.21%** | **77.0%** | 81.6% | **0.314** |
 
 ### How to read these numbers
 
 **Accuracy alone rewards doing nothing.** A stemmer that returns every word
-unchanged already scores 39.3% on the held-out set, because a large share of
+unchanged already scores 37.3% on the held-out set, because a large share of
 Pashto word types carry no affix. That is why both tables split the task in
-two. Aslamzai & Saad reaches 42.5% overall but only **18.1%** on the words that
-actually need stripping; this system reaches **77.0%** on that half, a factor
+two. Aslamzai & Saad reaches 40.5% overall but only **16.9%** on the words that
+actually need stripping; this system reaches **70.6%** on that half, a factor
 of four.
 
-**The development figure is inflated, and we say so.** Its reference column was
-produced by applying the documented rules to the word list and correcting the
-output by hand, so agreement there measures faithfulness of implementation as
-well as linguistic correctness. The held-out set exists precisely so that there
-is one number this does not affect.
+**The development set was annotated independently by three native speakers** —
+the author, a Pashto-medium school principal and a university teacher of Pashto —
+and adjudicated by the author. 166 of 2,908 rows (5.7%) were revised afterwards.
+Accuracy on the 2,555 rows that were never revised is **79.41%**, slightly above
+the 79.21% over all 2,717: the revisions did not inflate the result. The
+individual annotation passes were not kept as separate files, so inter-annotator
+agreement cannot be computed from the released data.
 
 **Both sets exclude the rows a truncating stemmer cannot reach.** Where the
 reference is an Arabic broken plural or a suppletive form — `اثارو → اثر`,
 `نجونو → نجلۍ` — the answer is a lemma that no affix rule can produce, and
 marking a stemmer wrong there penalises it for not being a lemmatizer. That is
-210 of 2,912 development types and 27 of 500 held-out types, reported
+195 of 2,912 development types and 1 of 500 held-out types, reported
 separately rather than hidden.
 
-**87% in the prior work is not comparable with 75% here.** The difference is
+**87% in the prior work is not comparable with 71% here.** The difference is
 the protocol, not the algorithm. Aslamzai & Saad show system output to native
 speakers and ask whether it is acceptable; we fix the reference before seeing
 any output and require an exact match. Scored their way, a stemmer that
@@ -149,9 +151,9 @@ acceptable to a judge and it produces nothing else:
 
 | System | A: exact match | B: judged acceptable | Words modified |
 |---|:---:|:---:|:---:|
-| Do nothing | 39.32% | **100.00%** | 0.0% |
-| Aslamzai & Saad (2015) | 42.49% | 81.61% | 37.0% |
-| **This stemmer** | **75.05%** | **98.31%** | 67.9% |
+| Do nothing | 37.27% | **100.00%** | 0.0% |
+| Aslamzai & Saad (2015) | 40.48% | 80.76% | 37.5% |
+| **This stemmer** | **71.14%** | **98.40%** | 68.5% |
 
 This does not show the published 87% to be wrong. It shows the measurement
 answers a different question.
@@ -162,13 +164,13 @@ Leave-one-out, in percentage points:
 
 | Configuration | Development | Held-out |
 |---|:---:|:---:|
-| **Full system** | **79.64%** | **75.05%** |
-| without suffix rules | 71.84% (−7.81) | 61.73% (−13.32) |
-| without the length rules | 76.68% (−2.96) | 72.94% (−2.11) |
-| without the corpus lexicon | 78.76% (−0.89) | 75.69% (+0.63) |
-| without the uniform-strip group | 79.35% (−0.30) | 74.84% (−0.21) |
-| without prefix rules | 79.61% (−0.04) | 75.26% (+0.21) |
-| *with* the verb dictionary | 78.57% (−1.07) | 74.00% (−1.06) |
+| **Full system** | **79.21%** | **71.14%** |
+| without suffix rules | 71.44% (−7.77) | 58.52% (−12.63) |
+| without the length rules | 76.26% (−2.94) | 69.14% (−2.00) |
+| without the corpus lexicon | 78.32% (−0.88) | 71.74% (+0.60) |
+| without the uniform-strip group | 78.91% (−0.29) | 70.94% (−0.20) |
+| without prefix rules | 79.17% (−0.04) | 71.34% (+0.20) |
+| *with* the verb dictionary | 78.17% (−1.03) | 70.14% (−1.00) |
 
 The suffix inventory does most of the work. Three of these rows record
 decisions taken **against** the measured score, stated rather than quietly
@@ -181,7 +183,7 @@ resolved in favour of whatever scored best:
   `غیر‑` are negation prefixes the annotation policy keeps, since `ناقانونه`
   is not an instance of `قانون` but its opposite, and `سر‑` is a free noun as
   often as it is a prefix.
-- **The corpus lexicon** is worth 0.89 points on development data and −0.63 on
+- **The corpus lexicon** is worth 0.88 points on development data and −0.60 on
   held-out. Its contribution is marginal now that the uniform-strip and length
   rules decide most cases before the scorer is consulted, so this system should
   **not** be described as lexicon-driven.
@@ -190,7 +192,7 @@ resolved in favour of whatever scored best:
 
 A fourth result is negative and reported anyway. A 257-entry list of
 development-set words that should be left unchanged raises development accuracy
-by 8.8 points and held-out accuracy by **zero**: of the 52 held-out types
+by 8.7 points and held-out accuracy by **zero**: of the 52 held-out types
 needing the same treatment, none appear in the list. It is pure memorisation of
 one sample.
 
@@ -198,11 +200,18 @@ one sample.
 
 ```bash
 python experiments/reproduce_paper.py     # every results table in the paper
+python experiments/audit_annotation.py    # removals matching no documented affix
 python experiments/compare_stemmers.py    # the development-set comparison
 python experiments/ablation.py            # a broader component sweep
 ```
 
-`reproduce_paper.py` regenerates the four result tables exactly as printed.
+`reproduce_paper.py` regenerates the four result tables exactly as printed, and
+prints its own warning if any figure drifts. `audit_annotation.py` checks every
+removal in an annotated set against the affix inventory and writes the
+unresolved rows to `dataset/unsupported_removals_*.csv`; 33 of 287 removals in
+the held-out reference and 105 of 1,355 in the development reference match no
+documented affix, and each is either an annotation error or a gap in the
+inventory.
 Note that `ablation.py` scores **all 2,912 development rows**, including the
 lemma rows a truncating stemmer cannot reach, and toggles a different set of
 switches — so its figures are deliberately not the paper's, and it is kept as a
@@ -226,10 +235,10 @@ correct behaviour, not a defect.
 
 **Lemmatization substitutes one word for another.** `شو → کېدل` and
 `نجونو → نجلۍ` cannot be reached by removing characters. The irregular-verb
-dictionary does exactly this, so it belongs to lemmatization: on the 2,702
-stemming types it changes the output for 59 words and is right on 10 of them,
-because it supplies the wrong *kind* of answer. On the 210 lemma types it
-answers 52, against 8 without it. It is therefore off by default and offered
+dictionary does exactly this, so it belongs to lemmatization: on the 2,717
+stemming types it changes the output for 61 words and is right on 11 of them,
+because it supplies the wrong *kind* of answer. On the 195 lemma types it
+answers 51, against 8 without it. It is therefore off by default and offered
 as an explicit mode:
 
 ```python
@@ -295,7 +304,7 @@ dictionary orthography and `ي` in news orthography, so a rule spelled one way
 never fired on the other: of the 500 held-out news types 118 contain `ي`, and
 of the 2,912 development types **none** do. Matching now compares a folded key
 while the letters written out are never changed. On news text that is worth
-1.06 points — the clearest case in the project of a defect a single-source
+1.00 point — the clearest case in the project of a defect a single-source
 evaluation set could not have revealed.
 
 ## Repository layout
@@ -304,7 +313,7 @@ evaluation set could not have revealed.
 pashto_stemmer/     the library
   stemmer.py          the pipeline and its configuration
   rules.py            the AffixRule type and candidate generation
-  suffixes.py         108 suffix rules
+  suffixes.py         107 suffix rules
   prefixes.py          10 prefix rules
   normalizer.py       encoding repair; never merges the yeh letters
   validation.py       candidate scoring and selection
@@ -313,7 +322,11 @@ pashto_stemmer/     the library
   cli.py              command line interface
 dataset/            both annotated sets and the correction log
 docs/               the affix inventory, annotation policy, verb dictionary
-experiments/        the scripts behind the numbers above
+experiments/
+  reproduce_paper.py  regenerates every results table in the paper
+  audit_annotation.py checks annotations against the affix inventory
+  compare_stemmers.py the development-set comparison
+  ablation.py         a wider component sweep (not the paper's table)
 paper/              the paper: LaTeX source, Word, PDF, and its generators
 tests/              38 tests
 ```
@@ -347,16 +360,19 @@ inventory was missing. The procedure is cheap and we recommend it.
   but are not.
 - **The final `ه` is genuinely ambiguous.** `لنډه → لنډ` is right and
   `خواړه → خواړ` is wrong, and nothing in the surface form separates them. The
-  rule fires 226 times on the development set and is right 161 times; removing
-  it costs 1.63 points. No reformulation conditioned on the surface form can
+  rule fires 131 times on the development set and is right 86 times; removing
+  it costs 1.62 points. No reformulation conditioned on the surface form can
   help — only a lexical resource can.
 - **Compounds are kept whole.** That is a policy, not a solution.
 - **The evaluation is on word types, not running text**, so there is no
   measurement of retrieval effectiveness and no evidence yet about downstream
   gains.
-- **One annotator produced the gold standard**, so inter-annotator agreement
-  cannot be computed and systematic bias cannot be excluded.
-- **Not everything is cited.** Of 118 affix rules, 39 cite a published
+- **Inter-annotator agreement cannot be computed.** The development set had
+  three independent annotators adjudicated by the author, but the individual
+  passes were not retained. The held-out set had one annotator, and its
+  `gold_stem` and `expert_stem` columns are identical — one annotation stored
+  twice, not two passes.
+- **Not everything is cited.** Of 117 affix rules, 39 cite a published
   description directly, 30 reference this project's own inventory document, and
   49 carry no reference at all. Of the 42 irregular verbs, 8 are unverified
   against a printed grammar and are marked as such in

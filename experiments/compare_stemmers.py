@@ -29,18 +29,27 @@ GOLD = os.path.join(ROOT, "dataset", "pashto_gold_corrected_v2.csv")
 
 
 def is_stemming_row(word, stem):
-    """Is this row within the stemming task at all?
+    """Can the reference be reached by removing characters from the word?
 
-    Stemming removes characters; it cannot insert them. Where the reference is
-    an Arabic broken plural or a suppletive form (اثارو→اثر، نجونو→نجلۍ), the
-    answer is a lemma, which no affix rule can produce. Those rows belong to
-    lemmatization and are reported separately rather than counted as stemming
-    failures. Comparison ignores which of the five yeh letters is written,
-    since that is a spelling difference and not an affix.
+    Stemming removes material from the edges of a word; it cannot insert.
+    Where the reference is an Arabic broken plural or a suppletive form
+    (اثارو→اثر، نجونو→نجلۍ), the answer is a lemma that no affix rule can
+    produce, and those rows belong to lemmatization.
+
+    The test is substring containment, not a prefix or suffix test. An earlier
+    version asked only whether the reference was at one end, which excluded
+    forms stripped at both ends -- وښيي→ښي, رارسېدو→رسېد, where a perfective
+    prefix and a verbal ending both come off. Those are removals like any
+    other, and excluding them dropped 26 held-out rows that this system gets
+    wrong, which flattered the result by 3.9 points. Comparison ignores which
+    of the five yeh letters is written, since that is a spelling difference
+    between registers and not an affix.
     """
-    fold = str.maketrans({"ي": "ی", "ې": "ی", "ۍ": "ی", "ئ": "ی", "ے": "ی"})
+    fold = str.maketrans({"ي": "ی", "ې": "ی", "ۍ": "ی",
+                          "ئ": "ی", "ے": "ی"})
     w, s = word.translate(fold), stem.translate(fold)
-    return w.startswith(s) or w.endswith(s)
+    return bool(s) and s in w
+
 
 
 def main():

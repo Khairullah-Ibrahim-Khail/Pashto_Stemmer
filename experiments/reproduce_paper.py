@@ -48,11 +48,23 @@ def fold(s: str) -> str:
 def is_stemming_row(word: str, stem: str) -> bool:
     """Can the reference be reached by removing characters from the word?
 
-    Comparison ignores which of the five yeh letters is written, since that is
-    a spelling difference between registers and not an affix.
+    Stemming removes material from the edges of a word; it cannot insert.
+    Where the reference is an Arabic broken plural or a suppletive form
+    (اثارو→اثر، نجونو→نجلۍ), the answer is a lemma that no affix rule can
+    produce, and those rows belong to lemmatization.
+
+    The test is substring containment, not a prefix or suffix test. An earlier
+    version asked only whether the reference was at one end, which excluded
+    forms stripped at both ends -- وښيي→ښي, رارسېدو→رسېد, where a perfective
+    prefix and a verbal ending both come off. Those are removals like any
+    other, and excluding them dropped 26 held-out rows that this system gets
+    wrong, which flattered the result by 3.9 points. Comparison ignores which
+    of the five yeh letters is written, since that is a spelling difference
+    between registers and not an affix.
     """
     w, s = fold(word), fold(stem)
-    return w.startswith(s) or w.endswith(s)
+    return bool(s) and s in w
+
 
 
 # --------------------------------------------------------------------------- #

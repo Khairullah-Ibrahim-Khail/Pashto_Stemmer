@@ -28,7 +28,20 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 GOLD = os.path.join(ROOT, "dataset", "pashto_gold_corrected_v2.csv")
 
 
+BANNER = """
+NOTE: these figures are NOT the component study in the paper.
+
+This script scores all 2,912 development rows, including the lemma rows whose
+reference is a different word rather than a truncation, and it toggles a wider
+and partly different set of switches. Its full-system figure is therefore lower
+than the paper's by construction.
+
+The paper's tables come from:   python experiments/reproduce_paper.py
+"""
+
+
 def main():
+    print(BANNER)
     rows = list(csv.DictReader(open(GOLD, encoding="utf-8-sig")))
     pairs = [(r["word"], r["stem"]) for r in rows
              if r.get("word") and r.get("stem")]
