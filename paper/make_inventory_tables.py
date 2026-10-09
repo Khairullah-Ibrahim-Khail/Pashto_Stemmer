@@ -130,7 +130,8 @@ EXAMPLES = {
                                "\u062a\u0648\u0646"),
     "Derivation: adjectives": ("\u06cc\u0632", "\u0645\u0646\u062f",
                                "\u0646\u0627\u06a9"),
-    "Derivation: verbs":      ("\u0644\u06d0",),
+    # the single rule in this group is gated, so there is no example to show
+    "Derivation: verbs":      (),
     "Prefixes":               ("\u0647\u0645", "\u0628\u06cc\u0627",
                                "\u0646\u06cc\u0645"),
 }
@@ -149,7 +150,7 @@ def main() -> int:
     with open(os.path.join(HERE, "inventory_summary.tsv"), "w", encoding="utf-8") as fh:
         fh.write("group\tgloss\trules\tpublished\tgated\texamples\n")
         for d in sm:
-            ex = " ".join(EXAMPLES[d["group"]])
+            ex = " ".join(EXAMPLES[d["group"]]) or "\u2014"
             fh.write(f"{d['group']}\t{d['gloss']}\t{d['rules']}\t{d['published']}"
                      f"\t{d['gated']}\t{ex}\n")
 
@@ -163,9 +164,10 @@ def main() -> int:
         fh.write("\\begin{tabular}{lcccl}\n\\toprule\n")
         fh.write("Group & Rules & Published & Kept & Examples\\\\\n\\midrule\n")
         for d in sm:
-            ex = " ".join(EXAMPLES[d["group"]])
+            ex = " ".join(EXAMPLES[d["group"]]) or "---"
+            cell = "---" if ex == "---" else f"\\ps{{{ex}}}"
             fh.write(f"{d['group']} & {d['rules']} & {d['published']} & "
-                     f"{d['gated']} & \\ps{{{ex}}}\\\\\n")
+                     f"{d['gated']} & {cell}\\\\\n")
         fh.write("\\midrule\n")
         fh.write(f"Total & {sum(d['rules'] for d in sm)} & "
                  f"{sum(d['published'] for d in sm)} & "

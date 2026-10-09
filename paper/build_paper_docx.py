@@ -691,7 +691,7 @@ def build():
                note="The third entry is documented and never applied. The header row "
                     "and the last two rows are in Pashto script.")
     para(doc, "Table IV groups the 117 rules by what they do. Derivation accounts for "
-              "71 of them against 37 inflectional rules, which is the opposite of what "
+              "81 of them against 36 inflectional rules, which is the opposite of what "
               "a stemmer for English would need and follows from where Pashto puts its "
               "productive morphology. The grouping also shows where the gated entries "
               "are concentrated: 16 of the 27 are noun-forming derivational suffixes, "

@@ -22,6 +22,7 @@ between competing analyses.*
 
 [Why this exists](#why-this-exists) ·
 [Quick start](#quick-start) ·
+[Stemming a file](#stemming-a-file) ·
 [Results](#results) ·
 [Reproducing the paper](#reproducing-the-paper) ·
 [Stemming or lemmatization](#stemming-or-lemmatization) ·
@@ -96,6 +97,57 @@ python -m pashto_stemmer.cli کورونه خبرونه افغانستان
 python -m pashto_stemmer.cli --file article.txt
 echo "د کورونو خبرونه" | python -m pashto_stemmer.cli --trace
 ```
+
+## Stemming a file
+
+**A plain text file.** The CLI reads UTF-8 and writes one `word<TAB>stem` pair
+per line, so the output pipes straight into `cut`, `sort` or `uniq`:
+
+```bash
+python -m pashto_stemmer.cli --file article.txt
+```
+
+```
+د	د
+افغانستان	افغان
+په	په
+کورونو	کور
+خبرونه	خبر
+```
+
+Stopwords come back unchanged, which is what you want for an index. Add
+`--trace` to see the confidence and the rules that fired on each word.
+
+**A CSV column.** There is no CSV mode in the CLI; use `stem_text`, which
+tokenises and returns one result per token:
+
+```python
+import csv
+from pashto_stemmer import PashtoStemmer
+
+st = PashtoStemmer()
+
+with open("in.csv", encoding="utf-8-sig") as fin, \
+     open("out.csv", "w", encoding="utf-8", newline="") as fout:
+    reader = csv.DictReader(fin)
+    writer = csv.DictWriter(fout, fieldnames=reader.fieldnames + ["stemmed"])
+    writer.writeheader()
+    for row in reader:
+        row["stemmed"] = " ".join(r.stem for r in st.stem_text(row["text"]))
+        writer.writerow(row)
+```
+
+```
+id,text,stemmed
+1,د کورونو خبرونه,د کور خبر
+2,پوهنتون ته ولاړ,پوهن ته ولاړ
+```
+
+Two things worth knowing. Read the file with `utf-8-sig`, because a CSV saved
+from Excel carries a byte-order mark that otherwise ends up glued to the first
+column name. And build one `PashtoStemmer()` outside the loop — it loads the
+rule inventory and the lexicon once, after which it stems about 7,000 word
+types per second.
 
 ## Results
 
