@@ -155,7 +155,7 @@ strong verbs, whose present stem must be known: \ps{لیدل} has the present st
 \begin{itemize}
 \item An affix inventory of 117 rules in which each entry records its
 grammatical source, its productivity, a confidence level, and an explicit
-decision about whether it may be stripped. Twenty-five entries are documented
+decision about whether it may be stripped. Twenty-seven entries are documented
 but never applied.
 \item Two annotated evaluation sets for Pashto stemming, one of which was
 annotated blind and never used during development.
@@ -252,11 +252,20 @@ The affix inventory was assembled from published descriptions rather than by
 inspecting a corpus. Table~\ref{tab:sources} lists the sources used and the
 tag each carries in the released inventory file.
 
-Of the 117 rules, 39 cite one of those published descriptions directly. A
-further 30 reference a section of this project's own affix-inventory document,
-which collates the same literature but is not itself a publication, and 49
-carry no reference at all. We separate the three cases rather than report one
-citation figure, because only the first is a citation in the ordinary sense.
+Of the 117 rules, 111 cite a published source, located by chapter in Tegey and
+Robson~\cite{tegey1996} or by section in Penzl~\cite{penzl1955}. The remaining
+six are oblique and feminine variants of suffixes that are themselves
+cited---\ps{ونکو} and \ps{ونکې} beside \ps{ونکی}, \ps{یزو} beside \ps{یز},
+\ps{والو} beside \ps{والی}---and a grammar that gives the base form does not
+always list every case variant. They are marked author-proposed rather than
+left to look unsourced.
+
+The provenance of each rule is recorded in Appendix~A rather than summarised,
+so a reader can check any individual entry. One distinction a single citation
+count would hide is worth drawing: sixteen of the cited rules are documented
+and never applied. For those the citation establishes that the affix exists,
+not that removing it is safe, and the decision not to strip rests on measured
+behaviour rather than on the grammar.
 
 \begin{table}[t]
 \caption{Sources for the affix inventory.}
@@ -271,6 +280,7 @@ Robson \& Tegey, ``Pashto''~\cite{robson2009} & [R\&T]\\
 David, \emph{Descriptive Grammar of Pashto}~\cite{david2014} & ---\\
 Naeem \& Khan, derivational morphology~\cite{naeem} & [N\&K]\\
 Khan, Pashto diminutives~\cite{khan2023} & [Khan23]\\
+Penzl, \emph{A Grammar of Pashto}~\cite{penzl1955} & [Penzl]\\
 Wiktionary / kaikki.org Pashto suffixes & [W]\\
 Apertium \texttt{apertium-pus} & [AP]\\
 \bottomrule
@@ -419,7 +429,7 @@ Table~\ref{tab:inventory} groups the 117 rules by what they do. Derivation
 accounts for 71 of them against 37 inflectional rules, which is the opposite of
 what a stemmer for English would need and follows from where Pashto puts its
 productive morphology. The grouping also shows where the gated entries are
-concentrated: 16 of the 25 are noun-forming derivational suffixes, which is the
+concentrated: 16 of the 27 are noun-forming derivational suffixes, which is the
 area where lexicalization is commonest and where a rule is most likely to be
 documented in a grammar and still be unsafe to apply.
 
@@ -474,7 +484,49 @@ do-nothing floor is not a floor the system inherits.
 
 Selection scores each candidate on how much affix material was removed,
 whether other words in the corpus are built on the same stem, and whether the
-stem itself is attested. Two corrections to this stage were necessary during
+stem itself is attested. For a candidate stem $c$ reached by removing $k$
+characters, the score is
+
+\begin{equation*}
+v(c) = \beta k + F\!\cdot\![\,\mathrm{fam}(c) \ge 2\,] +
+\begin{cases}
+A_k + w_f\,\mathrm{freq}(c) & c \text{ attested}\\[2pt]
+\gamma k & \text{otherwise}
+\end{cases}
+\end{equation*}
+
+where $\mathrm{fam}(c)$ counts the distinct corpus words formed from $c$ by a
+known suffix, $\mathrm{freq}(c)$ is the candidate's normalised corpus
+frequency, and $A_k$ is the attestation bonus, which takes a smaller value when
+$k=0$. Table~\ref{tab:weights} gives the constants. The family term fires only
+when the remainder is at least three characters long.
+
+\begin{table}[t]
+\caption{Weights in the selection score. They were set by hand and adjusted on
+the development set; none were fitted automatically, and the held-out set was
+not used to choose any of them.}
+\label{tab:weights}
+\centering
+\begin{tabular}{llr}
+\toprule
+Symbol & Meaning & Value\\
+\midrule
+$\beta$   & reward per character removed & 0.50\\
+$F$       & bonus when the remainder has a word family & 2.00\\
+$A_{k>0}$ & attestation bonus for a stripped candidate & 2.00\\
+$A_{0}$   & attestation bonus for the unstripped word & 0.50\\
+$w_f$     & weight on corpus frequency & 0.50\\
+$\gamma$  & reward per character for an unattested strip & 0.20\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two of these carry the design decisions. $A_0$ is a quarter of $A_{k>0}$
+because the unstripped word is nearly always in the corpus, and giving it the
+full bonus made inaction the default winner. And $\gamma>0$ is what lets the
+rules act on a word the lexicon has never seen: an unattested strip still
+scores above zero, so out-of-vocabulary input is stemmed rather than returned
+whole, though it loses to any attested candidate. Two corrections to this stage were necessary during
 development and are worth recording, since both are easy to get wrong.
 
 First, an early version required the stem to be an attested Pashto word before
@@ -836,11 +888,19 @@ external lists against one on ours places the disagreement in how they spell the
 reference rather than in the stemming.
 
 One caveat limits what these lists establish. On the words they share with our
-development set the two references agree 70.8\% and 64.1\% of the time, and the
-differences are systematic rather than scattered: \ps{اخلی} is stemmed to
-\ps{اخ} there and \ps{اخیستل} here, \ps{بدلولو} to \ps{بدلول} rather than
-\ps{بدل}. They follow a different annotation policy, particularly for verbs, so
-they test whether the system generalises, not whether it is correct under ours.
+development set the two references agree 70.8\% and 64.1\% of the time. Sorting
+the disagreements shows they are a difference of policy rather than noise.
+About a quarter---19.1\% on the 5{,}000-type list and 24.3\% on the larger
+one---are cases where our reference gives a lemma that no truncation reaches,
+\ps{اخلی}~$\rightarrow$~\ps{اخیستل} against their \ps{اخ}; those are not
+disagreements about stemming at all but about where stemming stops. Of the
+rest, roughly half cut deeper than we do (\ps{تنګی}~$\rightarrow$~\ps{تن}
+against our \ps{تنګ}) and about a quarter cut less
+(\ps{استازیتوب}~$\rightarrow$~\ps{استازی} against our \ps{استاز}). Only two
+disagreements in 154 come down to the spelling of a \emph{ye}. The two
+annotations differ consistently in how deep a stem should go and in whether
+verbs are reduced to a stem or to an infinitive, which is why these lists test
+generalisation rather than correctness under our policy.
 
 \subsection{Component study}
 
@@ -989,17 +1049,55 @@ are under-strips, and 134 of those are words the system left untouched
 altogether; the remaining 41 are the same length as the reference but differ in
 which letters survive. The held-out set behaves the same way, 51\% and 44\%.
 Over-stripping is therefore the larger problem on both sets, which is what one
-would expect of a system whose scorer rewards removing affix material, and it
-is concentrated on the \ps{ه}/\ps{ی}/\ps{ې} ambiguity and on loanwords rather
-than on missing affixes.
+would expect of a system whose scorer rewards removing affix material.
+
+Table~\ref{tab:bygroup} locates the errors. Accuracy is high wherever the
+reference removes an affix the inventory holds---90.9\% on noun-forming
+derivation, 95.1\% on verbal inflection---and the two weak rows are the ones
+that do not depend on the inventory being right. 105 types have a reference the
+inventory cannot explain at all, and we reach 30.5\% on those. The larger group
+is the 1{,}347 types the reference leaves whole, where we are right 79.1\% of
+the time: 282 words stripped that should not have been, the biggest single
+source of error in the system.
+
+\begin{table}[t]
+\caption{Accuracy by the affix the reference removes, development set.}
+\label{tab:bygroup}
+\centering
+\begin{tabular}{lrr}
+\toprule
+What the reference removes & Types & Accuracy\\
+\midrule
+Nominal inflection        &   624 & 80.1\%\\
+Verbal inflection         &    41 & 95.1\%\\
+Derivation: nouns         &   582 & 90.9\%\\
+Derivation: adjectives    &    18 & 88.9\%\\
+No affix, word left whole & 1{,}347 & 79.1\%\\
+Nothing in the inventory  &   105 & 30.5\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We had attributed that bucket to loanwords, and the data does not support it.
+Pashto marks native vocabulary orthographically: a word containing one of
+\ps{ټ ډ ړ ږ ښ ځ څ ڼ ګ ې ۍ} is certainly not a borrowing, though a word without
+one may be either, so the test is one-sided. Among the types the reference
+leaves whole we are wrong on 28.3\% of the certainly-native ones and 17.8\% of
+the rest. Native words are the harder half, not the easier one, and the errors
+bear it out: \ps{خواړه}, \ps{وړاندې}, \ps{داسې}, \ps{پاتې}, \ps{یوازې} and
+\ps{پورې} are ordinary Pashto words ending in \ps{ه} or \ps{ې} that the length
+rules cut. The shortfall is the \ps{ه}/\ps{ی}/\ps{ې} ambiguity, and it falls on
+native vocabulary rather than on borrowings.
 
 We tested the obvious remedy and report the result because it is negative. A
 257-entry list of development-set words that should be left unchanged raises
 development accuracy by 8.5 points and held-out accuracy by zero: of the 51
 held-out types needing the same treatment, none appear in the list. The list is
 pure memorisation of one sample. The generalizing form of the same idea is a
-named-entity and loanword lexicon, since the words concerned are overwhelmingly
-names and borrowings, and we leave that to future work.
+lexicon of words that must not be stripped. On the evidence above it would need
+to cover ordinary native vocabulary rather than borrowings alone, which makes
+it a larger undertaking than we first assumed, and we leave it to future
+work.
 
 % ===========================================================================
 \section{Limitations}
@@ -1008,8 +1106,11 @@ The evaluation is on word types rather than running text, so no measurement of
 retrieval effectiveness is reported, and the relationship between the intrinsic
 gains shown here and downstream performance remains untested.
 
-Of 117 affix rules, 39 cite a published description directly and 49 carry no
-reference at all. Of 42 verbs in the dictionary, 34 are checked against a
+Of 117 affix rules, 111 cite a published grammar by chapter or section and six
+are marked author-proposed. The chapter attributions were assembled by the
+author and have not been independently checked page by page, so a reader
+verifying the inventory should treat each locus as a pointer rather than as a
+quotation. Of 42 verbs in the dictionary, 34 are checked against a
 printed grammar and 8 are marked unverified in the released documentation. We
 prefer to label these rather than to present them as settled.
 
@@ -1054,7 +1155,7 @@ against three references, lost on both careful annotations, and was removed.
 The stemmer, the affix inventory with its sources, the verb dictionary, both
 annotated sets and the scripts that reproduce every figure in this paper are
 released under an MIT licence at
-\url{https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stammer}. Every table
+\url{https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stemmer}. Every table
 in this paper is regenerated by \texttt{experiments/reproduce\_paper.py}, and
 the inter-annotator figures by \texttt{experiments/agreement.py}.
 
@@ -1116,6 +1217,11 @@ G. Windfuhr, Ed. London: Routledge, 2009.
 A.~B. David, \emph{Descriptive Grammar of Pashto and its Dialects}.
 Berlin: De Gruyter Mouton, 2014.
 
+\bibitem{penzl1955}
+H. Penzl, \emph{A Grammar of Pashto: A Descriptive Study of the Dialect of
+Kandahar, Afghanistan}. Washington, DC: American Council of Learned Societies,
+1955.
+
 \bibitem{naeem}
 T. Naeem and M.~A. Khan, ``Automatic derivation of nouns from adjectives in
 Pashto,'' Center for Language Engineering, Pakistan.
@@ -1144,8 +1250,11 @@ art.~536, 2023.
 The 117 rules in full, in the order the engine holds them. ``Type'' gives the
 side and whether the rule is inflectional or derivational; ``min'' is the
 shortest stem the rule is allowed to leave; ``strip'' is whether the engine may
-remove the affix at all. The entries marked \emph{no} are documented and never
-applied, for the reasons given in Section~IV.B. This table is generated
+remove the affix at all; ``source'' is what backs the rule---a published grammar, this project's
+inventory document, \texttt{gated} for an entry that is never applied,
+and \texttt{author} for one the author proposes. The entries marked \emph{no} under
+``strip'' are documented and never applied, for the reasons given in
+Section~IV.B. This table is generated
 directly from the rule objects by \texttt{paper/make\_inventory\_tables.py},
 so it cannot drift from the implementation.
 

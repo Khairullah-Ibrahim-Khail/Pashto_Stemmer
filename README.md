@@ -40,7 +40,8 @@ leaves most words untouched and damages many of the ones it does change.
 
 This project takes a different route and stays entirely rule-based:
 
-- **107 suffix rules and 10 prefix rules.** Each records the grammar it came
+- **107 suffix rules and 10 prefix rules**, 111 of them located in Tegey &
+  Robson or Penzl by chapter or section. Each records the grammar it came
   from, whether it is inflectional or derivational, a minimum surviving stem
   length, the part of speech it signals, its productivity, a confidence level,
   and whether it may be stripped at all. **27 of the 117 are documented and
@@ -59,8 +60,8 @@ This project takes a different route and stays entirely rule-based:
 ## Quick start
 
 ```bash
-git clone https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stammer
-cd Pashto_Stammer
+git clone https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stemmer
+cd Pashto_Stemmer
 pip install -e .
 python examples/quickstart.py
 ```
@@ -136,8 +137,11 @@ five ye letters for the comparison alone — the output is never rewritten —
 gives the second column. The same folding is worth 1.51 points on our
 development set and 0.80 on our held-out set, which are internally consistent.
 They also follow a different annotation policy, agreeing with our reference on
-70.8% and 64.1% of shared words, so they test generalisation rather than
-correctness under our policy. See
+70.8% and 64.1% of shared words. Those disagreements sort cleanly: about a
+quarter are places where our reference gives a lemma no truncation reaches,
+roughly half cut deeper than we do, a quarter cut less, and only two in 154 are
+about the spelling of a ye. They test generalisation, not correctness under our
+policy. See
 [dataset/external/README.md](dataset/external/README.md).
 
 ### How to read these numbers
@@ -222,6 +226,26 @@ development-set words that should be left unchanged raises development accuracy
 by 8.5 points and held-out accuracy by **zero**: of the 51 held-out types
 needing the same treatment, none appear in the list. It is pure memorisation of
 one sample.
+
+### Where the errors are
+
+| What the reference removes | Types | Accuracy |
+|---|---:|---:|
+| Nominal inflection | 624 | 80.1% |
+| Verbal inflection | 41 | 95.1% |
+| Derivation: nouns | 582 | 90.9% |
+| Derivation: adjectives | 18 | 88.9% |
+| **No affix, word left whole** | **1,347** | **79.1%** |
+| **Nothing in the inventory** | **105** | **30.5%** |
+
+Accuracy is high wherever the reference removes an affix the inventory holds.
+The damage is in the last two rows: 282 words stripped that should have been
+left alone, and 105 types the inventory cannot explain at all.
+
+The selection score is published in full — the formula and all six weights are
+in the paper's Table V, and in `pashto_stemmer/validation.py`. They were set by
+hand and adjusted on the development set; none were fitted automatically and
+the held-out set was never used to choose them.
 
 ## Reproducing the paper
 
@@ -389,9 +413,11 @@ inventory was missing. The procedure is cheap and we recommend it.
 
 ## Limitations
 
-- **Loanwords and proper nouns** are the main remaining source of error.
-  `منشي`, `سليمان` and `زیارت` end in sequences that look like Pashto affixes
-  but are not.
+- **Native words, not loanwords, are the harder half.** We assumed borrowings
+  dominated the error and measured otherwise: on the types the reference leaves
+  whole we are wrong on 28.3% of certainly-native words against 17.8% of the
+  rest. `خواړه`, `وړاندې`, `داسې`, `پاتې` and `یوازې` are ordinary Pashto words
+  the length rules cut.
 - **The final `ه` is genuinely ambiguous.** `لنډه → لنډ` is right and
   `خواړه → خواړ` is wrong, and nothing in the surface form separates them. The
   rule fires 131 times on the development set and is right 86 times; removing
@@ -412,9 +438,12 @@ inventory was missing. The procedure is cheap and we recommend it.
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
   binary decision). The held-out set carries a single agreed reference, so no
   coefficient is computed for it.
-- **Not everything is cited.** Of 117 affix rules, 39 cite a published
-  description directly, 30 reference this project's own inventory document, and
-  49 carry no reference at all. Of the 42 irregular verbs, 8 are unverified
+- **Citations are located but not page-verified.** 111 of 117 rules cite
+  Tegey & Robson by chapter or Penzl by section; the remaining six are oblique
+  and feminine variants of cited suffixes and are marked author-proposed. The
+  chapter attributions were assembled by the author and have not been checked
+  page by page, so treat each locus as a pointer. Every rule carries its source
+  in the `source` column of `paper/inventory_rows.tsv` and in Appendix A. Of the 42 irregular verbs, 8 are unverified
   against a printed grammar and are marked as such in
   [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md).
 
@@ -427,7 +456,6 @@ inventory was missing. The procedure is cheap and we recommend it.
 | [docs/01_affix_inventory.md](docs/01_affix_inventory.md) | every affix with its productivity, confidence and whether it may be stripped |
 | [docs/02_annotation_policy.md](docs/02_annotation_policy.md) | what counts as a stem, and why |
 | [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | the verb dictionary, marked verified or not |
-| [docs/Pashto_Stemmer_Rules.pdf](docs/Pashto_Stemmer_Rules.pdf) | the twelve rules, with worked examples |
 | [docs/Aslamzai_Saad_2015_Rules.pdf](docs/Aslamzai_Saad_2015_Rules.pdf) | the baseline's nine rules, transcribed from the paper |
 
 The paper's inventory tables are generated straight from the rule objects by

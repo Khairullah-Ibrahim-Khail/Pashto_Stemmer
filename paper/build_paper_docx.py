@@ -176,8 +176,32 @@ def table(doc, caption, headers, rows, widths=None, pashto_cols=(), note=None,
         style_run(pp.add_run(htxt), size=9, bold=True,
                   pashto=(i in pashto_headers))
         shade(c, "E8E8E8")
+    # Repeat the header on every page. Without this a table that spans pages
+    # shows a headerless grid from the second page on, which is how the
+    # appendices looked.
+    trpr = t.rows[0]._tr.get_or_add_trPr()
+    th = OxmlElement("w:tblHeader")
+    th.set(qn("w:val"), "true")
+    trpr.append(th)
     for row in rows:
-        cells = t.add_row().cells
+        tr = t.add_row()
+        # keep a row intact rather than splitting it across a page break
+        cs = OxmlElement("w:cantSplit")
+        tr._tr.get_or_add_trPr().append(cs)
+        cells = tr.cells
+        # A group-heading row -- a bold label with the rest of the row empty --
+        # is merged across the table. Left in the first column it wrapped onto
+        # two lines and read like a broken header.
+        if str(row[0]).startswith("**") and not any(str(v) for v in row[1:]):
+            merged = cells[0].merge(cells[-1])
+            merged.text = ""
+            pp = merged.paragraphs[0]
+            pp.paragraph_format.space_before = Pt(3)
+            pp.paragraph_format.space_after = Pt(1)
+            style_run(pp.add_run(str(row[0]).replace("**", "")),
+                      size=body_size, bold=True, italic=True)
+            shade(merged, "F2F2F2")
+            continue
         for i, v in enumerate(row):
             cells[i].text = ""
             pp = cells[i].paragraphs[0]
@@ -293,9 +317,9 @@ def appendix_rows():
     for d in read_tsv("inventory_rows.tsv"):
         if d["group"] != current:
             current = d["group"]
-            out.append(["**" + current, "", "", "", "", "", ""])
+            out.append(["**" + current, "", "", "", "", "", "", ""])
         out.append([d["affix"], d["type"], d["min"], d["pos"],
-                    d["productivity"], d["confidence"], d["strip"]])
+                    d["productivity"], d["confidence"], d["strip"], d["source"]])
     return out
 
 
@@ -425,7 +449,7 @@ def build():
     h2(doc, "D. Contributions")
     bullet(doc, "An affix inventory of 117 rules in which each entry records its "
                 "grammatical source, its productivity, a confidence level, and an "
-                "explicit decision about whether it may be stripped. Twenty-five "
+                "explicit decision about whether it may be stripped. Twenty-seven "
                 "entries are documented but never applied.")
     bullet(doc, "Two annotated evaluation sets for Pashto stemming, one of which was "
                 "annotated blind and never used during development.")
@@ -516,19 +540,30 @@ def build():
     para(doc, "The affix inventory was assembled from published descriptions rather "
               "than by inspecting a corpus. Table II lists the sources used and the tag "
               "each carries in the released inventory file.")
-    para(doc, "Of the 117 rules, 39 cite one of those published descriptions directly. "
-              "A further 30 reference a section of this project's own affix-inventory "
-              "document, which collates the same literature but is not itself a "
-              "publication, and 49 carry no reference at all. We separate the three "
-              "cases rather than report one citation figure, because only the first is "
-              "a citation in the ordinary sense.", first_line=0.18)
+    para(doc, [P("Of the 117 rules, 111 cite a published source, located by "
+                 "chapter in Tegey and Robson [9] or by section in Penzl [12]. The "
+                 "remaining six are oblique and feminine variants of suffixes that "
+                 "are themselves cited \u2014 "), S("ونکو"), P(" and "), S("ونکې"),
+                P(" beside "), S("ونکی"), P(", "), S("یزو"), P(" beside "), S("یز"),
+                P(", "), S("والو"), P(" beside "), S("والی"), P(" \u2014 and a "
+                  "grammar that gives the base form does not always list every case "
+                  "variant. They are marked author-proposed rather than left to look "
+                  "unsourced.")], first_line=0.18)
+    para(doc, "The provenance of each rule is recorded in Appendix A rather than "
+              "summarised, so a reader can check any individual entry. One "
+              "distinction a single citation count would hide is worth drawing: "
+              "sixteen of the cited rules are documented and never applied. For "
+              "those the citation establishes that the affix exists, not that "
+              "removing it is safe, and the decision not to strip rests on measured "
+              "behaviour rather than on the grammar.", first_line=0.18)
     wide_table(doc, "TABLE II.  SOURCES FOR THE AFFIX INVENTORY",
           ["Source", "Tag"],
           [["Tegey & Robson, A Reference Grammar of Pashto [9]", "[T&R]"],
            ["Robson & Tegey, “Pashto” [10]", "[R&T]"],
            ["David, Descriptive Grammar of Pashto [11]", "—"],
-           ["Naeem & Khan, derivational morphology [12]", "[N&K]"],
-           ["Khan, Pashto diminutives [13]", "[Khan23]"],
+           ["Naeem & Khan, derivational morphology [13]", "[N&K]"],
+           ["Khan, Pashto diminutives [16]", "[Khan23]"],
+           ["Penzl, A Grammar of Pashto [12]", "[Penzl]"],
            ["Wiktionary / kaikki.org Pashto suffixes", "[W]"],
            ["Apertium apertium-pus", "[AP]"]],
           widths=[4.6, 2.0])
@@ -659,7 +694,7 @@ def build():
               "71 of them against 37 inflectional rules, which is the opposite of what "
               "a stemmer for English would need and follows from where Pashto puts its "
               "productive morphology. The grouping also shows where the gated entries "
-              "are concentrated: 16 of the 25 are noun-forming derivational suffixes, "
+              "are concentrated: 16 of the 27 are noun-forming derivational suffixes, "
               "which is the area where lexicalization is commonest and where a rule is "
               "most likely to be documented in a grammar and still be unsafe to apply.")
     wide_table(doc, "TABLE IV.  THE 117 RULES BY FUNCTION",
@@ -714,11 +749,37 @@ def build():
               "system modifies 68.3% of held-out types while the reference modifies "
               "62.7%, and why the do-nothing floor is not a floor the system inherits.",
          first_line=0.18)
-    para(doc, "Selection scores each candidate on how much affix material was removed, "
-              "whether other words in the corpus are built on the same stem, and whether "
-              "the stem itself is attested. Two corrections to this stage were necessary "
-              "during development and are worth recording, since both are easy to get "
-              "wrong.", first_line=0.18)
+    para(doc, "Selection scores each candidate on how much affix material was "
+              "removed, whether other words in the corpus are built on the same stem, "
+              "and whether the stem itself is attested. For a candidate reached by "
+              "removing k characters the score is \u03b2k, plus a bonus F when the "
+              "remainder has a word family of at least two members, plus either the "
+              "attestation bonus A and w times the candidate's normalised corpus "
+              "frequency if the stem is attested, or \u03b3k if it is not. The family "
+              "term fires only when the remainder is at least three characters long.",
+         first_line=0.18)
+    wide_table(doc, "TABLE V.  WEIGHTS IN THE SELECTION SCORE",
+               ["Symbol", "Meaning", "Value"],
+               [["\u03b2", "reward per character removed", "0.50"],
+                ["F", "bonus when the remainder has a word family", "2.00"],
+                ["A (k>0)", "attestation bonus for a stripped candidate", "2.00"],
+                ["A (k=0)", "attestation bonus for the unstripped word", "0.50"],
+                ["w", "weight on corpus frequency", "0.50"],
+                ["\u03b3", "reward per character for an unattested strip", "0.20"]],
+               widths=[1.0, 4.1, 0.9],
+               note="Set by hand and adjusted on the development set; none were fitted "
+                    "automatically, and the held-out set was not used to choose any of "
+                    "them.")
+    para(doc, "Two of these carry the design decisions. The attestation bonus for the "
+              "unstripped word is a quarter of the one a stripped candidate gets, "
+              "because the unstripped word is nearly always in the corpus and giving "
+              "it the full bonus made inaction the default winner. And \u03b3 is above "
+              "zero so the rules can act on a word the lexicon has never seen: an "
+              "unattested strip still scores above nothing, so out-of-vocabulary input "
+              "is stemmed rather than returned whole, though it loses to any attested "
+              "candidate.")
+    para(doc, "Two corrections to this stage were necessary during development and are "
+              "worth recording, since both are easy to get wrong.", first_line=0.18)
     para(doc, [P("First, an early version required the stem to be an attested Pashto "
                  "word before accepting a strip. That is incorrect: the output of a "
                  "stemmer is a class label, and Porter's "), I("relat"),
@@ -939,7 +1000,7 @@ def build():
               "that is not a documented affix, and by treating an unchanged word as "
               "always acceptable, which is how a judge shown an unchanged word would "
               "score it.", first_line=0.18)
-    wide_table(doc, "TABLE V.  THE SAME 499 HELD-OUT WORD TYPES UNDER BOTH PROTOCOLS",
+    wide_table(doc, "TABLE VI.  THE SAME 499 HELD-OUT WORD TYPES UNDER BOTH PROTOCOLS",
           ["System", "A: exact", "B: judged", "Modified"],
           [["Modifies nothing", "37.27%", "**100.00%", "0.0%"],
            ["Aslamzai & Saad [1]", "40.48%", "80.76%", "37.5%"],
@@ -947,7 +1008,7 @@ def build():
           widths=[2.6, 1.3, 1.3, 1.3],
           note="The final column gives the proportion of types the system modifies at "
                "all.")
-    para(doc, "The first row of Table V is the finding. Under Protocol B a system that "
+    para(doc, "The first row of Table VI is the finding. Under Protocol B a system that "
               "modifies no word scores 100%, because every unchanged word is acceptable "
               "to a judge and it produces nothing else. The protocol cannot separate a "
               "working stemmer from an inert one, and a figure obtained under it cannot "
@@ -962,10 +1023,10 @@ def build():
     h1(doc, "Results", 7)
 
     h2(doc, "A. Held-out evaluation")
-    para(doc, "Table VI reports the held-out set, which is the primary result: 499 word "
+    para(doc, "Table VII reports the held-out set, which is the primary result: 499 word "
               "types from news text, annotated with the reference field initially empty "
               "and never used during development.")
-    wide_table(doc, "TABLE VI.  HELD-OUT EVALUATION, 499 WORD TYPES",
+    wide_table(doc, "TABLE VII.  HELD-OUT EVALUATION, 499 WORD TYPES",
           ["System", "Accuracy", "Affixed", "Bare", "UI"],
           [["Modifies nothing", "37.27%", "0.0%", "100.0%", "1.000"],
            ["Aslamzai & Saad", "40.48%", "16.9%", "80.1%", "0.889"],
@@ -987,13 +1048,13 @@ def build():
               "falls from 0.889 to 0.500, and over-stemming remains below 4×10⁻⁵.")
 
     h2(doc, "B. Development set")
-    wide_table(doc, "TABLE VII.  DEVELOPMENT SET, 2,717 STEMMING TYPES",
+    wide_table(doc, "TABLE VIII.  DEVELOPMENT SET, 2,717 STEMMING TYPES",
           ["System", "Accuracy", "Affixed", "Bare", "UI"],
           [["Modifies nothing", "47.77%", "0.0%", "100.0%", "1.000"],
            ["Aslamzai & Saad", "50.68%", "12.2%", "92.8%", "0.919"],
            ["**Proposed", "**80.27%", "**78.6%", "82.0%", "**0.304"]],
           widths=[2.2, 1.2, 1.1, 1.1, 0.9])
-    para(doc, "Table VII reports the development set. The figure is higher than the "
+    para(doc, "Table VIII reports the development set. The figure is higher than the "
               "held-out result. The revisions described in Section V.B account for 0.07 "
               "points of that gap, so the explanation lies elsewhere: it is "
               "orthographic, and Section VII.E gives it. The development set is "
@@ -1032,15 +1093,23 @@ def build():
                   "shows: seven to eight points on the external lists against one on "
                   "ours places the disagreement in how they spell the reference rather "
                   "than in the stemming.")])
-    para(doc, [P("One caveat limits what these lists establish. On the words they "
-                 "share with our development set the two references agree 70.8% and "
-                 "64.1% of the time, and the differences are systematic rather than "
-                 "scattered: "), S("اخلی"), P(" is stemmed to "), S("اخ"),
-                P(" there and "), S("اخیستل"), P(" here, "), S("بدلولو"), P(" to "),
-                S("بدلول"), P(" rather than "), S("بدل"), P(". They follow a different "
-                  "annotation policy, particularly for verbs, so they test whether the "
-                  "system generalises, not whether it is correct under ours.")],
-         first_line=0.18)
+    para(doc, [P("One caveat limits what these lists establish. On the words "
+                 "they share with our development set the two references agree 70.8% "
+                 "and 64.1% of the time. Sorting the disagreements shows they are a "
+                 "difference of policy rather than noise. About a quarter \u2014 19.1% "
+                 "on the 5,000-type list and 24.3% on the larger one \u2014 are cases "
+                 "where our reference gives a lemma that no truncation reaches, "),
+                S("اخلی"), P(" \u2192 "), S("اخیستل"), P(" against their "), S("اخ"),
+                P("; those are not disagreements about stemming at all but about where "
+                  "stemming stops. Of the rest, roughly half cut deeper than we do ("),
+                S("تنګی"), P(" \u2192 "), S("تن"), P(" against our "), S("تنګ"),
+                P(") and about a quarter cut less ("), S("استازیتوب"), P(" \u2192 "),
+                S("استازی"), P(" against our "), S("استاز"), P("). Only two "
+                  "disagreements in 154 come down to the spelling of a ye. The two "
+                  "annotations differ consistently in how deep a stem should go and in "
+                  "whether verbs are reduced to a stem or to an infinitive, which is "
+                  "why these lists test generalisation rather than correctness under "
+                  "our policy.")], first_line=0.18)
 
     h2(doc, "D. Component study")
     wide_table(doc, "TABLE X.  EACH COMPONENT REMOVED IN TURN",
@@ -1173,18 +1242,48 @@ def build():
                  "same length as the reference but differ in which letters survive. The "
                  "held-out set behaves the same way, 51% and 44%. Over-stripping is "
                  "therefore the larger problem on both sets, which is what one would "
-                 "expect of a system whose scorer rewards removing affix material, and "
-                 "it is concentrated on the "), S("ه"), P("/"), S("ی"), P("/"), S("ې"),
-                P(" ambiguity and on loanwords rather than on missing affixes.")],
+                 "expect of a system whose scorer rewards removing affix material.")],
          first_line=0.18)
+    para(doc, "Table XII locates the errors. Accuracy is high wherever the reference "
+              "removes an affix the inventory holds \u2014 90.9% on noun-forming "
+              "derivation, 95.1% on verbal inflection \u2014 and the two weak rows are "
+              "the ones that do not depend on the inventory being right. 105 types have "
+              "a reference the inventory cannot explain at all, and we reach 30.5% on "
+              "those. The larger group is the 1,347 types the reference leaves whole, "
+              "where we are right 79.1% of the time: 282 words stripped that should not "
+              "have been, the biggest single source of error in the system.",
+         first_line=0.18)
+    wide_table(doc, "TABLE XII.  ACCURACY BY THE AFFIX THE REFERENCE REMOVES",
+               ["What the reference removes", "Types", "Accuracy"],
+               [["Nominal inflection", "624", "80.1%"],
+                ["Verbal inflection", "41", "95.1%"],
+                ["Derivation: nouns", "582", "90.9%"],
+                ["Derivation: adjectives", "18", "88.9%"],
+                ["No affix, word left whole", "1,347", "**79.1%"],
+                ["Nothing in the inventory", "105", "**30.5%"]],
+               widths=[3.2, 1.2, 1.4], note="Development set.")
+    para(doc, [P("We had attributed that bucket to loanwords, and the data does not "
+                 "support it. Pashto marks native vocabulary orthographically: a word "
+                 "containing one of "), S("ټ ډ ړ ږ ښ ځ څ ڼ ګ ې ۍ"), P(" is certainly "
+                  "not a borrowing, though a word without one may be either, so the "
+                  "test is one-sided. Among the types the reference leaves whole we are "
+                  "wrong on 28.3% of the certainly-native ones and 17.8% of the rest. "
+                  "Native words are the harder half, not the easier one, and the errors "
+                  "bear it out: "), S("خواړه"), P(", "), S("وړاندې"), P(", "),
+                S("داسې"), P(", "), S("پاتې"), P(", "), S("یوازې"), P(" and "),
+                S("پورې"), P(" are ordinary Pashto words ending in "), S("ه"),
+                P(" or "), S("ې"), P(" that the length rules cut. The shortfall is the "),
+                S("ه"), P("/"), S("ی"), P("/"), S("ې"), P(" ambiguity, and it falls on "
+                  "native vocabulary rather than on borrowings.")], first_line=0.18)
     para(doc, "We tested the obvious remedy and report the result because it is "
               "negative. A 257-entry list of development-set words that should be left "
               "unchanged raises development accuracy by 8.5 points and held-out accuracy "
               "by zero: of the 51 held-out types needing the same treatment, none appear "
               "in the list. The list is pure memorisation of one sample. The "
-              "generalizing form of the same idea is a named-entity and loanword "
-              "lexicon, since the words concerned are overwhelmingly names and "
-              "borrowings, and we leave that to future work.", first_line=0.18)
+              "generalizing form of the same idea is a lexicon of words that must not "
+              "be stripped. On the evidence above it would need to cover ordinary "
+              "native vocabulary rather than borrowings alone, which makes it a larger "
+              "undertaking than we first assumed, and we leave it to future work.", first_line=0.18)
 
     # ---------------- 9 limitations ----------------
     h1(doc, "Limitations", 9)
@@ -1192,8 +1291,12 @@ def build():
               "measurement of retrieval effectiveness is reported, and the relationship "
               "between the intrinsic gains shown here and downstream performance remains "
               "untested.")
-    para(doc, "Of 117 affix rules, 39 cite a published description directly and 49 "
-              "carry no reference at all. Of 42 verbs in the dictionary, 34 are checked "
+    para(doc, "Of 117 affix rules, 111 cite a published grammar by chapter or "
+              "section and six are marked author-proposed. The chapter attributions "
+              "were assembled by the author and have not been independently checked "
+              "page by page, so a reader verifying the inventory should treat each "
+              "locus as a pointer rather than as a quotation. "
+              "than summarised. Of 42 verbs in the dictionary, 34 are checked "
               "against a printed grammar and 8 are marked unverified in the released "
               "documentation. We prefer to label these rather than to present them as "
               "settled.", first_line=0.18)
@@ -1234,7 +1337,7 @@ def build():
     para(doc, "The stemmer, the affix inventory with its sources, the verb dictionary, "
               "both annotated sets and the scripts that reproduce every figure in this "
               "paper are released under an MIT licence at "
-              "https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stammer. Every "
+              "https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stemmer. Every "
               "table in this paper is regenerated by "
               "experiments/reproduce_paper.py, and the inter-annotator figures by "
               "experiments/agreement.py.", first_line=0.18)
@@ -1274,6 +1377,9 @@ def build():
         "G. Windfuhr, Ed. London: Routledge, 2009.",
         "A. B. David, Descriptive Grammar of Pashto and its Dialects. Berlin: "
         "De Gruyter Mouton, 2014.",
+        "H. Penzl, A Grammar of Pashto: A Descriptive Study of the Dialect of "
+        "Kandahar, Afghanistan. Washington, DC: American Council of Learned "
+        "Societies, 1955.",
         "T. Naeem and M. A. Khan, “Automatic derivation of nouns from adjectives in "
         "Pashto,” Center for Language Engineering, Pakistan.",
         "J. Cohen, “A coefficient of agreement for nominal scales,” "
@@ -1303,14 +1409,19 @@ def build():
               "\u201cType\u201d gives the side and whether the rule is inflectional or "
               "derivational; \u201cmin\u201d is the shortest stem the rule is allowed "
               "to leave; \u201cstrip\u201d is whether the engine may remove the affix "
-              "at all. The entries marked no are documented and never applied, for the "
+              "at all; \u201csource\u201d is what backs the rule \u2014 a published "
+              "grammar, this project's inventory document, gated for an entry that is "
+              "never applied, and author for one the author proposes. The entries marked no "
+              "under "
+              "\u201cstrip\u201d are documented and never applied, for the "
               "reasons given in Section IV.B. This table is generated directly from the "
               "rule objects by paper/make_inventory_tables.py, so it cannot drift from "
               "the implementation.")
     table(doc, "TABLE A.I.  THE COMPLETE AFFIX INVENTORY",
-          ["Affix", "Type", "min", "POS", "Productivity", "Confidence", "Strip"],
+          ["Affix", "Type", "min", "POS", "Productivity", "Confidence", "Strip",
+           "Source"],
           appendix_rows(),
-          widths=[0.9, 0.95, 0.45, 0.95, 1.1, 1.0, 0.7], pashto_cols=(0,),
+          widths=[0.8, 0.85, 0.4, 0.8, 0.95, 0.9, 0.6, 0.95], pashto_cols=(0,),
           body_size=8)
 
     h1(doc, "Appendix B:  The Irregular-Verb Dictionary")

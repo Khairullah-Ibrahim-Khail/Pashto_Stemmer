@@ -50,29 +50,34 @@ reference does not do it, and the stemmer does not either.
 
 `‑توب، ‑تیا، ‑والی/‑والۍ، ‑ونکی، ‑ګر، ‑وال، ‑وان، ‑ي (nisba)، ‑یز`
 
-Examples: `هوښیارۍ → هوښیار`، `ځیرکتیا → ځېرک`، `پوځي → پوځ`،
+Examples: `هوښیارۍ → هوښیار`، `ځیرکتیا → ځیرک`، `پوځي → پوځ`،
 `سیاستوال → سیاست`.
 **Stop at the Pashto stem** — do not continue into an Arabic root.
 
-## 5. Verbs — reduce to the **stem** (infinitive minus ‑ل)
+## 5. Verbs — keep the infinitive; strip what is attached to it
 
-- Regular: `لوستل → لوست`، `ووېشل → وېش`، `کولو → کو`
-- Suppletive/irregular (via the paradigm table):
-  `ځي / لاړ → تل`، `غواړي → غوښت`، `وینم → لید`، `شول → کېد`
-- Verbalizers are affixes too, so they come off as well (§4):
+- Perfective prefix and inflection come off, the infinitive stays:
+  `ووېشل → وېشل`، `کولو → کول`، `ساتلو → ساتل`
+- The infinitive itself is **not** reduced further: `لوستل → لوستل`,
+  not `لوست`.
+- Verbalizers are a separate matter and do come off (§4), because there the
+  whole `‑ېدل`/`‑ول` pattern is the affix on a noun or adjective:
   `کارول → کار`، `جوړېدل → جوړ`، `زیاتوی → زیات`
+- Suppletive forms (`ځي`, `لاړ`, `غواړي`, `وینم`, `شول`) map to the
+  infinitive — `تلل`، `غوښتل`، `لیدل`، `کېدل` — which is a **lemma**, not a
+  stem, and therefore belongs to the lemmatization mode, not to stemming (§1).
 
-**Rationale.** The infinitive ending ‑ل **is itself an affix**. The stem `لوست`
-is the base from which the whole family is built by adding affixes —
-`لوست` → `لوسته`، `لوستونکی`، `لوستل`، `لوستلو`. Reducing to `لوست` therefore
-conflates the entire family, which is the purpose of stemming, and it satisfies
-§10 (a stem must be reachable by removing affixes). The infinitive `لوستل`
-would *fail* §10, because it cannot be reached from `غواړي` by affix removal —
-that would be lemmatization, which is a different task (§1).
+**Why.** Across the released reference, no word ending in `‑ل` has that `‑ل`
+removed: of 124 such words, 80 are left exactly as they are and the rest lose
+only a prefix or an inflectional ending. Stripping the bare `‑ل` was tried and
+removed from the system, because it only ever fired on nouns where `ل` belongs
+to the root (`کابل → کاب`, `لامل → لام`). The rules `‑لو` and `‑لې` were gated
+for the same reason: they take an `ل` the reference keeps.
 
-> Revision note: an earlier draft targeted the infinitive. That was wrong: it
-> contradicted §10 and treated a lemma as a stem. Corrected on the ruling of
-> the native-speaker author.
+> Revision note: two earlier drafts of this section said the opposite — one
+> targeted the infinitive, a later one the bare stem. Neither matched the data.
+> This version was checked against all 124 `‑ل` words in the released
+> reference.
 
 **Implementation.** Suppletion cannot be derived by any rule (`ځي` and `تلل`
 share no material), so a lexicon is linguistically *required*, not a shortcut.
@@ -80,16 +85,16 @@ Irregular verbs are stored as a **paradigm table** —
 `lemma | present stem | past stem` (e.g. `تلل | ځ‑ | لاړ/تل‑`,
 `اخیستل | اخل‑ | اخیست‑`, `کول | کو‑ | کړ‑`) — with the regular agreement
 endings (‑م، ‑ې، ‑ي، ‑و، ‑ئ) applied by rule on top, rather than a flat list of
-surface forms. Entries are grounded in descriptive grammars (Tegey & Robson;
-A. B. David) and the Pashto Academy dictionary — not ad-hoc recall.
+surface forms. That table produces lemmas, so it is off by default and is
+offered as an explicit lemmatization mode.
 
 ## 6. Loanwords (Arabic / Persian)
 
 - Strip **only the Pashto affixes** attached to them: `مصنوعي → مصنوع`.
-- **No Arabic templatic root extraction:** ✗ `مصنوعي → صنع`، ✗ `جریمه → جرم`.
+- **No Arabic templatic root extraction:** ✗ `مصنوعي → صنع`، ✗ `جریمه → جریم`.
 - **Arabic broken plurals are handled as lexical exceptions**, exactly like
   native Pashto irregular plurals (`کلونو → کال`، `نجونو → نجلۍ`):
-  `اثار → اثر`، `مطالب → مطلب`، `علوم → علم`.
+  `اثار → اثر`، `مطالب → مطالب` (a broken plural: a lemma, not a stem)، `علوم → علم`.
 
   They are **listed in an exception lexicon, never guessed by pattern.**
   Rationale: Pashto text is unvowelled, so Arabic templates (فِعال، أفعال،
@@ -121,7 +126,7 @@ conflation slightly *better* (UI 0.240 → 0.237).
 
 `مرګژوبله`، `سرچینه`، `لوبغاړی` are single lexical items. Strip only the outer
 inflection (`لوبغاړي → لوبغاړی`); **do not split** them into components.
-✗ `سرچینه → چینه`، ✗ `مرګژوبله → مرګ`.
+✗ `سرچینه → سرچین` (the prefix ‑سر is kept)، ✗ `مرګژوبله → مرګژوبل` (compounds stay whole).
 
 ## 9. Function words — unchanged
 

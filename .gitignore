@@ -53,3 +53,18 @@ paper/*.docx
 paper/*.pdf
 !paper/Pashto_Stemmer_Paper.docx
 !paper/Pashto_Stemmer_Paper.pdf
+
+# Third-party material. Aslamzai & Saad (2015) is someone else's copyrighted
+# paper; it is cited in the references, not redistributed here. Our own
+# transcription of its nine rules is in docs/Aslamzai_Saad_2015_Rules.pdf.
+resources/
+
+# Superseded documents. The annotation guidelines PDF carries the abandoned
+# first protocol (a template pre-filled with the stemmer's output) and
+# contradicts the released policy; docs/02_annotation_policy.md is current.
+dataset/ANNOTATION_GUIDELINES.pdf
+
+# The standalone rules PDF describes a twelve-rule pipeline that the system no
+# longer has. Section IV and Appendix A of the paper replace it.
+docs/Pashto_Stemmer_Rules.pdf
+docs/Pashto_Stemmer_Rules.docx

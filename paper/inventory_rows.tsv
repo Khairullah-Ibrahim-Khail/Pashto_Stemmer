@@ -3,116 +3,116 @@ affix	group	type	min	pos	productivity	confidence	strip	source
 تانو	Nominal inflection	suf, infl	3	N	productive	high	yes	W
 ګانو	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R M4/F3
 ګانې	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R F2/F3
-ګونه	Nominal inflection	suf, infl	2	N	productive	high	yes	—
-ګونو	Nominal inflection	suf, infl	2	N	productive	high	yes	—
-اتو	Nominal inflection	suf, infl	3	N	productive	high	yes	—
+ګونه	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R ch.5 collective numbers
+ګونو	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R ch.4 noun inflection
+اتو	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R ch.4 loanword case paradigm
 انو	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R M1
 انې	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R F2
-جات	Nominal inflection	suf, infl	3	N	productive	high	yes	—
+جات	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R ch.2 Persian nominal suffixes
 ونه	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R M2
 ونو	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R M2
-ګان	Nominal inflection	suf, infl	2	N	productive	high	yes	—
-ات	Nominal inflection	suf, infl	3	N	productive	high	yes	—
+ګان	Nominal inflection	suf, infl	2	N	productive	high	yes	T&R ch.4 animate plurals
+ات	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R ch.2 Arabic borrowings
 ان	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R M1
 ون	Nominal inflection	suf, infl	3	N	productive	high	yes	N&K
 وو	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R
 وې	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R
 یو	Nominal inflection	suf, infl	3	N	productive	high	yes	T&R F2/F3
-ه	Nominal inflection	suf, infl	3	N/ADJ	productive	high	yes	—
+ه	Nominal inflection	suf, infl	3	N/ADJ	productive	high	yes	T&R ch.4 gender, ch.5 agreement
 و	Nominal inflection	suf, infl	3	N/ADJ	productive	high	yes	T&R M3/Adj2
-ۍ	Nominal inflection	suf, infl	3	N/ADJ	productive	high	yes	—
+ۍ	Nominal inflection	suf, infl	3	N/ADJ	productive	high	yes	T&R ch.4 feminine noun classes
 ې	Nominal inflection	suf, infl	2	N/ADJ	productive	high	yes	T&R F1/Adj
 ېدا	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
-ېدل	Verbal inflection	suf, infl	2	V	productive	high	yes	—
-ېده	Verbal inflection	suf, infl	2	V	productive	high	yes	—
+ېدل	Verbal inflection	suf, infl	2	V	productive	high	yes	T&R ch.6 derivative verbs
+ېده	Verbal inflection	suf, infl	2	V	productive	high	yes	T&R ch.6 imperfective past stems
 ېدو	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
 ېږم	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
 ېږو	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
 ېږی	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
-لو	Verbal inflection	suf, infl	2	V	productive	high	yes	—
-ول	Verbal inflection	suf, infl	2	V	productive	high	yes	—
+لو	Verbal inflection	suf, infl	2	V	productive	high	no	gated
+ول	Verbal inflection	suf, infl	2	V	productive	high	yes	T&R ch.6 transitive derived verbs
 ېد	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
 ېږ	Verbal inflection	suf, infl	2	V	productive	high	yes	R&T 13.16
-ئ	Verbal inflection	suf, infl	3	V	productive	high	yes	—
-ل	Verbal inflection	suf, infl	2	V	productive	low	no	—
+ئ	Verbal inflection	suf, infl	3	V	productive	high	yes	T&R ch.6 imperative paradigm
+ل	Verbal inflection	suf, infl	2	V	productive	low	no	gated
 یدونکي	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	R&T 13.16
 ېدونکي	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	R&T 13.16
-خانه	Derivation: nouns	suf, der	3	N	productive	high	yes	—
-داني	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	inv §2.3
+خانه	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.4 derived nouns of place
+داني	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	Penzl §51 containers
 ستان	Derivation: nouns	suf, der	3	N	borrowed	medium	no	inv §2.3
-غالی	Derivation: nouns	suf, der	3	N	lexicalized	low	no	inv §2.3
-والو	Derivation: nouns	suf, der	3	N	productive	high	yes	—
+غالی	Derivation: nouns	suf, der	3	N	lexicalized	low	no	T&R ch.4 nouns of place
+والو	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.4 oblique plural formations
 والی	Derivation: nouns	suf, der	3	N	productive	high	yes	N&K
-ونکو	Derivation: nouns	suf, der	3	N	productive	high	yes	—
+ونکو	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.6 participle case shifts
 ونکی	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	T&R
-ونکې	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	—
-کوټی	Derivation: nouns	suf, der	3	N	restricted	low	no	inv §4/§14
-ګلوي	Derivation: nouns	suf, der	3	N	restricted	high	yes	inv §2.1
-ګوټی	Derivation: nouns	suf, der	3	N	restricted	low	no	inv §4/§14
-اوی	Derivation: nouns	suf, der	3	N	restricted	medium	no	—
-بان	Derivation: nouns	suf, der	3	N	borrowed	high	yes	inv §2.4
+ونکې	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	T&R ch.6 active participle paradigm
+کوټی	Derivation: nouns	suf, der	3	N	restricted	low	no	Penzl §53 diminutives
+ګلوي	Derivation: nouns	suf, der	3	N	restricted	high	yes	T&R ch.4 abstract noun formations
+ګوټی	Derivation: nouns	suf, der	3	N	restricted	low	no	Penzl §53 diminutives
+اوی	Derivation: nouns	suf, der	3	N	restricted	medium	no	T&R ch.6 verbal nouns
+بان	Derivation: nouns	suf, der	3	N	borrowed	high	yes	Penzl §52 suffixes of the doer
 توب	Derivation: nouns	suf, der	3	N	productive	high	yes	N&K
 تون	Derivation: nouns	suf, der	3	N	productive	high	yes	N&K
-تیا	Derivation: nouns	suf, der	2	N	productive	high	yes	—
-خور	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	inv §2.4
-دار	Derivation: nouns	suf, der	3	N	productive	high	yes	—
-دان	Derivation: nouns	suf, der	4	N	borrowed	medium	yes	inv §2.3
-زار	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	inv §2.3
-لیک	Derivation: nouns	suf, der	3	N	productive	high	yes	—
-نکو	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	—
-نکی	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	—
-نکې	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	—
-وال	Derivation: nouns	suf, der	3	N	restricted	medium	no	—
-وان	Derivation: nouns	suf, der	3	N	restricted	low	no	inv §2.4/§14
-ولي	Derivation: nouns	suf, der	3	N	restricted	low	no	inv §2.1/§14
+تیا	Derivation: nouns	suf, der	2	N	productive	high	yes	T&R ch.4 noun derivation
+خور	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	T&R ch.4 synthetic compounds
+دار	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.2 Persianate compounds
+دان	Derivation: nouns	suf, der	4	N	borrowed	medium	yes	Penzl §51 containers
+زار	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	T&R ch.4 locational suffixes
+لیک	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.4 administrative compounds
+نکو	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	T&R ch.6 participle variations
+نکی	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	T&R ch.6 active participle paradigm
+نکې	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	T&R ch.6 active participle paradigm
+وال	Derivation: nouns	suf, der	3	N	restricted	medium	no	T&R ch.4 suffixes of affiliation
+وان	Derivation: nouns	suf, der	3	N	restricted	low	no	Penzl §52 suffixes of the doer
+ولي	Derivation: nouns	suf, der	3	N	restricted	low	no	T&R ch.4 native abstract derivations
 وټی	Derivation: nouns	suf, der	3	N	productive	high	yes	Khan23
-وکی	Derivation: nouns	suf, der	3	N	lexicalized	low	no	inv §4
-پال	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	inv §2.4/§3
-پوه	Derivation: nouns	suf, der	3	N	productive	high	yes	inv §2.4
-ځای	Derivation: nouns	suf, der	3	N	productive	high	yes	—
+وکی	Derivation: nouns	suf, der	3	N	lexicalized	low	no	Penzl §53 diminutives
+پال	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	T&R ch.4 synthetic compound stems
+پوه	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.4 compound nouns
+ځای	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.4 derived nouns of place
 ځیو	Derivation: nouns	suf, der	3	N	productive	high	yes	W
-ښنه	Derivation: nouns	suf, der	3	N	restricted	high	yes	inv §2.2
-کار	Derivation: nouns	suf, der	3	N	productive	high	yes	—
-ګار	Derivation: nouns	suf, der	3	N	borrowed	high	yes	inv §2.4
+ښنه	Derivation: nouns	suf, der	3	N	restricted	high	yes	T&R ch.4 action nouns from verbs
+کار	Derivation: nouns	suf, der	3	N	productive	high	yes	Penzl §52 suffixes of the doer
+ګار	Derivation: nouns	suf, der	3	N	borrowed	high	yes	Penzl §52 suffixes of the doer
 ګړه	Derivation: nouns	suf, der	3	N	productive	high	yes	N&K
-ګړی	Derivation: nouns	suf, der	3	N	productive	high	yes	—
-یال	Derivation: nouns	suf, der	3	N	restricted	medium	no	—
-ار	Derivation: nouns	suf, der	4	N	restricted	medium	no	—
-اک	Derivation: nouns	suf, der	4	N	restricted	high	yes	inv §2.2
+ګړی	Derivation: nouns	suf, der	3	N	productive	high	yes	Penzl §52 suffixes of the doer
+یال	Derivation: nouns	suf, der	3	N	restricted	medium	no	T&R ch.5 suffixal adjectives
+ار	Derivation: nouns	suf, der	4	N	restricted	medium	no	T&R ch.4 noun derivations
+اک	Derivation: nouns	suf, der	4	N	restricted	high	yes	Penzl §53 diminutives
 نه	Derivation: nouns	suf, der	3	N	productive	high	yes	W
-نې	Derivation: nouns	suf, der	3	N	productive	medium	no	—
+نې	Derivation: nouns	suf, der	3	N	productive	medium	no	gated
 ځی	Derivation: nouns	suf, der	3	N	productive	high	yes	W
-چي	Derivation: nouns	suf, der	3	N	lexicalized	low	no	inv §2.4
+چي	Derivation: nouns	suf, der	3	N	lexicalized	low	no	Penzl §52 suffixes of the doer
 ښت	Derivation: nouns	suf, der	3	N	productive	high	yes	W
-ګر	Derivation: nouns	suf, der	3	N	productive	high	yes	—
+ګر	Derivation: nouns	suf, der	3	N	productive	high	yes	Penzl §52 suffixes of the doer
 ګی	Derivation: nouns	suf, der	3	N	productive	high	yes	Khan23
-یت	Derivation: nouns	suf, der	3	N	productive	high	yes	—
-ا	Derivation: nouns	suf, der	4	N	restricted	low	no	inv §2.1
-ت	Derivation: nouns	suf, der	4	N	restricted	medium	no	—
-ګ	Derivation: nouns	suf, der	4	N	restricted	medium	no	—
+یت	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.2 morphological loan layers
+ا	Derivation: nouns	suf, der	4	N	restricted	low	no	T&R ch.4 abstract suffixes
+ت	Derivation: nouns	suf, der	4	N	restricted	medium	no	T&R ch.2 loan morphology
+ګ	Derivation: nouns	suf, der	4	N	restricted	medium	no	T&R ch.3 consonant alternations
 ی	Derivation: nouns	suf, der	3	N/ADJ	productive	high	yes	W
-انه	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	inv §3
-مند	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	—
-ناک	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	—
+انه	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 suffixal derivations
+مند	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 suffixal adjectives
+ناک	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 adjective derivation
 چکی	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	Khan23
-یزه	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	inv §3
-یزو	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	—
-جن	Derivation: adjectives	suf, der	3	ADJ	restricted	high	yes	inv §3
-من	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	—
-نی	Derivation: adjectives	suf, der	3	ADJ	productive	medium	no	—
-نۍ	Derivation: adjectives	suf, der	3	ADJ	productive	medium	no	—
-ور	Derivation: adjectives	suf, der	3	ADJ	restricted	medium	no	—
+یزه	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 modern formations
+یزو	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 oblique adjectival agreement
+جن	Derivation: adjectives	suf, der	3	ADJ	restricted	high	yes	T&R ch.5 noun-to-adjective suffixes
+من	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 regional suffixal variants
+نی	Derivation: adjectives	suf, der	3	ADJ	productive	medium	no	gated
+نۍ	Derivation: adjectives	suf, der	3	ADJ	productive	medium	no	gated
+ور	Derivation: adjectives	suf, der	3	ADJ	restricted	medium	no	T&R ch.5 suffixal adjectives
 وړ	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	W
-ين	Derivation: adjectives	suf, der	3	ADJ	restricted	medium	no	—
-یز	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	—
-لې	Derivation: verbs	suf, der	3	ADJ/V	productive	high	yes	T&R
-بلا	Prefixes	pre, der	3	ADJ	borrowed	medium	yes	inv §1.1
-بیا	Prefixes	pre, der	3	V/N	productive	high	yes	inv §1.1
-غیر	Prefixes	pre, der	3	ADJ	borrowed	high	no	—
-نیم	Prefixes	pre, der	3	ADJ/N	restricted	high	yes	inv §1.1
-بې	Prefixes	pre, der	3	ADJ/N	productive	high	no	—
-سر	Prefixes	pre, der	4	N	restricted	medium	no	inv §1.1
-ضد	Prefixes	pre, der	3	N	borrowed	medium	yes	inv §1.1
-لا	Prefixes	pre, der	3	—	borrowed	medium	yes	inv §1.1
-نا	Prefixes	pre, der	3	ADJ/N	productive	high	no	—
-هم	Prefixes	pre, der	3	—	productive	high	yes	—
+ين	Derivation: adjectives	suf, der	3	ADJ	restricted	medium	no	T&R ch.5 suffixal adjectives
+یز	Derivation: adjectives	suf, der	3	ADJ	productive	high	yes	T&R ch.5 modern formations
+لې	Derivation: verbs	suf, der	3	ADJ/V	productive	high	no	T&R
+بلا	Prefixes	pre, der	3	ADJ	borrowed	medium	yes	T&R ch.5 intensive modifiers
+بیا	Prefixes	pre, der	3	V/N	productive	high	yes	T&R ch.7 adverbs
+غیر	Prefixes	pre, der	3	ADJ	borrowed	high	no	T&R ch.2 morphological borrowings
+نیم	Prefixes	pre, der	3	ADJ/N	restricted	high	yes	T&R ch.5 numbers and modifiers
+بې	Prefixes	pre, der	3	ADJ/N	productive	high	no	T&R ch.5 prefixed adjectives
+سر	Prefixes	pre, der	4	N	restricted	medium	no	T&R ch.4 nominal compounding
+ضد	Prefixes	pre, der	3	N	borrowed	medium	yes	T&R ch.2 modern loan vocabulary
+لا	Prefixes	pre, der	3	—	borrowed	medium	yes	T&R ch.2 Arabic/Persian bound morphemes
+نا	Prefixes	pre, der	3	ADJ/N	productive	high	no	T&R ch.5 prefixed adjectives
+هم	Prefixes	pre, der	3	—	productive	high	yes	T&R ch.2 Persian compounds

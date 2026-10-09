@@ -32,30 +32,40 @@ def _p(affix, category, add_back="", min_stem_len=3, pos=(), note="",
 
 _DERIVATIONAL: List[AffixRule] = [
     _p("نا", "derivational", min_stem_len=3, pos=("ADJ", "N"), strip_allowed="no",
-       note="KEPT, not stripped: the gold correction log records the negated form as its own lexeme (ناقانونه→ناقانون، ناوړه→ناوړ). Only the agreement ending is removed."),
+       note="[T&R ch.5 prefixed adjectives] KEPT, not stripped: the gold "
+            "correction log records the negated form as its own lexeme "
+            "(ناقانونه→ناقانون، ناوړه→ناوړ). Only the agreement ending is removed."),
     _p("بې", "derivational", min_stem_len=3, pos=("ADJ", "N"), strip_allowed="no",
-       note="KEPT, not stripped: the gold correction log records the negated form as its own lexeme (the negated form is its own lexeme). Only the agreement ending is removed."),
+       note="[T&R ch.5 prefixed adjectives] KEPT, not stripped: the negated form "
+            "is its own lexeme. Only the agreement ending is removed."),
     _p("لا", "derivational", min_stem_len=3, productivity="borrowed",
        confidence="medium",
-       note="[inv §1.1] privative in Arabic learned formations: لاانتها"),
+       note="[T&R ch.2 Arabic/Persian bound morphemes] [inv §1.1] privative in "
+            "Arabic learned formations: لاانتها"),
     # --- added from docs/pashto_affix_inventory new finale .md §1.1 -------- #
     _p("بیا", "derivational", min_stem_len=3, pos=("V", "N"),
-       note="[inv §1.1] repetition: بیاجوړول→جوړول"),
-    _p("غیر", "derivational", min_stem_len=3, pos=("ADJ",), productivity="borrowed", strip_allowed="no",
-       note="KEPT, not stripped: the gold correction log records the negated form as its own lexeme (غیرقانونی→غیرقانون). Only the agreement ending is removed."),
+       note="[T&R ch.7 adverbs] [inv §1.1] repetition: بیاجوړول→جوړول"),
+    _p("غیر", "derivational", min_stem_len=3, pos=("ADJ",), productivity="borrowed",
+       strip_allowed="no",
+       note="[T&R ch.2 morphological borrowings] KEPT, not stripped: the gold "
+            "correction log records the negated form as its own lexeme "
+            "(غیرقانونی→غیرقانون). Only the agreement ending is removed."),
     _p("بلا", "derivational", min_stem_len=3, pos=("ADJ",), productivity="borrowed",
        confidence="medium",
-       note="[inv §1.1] without (Arabic, restricted): بلاشرطه→شرطه"),
+       note="[T&R ch.5 intensive modifiers] [inv §1.1] without (Arabic, "
+            "restricted): بلاشرطه→شرطه"),
     _p("نیم", "derivational", min_stem_len=3, pos=("ADJ", "N"),
-       productivity="restricted", note="[inv §1.1] half: نیمګړی→ګړی"),
+       productivity="restricted",
+       note="[T&R ch.5 numbers and modifiers] [inv §1.1] half: نیمګړی→ګړی"),
     _p("سر", "derivational", min_stem_len=4, pos=("N",), productivity="restricted",
        confidence="medium", strip_allowed="no",
-       note="[inv §1.1] head/chief (سرمنشي→منشي). NOT stripped: سر is a free "
-            "noun and the prefix reading cannot be told from a compound, so it "
-            "removed سر from ordinary words."),
+       note="[T&R ch.4 nominal compounding] [inv §1.1] head/chief (سرمنشي→منشي). "
+            "NOT stripped: سر is a free noun and the prefix reading cannot be told "
+            "from a compound, so it removed سر from ordinary words."),
     _p("ضد", "derivational", min_stem_len=3, pos=("N",), productivity="borrowed",
        confidence="medium",
-       note="[inv §1.1] anti- (Arabic); often written separately: ضد انقلاب"),
+       note="[T&R ch.2 modern loan vocabulary] [inv §1.1] anti- (Arabic); often "
+            "written separately: ضد انقلاب"),
 ]
 
 _LOAN_DERIVATIONAL: List[AffixRule] = [
@@ -63,7 +73,7 @@ _LOAN_DERIVATIONAL: List[AffixRule] = [
     # پروګرام، پرېکړه). A prefix this short needs lexical support we
     # do not have, so it is not a safe rule.
 
-    _p("هم",  "derivational", min_stem_len=3, note="co-/fellow: همکار→کار"),
+    _p("هم",  "derivational", min_stem_len=3, note="[T&R ch.2 Persian compounds] co-/fellow: همکار→کار"),
 ]
 
 _VERBAL_INFLECTIONAL: List[AffixRule] = [
