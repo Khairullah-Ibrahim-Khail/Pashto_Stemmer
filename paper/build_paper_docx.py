@@ -271,6 +271,23 @@ def inventory_summary_rows():
     return rows_out
 
 
+def verb_rows():
+    """The 42 strong verbs, parsed from docs/03_irregular_verbs.md."""
+    import re
+    path = os.path.join(os.path.dirname(HERE), "docs", "03_irregular_verbs.md")
+    out = []
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        if not line.startswith("|") or line.count("|") < 5:
+            continue
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if len(cells) >= 5 and cells[0].isdigit():
+            src = re.sub(r"\*([^*]*)\*", r"\1", cells[5] if len(cells) > 5 else "")
+            src = "unverified" if "unverified" in src.lower() else src.split(",")[0][:24]
+            out.append([cells[1], cells[2], cells[3], cells[4], src])
+    return out
+
+
 def appendix_rows():
     out, current = [], None
     for d in read_tsv("inventory_rows.tsv"):
@@ -331,7 +348,7 @@ def build():
          "On that set the proposed system reaches 71.34% exact-match accuracy "
          "against 40.48% for a faithful reimplementation of the prior system, and "
          "70.6% against 16.9% on the types that carry an affix. Paice's "
-         "under-stemming index falls from 0.889 to 0.556.")
+         "under-stemming index falls from 0.889 to 0.500.")
     para(doc,
          "A secondary finding concerns evaluation itself. The protocol used in "
          "the prior work — presenting system output to native speakers and asking "
@@ -595,6 +612,10 @@ def build():
                   "are encoding corrections rather than changes of spelling.")])
     para(doc, "What normalization does not do is merge the ye letters. We verified that "
               "no ye character is altered in any cell of either evaluation set. The "
+              "This holds through the whole pipeline, not only at the normalization "
+              "step: the output is always a slice of the input token, so whichever ye "
+              "the word was written with is the one the stem carries. A rule spelled "
+              "with \u06cc that fires on a word spelled with \u064a returns \u064a. The "
               "aggressive fold remains available behind a configuration flag so that the "
               "cost of the error reported in the literature can be measured rather than "
               "asserted.", first_line=0.18)
@@ -607,7 +628,7 @@ def build():
               "lexicalized or borrowed); a confidence level; and whether it may be "
               "stripped at all.")
     para(doc, [P("Table III gives the schema in full, with three entries written out. "
-                 "The last field does real work. Twenty-five entries are documented but "
+                 "The last field does real work. Twenty-seven entries are documented but "
                  "never applied, because applying them was measured to be harmful or "
                  "because the grammatical source provides no attested example. The "
                  "lexicalized diminutive "), S("وکی"), P(", the last column of "
@@ -687,6 +708,12 @@ def build():
                   "removing "), S("ونو"), P(", and the result of removing "), S("و"),
                 P(" alone. Nothing is decided at this stage, which is what allows a "
                   "shallower analysis to displace a deeper one.")])
+    para(doc, "A word that is already a stem is not passed through untouched by "
+              "default. Below the length rules it enters the same competition as any "
+              "other word, as the no-strip candidate, and it can lose: that is why the "
+              "system modifies 68.3% of held-out types while the reference modifies "
+              "62.7%, and why the do-nothing floor is not a floor the system inherits.",
+         first_line=0.18)
     para(doc, "Selection scores each candidate on how much affix material was removed, "
               "whether other words in the corpus are built on the same stem, and whether "
               "the stem itself is attested. Two corrections to this stage were necessary "
@@ -704,15 +731,24 @@ def build():
               "and concealed every single-letter inflection. Presence in a corpus is "
               "evidence that a string is a word, not that it is a stem, and the no-strip "
               "candidate now receives a much smaller bonus.", first_line=0.18)
-    para(doc, [P("A small number of affix groups bypass the scorer entirely. The "
-                 "abstract-noun and place suffixes "), S("تیا"), P(", "), S("توب"),
+    para(doc, [P("A small number of affix groups bypass the scorer entirely; we "
+                 "call these the uniform-strip group, and it is the component measured "
+                 "under that name in Table X. The abstract-noun and place suffixes "),
+                S("تیا"), P(", "), S("توب"),
                 P(", "), S("والی"), P(" and "), S("تون"), P(" are long and unambiguous, "
                   "so no competing analysis exists for the scorer to weigh; leaving them "
                   "arbitrated meant that "), S("روغتیا"), P(" and "), S("پوهنتون"),
                 P(" remained unchanged because "), S("روغ"), P(" and "), S("پوهن"),
                 P(" are absent from the lexicon.")], first_line=0.18)
 
-    h2(doc, "E. Guards")
+    h2(doc, "E. Throughput")
+    para(doc, "The system is a single pass of string operations over a 117-rule table, "
+              "with no model to load. On one core of a commodity laptop it stems "
+              "roughly 6,800 word types per second cold and 7,100 warm, measured over "
+              "the development set. For an indexing pipeline the stemmer is not the "
+              "bottleneck.")
+
+    h2(doc, "F. Guards")
     para(doc, [P("Two guards were added after error analysis. A prefix is removed only "
                  "when what remains is itself an attested word. Without it the system "
                  "strips "), S("لا"), P(" from "), S("لانسیټ"), P(", leaving "),
@@ -740,16 +776,16 @@ def build():
                   "a lexicon of free forms that we do not have, and guessing at the "
                   "boundary was worse than leaving it alone.")], first_line=0.18)
 
-    h2(doc, "F. The verb dictionary and the scope of the task")
+    h2(doc, "G. The verb dictionary and the scope of the task")
     para(doc, [P("The system includes a dictionary of 42 strong verbs, of which 34 are "
                  "checked against a printed grammar and 8 are marked unverified. The "
                  "dictionary maps an inflected form to its verb: "), S("شو"),
                 P(" → "), S("کېدل"), P(". That output is a lemma, and substituting "
                   "one word for another is lemmatization rather than stemming. On the "
                   "word types whose reference is a truncation, the dictionary decides "
-                  "the output on 61 of them and is right on 11, because it supplies "
-                  "the wrong kind of answer; it costs 1.03 points on the development "
-                  "set and 1.00 on held-out text.")])
+                  "the output on 69 of them and is right on 11, because it supplies "
+                  "the wrong kind of answer; it costs 1.36 points on the development "
+                  "set and 0.80 on held-out text.")])
     para(doc, "The dictionary is therefore disabled by default and provided as an "
               "explicit lemmatization mode. We report its contribution separately in "
               "Section VII rather than folding it into the stemming result.",
@@ -882,7 +918,11 @@ def build():
               "stemming task when the reference can be obtained by removing characters "
               "from the word, comparison being insensitive to which ye letter is "
               "written. By this criterion the development set contributes 2,717 stemming "
-              "types and 195 lemma types, and the held-out set 499 and 1. Results for "
+              "types and 195 lemma types, and the held-out set 499 and 1. Of the 195, "
+              "155 are verb forms whose reference is an infinitive that no truncation "
+              "reaches; the remaining 40 are suppletive or irregular nominals and "
+              "Arabic broken plurals, so the boundary between the two tasks is almost "
+              "entirely the strong verb. Results for "
               "the lemma types are reported separately in Section VII.",
          first_line=0.18)
 
@@ -929,22 +969,29 @@ def build():
           ["System", "Accuracy", "Affixed", "Bare", "UI"],
           [["Modifies nothing", "37.27%", "0.0%", "100.0%", "1.000"],
            ["Aslamzai & Saad", "40.48%", "16.9%", "80.1%", "0.889"],
-           ["**Proposed", "**71.34%", "**70.6%", "72.6%", "**0.556"]],
+           ["**Proposed", "**71.34%", "**70.6%", "72.6%", "**0.500"]],
           widths=[2.2, 1.2, 1.1, 1.1, 0.9],
           note="“Affixed” and “Bare” are accuracy on the types the "
                "annotation changes and leaves unchanged.")
+    para(doc, "The two systems fail in opposite directions, and that is more "
+              "informative than the gap between them. Of the baseline's 297 held-out "
+              "errors, 254 \u2014 86% \u2014 are under-strips, and 163 are words it "
+              "left untouched altogether; only 9% are over-strips. Of our 143, 51% are "
+              "over-strips and 44% under-strips. The baseline's problem is inaction, "
+              "ours is excess, which is the trade a stemmer has to make and the reason "
+              "the two halves of the task are reported separately.")
     para(doc, "The proposed system improves on the baseline by 30.9 points overall. The "
               "separation of the two halves is more informative than the overall figure: "
               "on the types that require a strip the baseline reaches 16.9% and the "
               "proposed system 70.6%, a factor of four. Paice's under-stemming index "
-              "falls from 0.889 to 0.556, and over-stemming remains below 4×10⁻⁵.")
+              "falls from 0.889 to 0.500, and over-stemming remains below 4×10⁻⁵.")
 
     h2(doc, "B. Development set")
     wide_table(doc, "TABLE VII.  DEVELOPMENT SET, 2,717 STEMMING TYPES",
           ["System", "Accuracy", "Affixed", "Bare", "UI"],
           [["Modifies nothing", "47.77%", "0.0%", "100.0%", "1.000"],
            ["Aslamzai & Saad", "50.68%", "12.2%", "92.8%", "0.919"],
-           ["**Proposed", "**79.43%", "**77.0%", "82.0%", "**0.314"]],
+           ["**Proposed", "**80.27%", "**78.6%", "82.0%", "**0.304"]],
           widths=[2.2, 1.2, 1.1, 1.1, 0.9])
     para(doc, "Table VII reports the development set. The figure is higher than the "
               "held-out result. The revisions described in Section V.B account for 0.07 "
@@ -952,7 +999,7 @@ def build():
               "orthographic, and Section VII.E gives it. The development set is "
               "reported for comparability with the baseline, which is scored "
               "identically, and because Paice's indices are more stable on the larger "
-              "set. On the types requiring a strip the margin is wider still: 77.0% "
+              "set. On the types requiring a strip the margin is wider still: 78.6% "
               "against 12.2%, a factor of six.")
 
     h2(doc, "C. Two external datasets")
@@ -970,7 +1017,7 @@ def build():
                 ["External, 10,000 types", "10,000", "**70.39%", "**77.69%"],
                 ["    Aslamzai & Saad", "", "47.95%", "53.68%"],
                 ["Our held-out set", "499", "71.34%", "72.14%"],
-                ["Our development set", "2,717", "79.43%", "80.93%"]],
+                ["Our development set", "2,717", "80.27%", "81.78%"]],
                widths=[2.6, 1.1, 1.3, 1.3],
                note="The folded column compares with the five ye letters treated as "
                     "equal; the stemmer's output is never rewritten.")
@@ -998,13 +1045,13 @@ def build():
     h2(doc, "D. Component study")
     wide_table(doc, "TABLE X.  EACH COMPONENT REMOVED IN TURN",
           ["Configuration", "Development", "Held-out"],
-          [["**Full system", "**79.43%", "**71.34%"],
-           ["− suffix rules", "71.99% (−7.43)", "58.92% (−12.42)"],
-           ["− length rules", "76.48% (−2.94)", "69.34% (−2.00)"],
-           ["− corpus lexicon", "78.32% (−1.10)", "71.74% (+0.40)"],
-           ["− uniform-strip group", "79.13% (−0.29)", "71.14% (−0.20)"],
-           ["− prefix rules", "79.39% (−0.04)", "71.54% (+0.20)"],
-           ["+ verb dictionary", "78.40% (−1.03)", "70.34% (−1.00)"]],
+          [["**Full system", "**80.27%", "**71.34%"],
+           ["− suffix rules", "71.99% (−8.28)", "58.92% (−12.42)"],
+           ["− length rules", "77.62% (−2.65)", "69.34% (−2.00)"],
+           ["− corpus lexicon", "80.09% (−0.18)", "71.74% (+0.40)"],
+           ["− uniform-strip group", "80.05% (−0.22)", "71.14% (−0.20)"],
+           ["− prefix rules", "80.24% (−0.04)", "71.54% (+0.20)"],
+           ["+ verb dictionary", "78.91% (−1.36)", "70.54% (−0.80)"]],
           widths=[2.6, 1.95, 1.95],
           note="Changes in percentage points.")
     para(doc, "The suffix inventory does most of the work, and removing it costs 12.4 "
@@ -1025,12 +1072,13 @@ def build():
                 S("ناقانونه"), P(" is not an instance of "), S("قانون"),
                 P(" but its opposite, and "), S("سر"), P(" is a free noun as often as "
                   "it is a prefix.")], first_line=0.18)
-    para(doc, "The corpus lexicon is worth 1.10 points on the development set and "
+    para(doc, "The corpus lexicon is worth 0.18 points on the development set and "
               "−0.40 on held-out text. Its contribution is now marginal, because "
               "the uniform-strip and length rules decide most cases before the scorer is "
               "consulted. We report this plainly: the system should not be described as "
               "lexicon-driven.", first_line=0.18)
-    para(doc, "Enabling the verb dictionary costs about one point on both sets, for the "
+    para(doc, "Enabling the verb dictionary costs 1.36 points on the development set and "
+              "0.80 on held-out text, for the "
               "reason given in Section IV.F. Its proper contribution is to the lemma "
               "types, where it answers 51 of the 195 in the development set against "
               "8 without it.",
@@ -1046,8 +1094,8 @@ def build():
                 P(" were returned unchanged.")])
     para(doc, "Making rule matching insensitive to which ye is written, while leaving the "
               "output letters untouched, corrected this. On the development set, which is "
-              "written entirely in one convention, exact matching scores 0.40 points "
-              "higher; on held-out news text the folded comparison is worth a point, "
+              "written entirely in one convention, exact matching scores 0.15 points "
+              "higher; on held-out news text the folded comparison is worth 1.20 points, "
               "so it earns its place on the set that reflects real text. This is the "
               "clearest instance in the project of a defect that a single-source "
               "evaluation set could not have revealed.", first_line=0.18)
@@ -1058,17 +1106,56 @@ def build():
     h2(doc, "A. Correct rules and under-determined rules")
     para(doc, [P("A per-rule analysis separates two kinds of failure, and the "
                  "distinction matters for how the remaining error should be addressed.")])
-    para(doc, [P("Some rules are simply wrong. Three were identified and removed "
-                 "during this work: a standalone rule for the verbal "), S("ل"),
-                P(", which only ever applied to nouns where "), S("ل"), P(" belongs to "
-                  "the root and so turned "), S("کابل"), P(" into "), S("کاب"),
-                P("; a rule removing "), S("نی"), P(" as a unit, where the affix is "
-                  "usually the "), S("ی"), P(" alone; and a rule restoring a feminine "),
-                S("ه"), P(" to any stem that had lost one, which produced "),
-                S("کورونو"), P(" \u2192 "), S("کورونه"), P(". These were defects rather "
-                  "than ambiguity. We give the words rather than firing counts because "
-                  "the counts were measured against an inventory that has since changed "
-                  "and cannot be recomputed from the released code.")], first_line=0.18)
+    para(doc, "Table XI gives the precision of the rules that fire most often on "
+              "the development set: how many times each contributed to the analysis "
+              "finally selected, and how often that analysis matched the reference. "
+              "Publishing it is uncomfortable and necessary. A rule can contribute "
+              "positive points overall and still be wrong half the time it fires, and a "
+              "reader cannot tell the two apart from an ablation table.")
+    wide_table(doc, "TABLE XI.  PRECISION OF THE MOST FREQUENTLY FIRING RULES",
+               ["Rule", "Fires", "Correct", "Precision"],
+               [["R2 keep short word", "398", "357", "89.7%"],
+                ["R1 drop ه", "228", "161", "70.6%"],
+                ["R1 drop ی", "190", "149", "78.4%"],
+                ["R1 drop ې", "160", "133", "83.1%"],
+                ["final trim", "131", "81", "61.8%"],
+                ["\u2212 ۍ", "126", "106", "84.1%"],
+                ["\u2212 و", "108", "88", "81.5%"],
+                ["\u2212 ونو", "58", "54", "93.1%"],
+                ["R2 drop ې at 3 letters", "39", "21", "**53.8%"],
+                ["\u2212 ونه", "39", "35", "89.7%"],
+                ["R2 drop و at 3 letters", "32", "18", "**56.2%"],
+                ["\u2212 ان", "28", "13", "**46.4%"]],
+               widths=[2.6, 1.0, 1.1, 1.3],
+               note="\u201cFires\u201d counts the analyses finally selected in which "
+                    "the rule took part. Development set.")
+    para(doc, [P("Building that table changed the system. Two rules turned out to fire "
+                 "26 times between them and be right on none of those occasions: "),
+                S("لو"), P(", the oblique infinitive, and "), S("لې"), P(", the "
+                  "feminine past participle. Both bundle an "), S("ل"), P(" into the "
+                  "affix that the reference keeps, either as the infinitive marker ("),
+                S("ساتلو"), P(" \u2192 "), S("ساتل"), P(", not "), S("سات"),
+                P(") or as part of the root ("), S("بریالی"), P(" \u2192 "),
+                S("بریال"), P("). The rules that remove the final vowel alone already "
+                  "produce the right answer, so these two could only ever take one "
+                  "letter too many. They are now documented and never applied, which is "
+                  "worth 0.85 points on the development set and nothing either way on "
+                  "held-out text. This is the same defect as the standalone verbal "),
+                S("ل"), P(", removed earlier for the same reason: it applied only to "
+                  "nouns where "), S("ل"), P(" belongs to the root and turned "),
+                S("کابل"), P(" into "), S("کاب"), P(". Two further rules were removed "
+                  "during the work, one taking "), S("نی"), P(" as a unit where the "
+                  "affix is usually the "), S("ی"), P(" alone, and one restoring a "
+                  "feminine "), S("ه"), P(" to any stem that had lost one, which "
+                  "produced "), S("کورونو"), P(" \u2192 "), S("کورونه"), P(".")])
+    para(doc, [P("Three rules remain below 60% precision and are kept. "), S("ان"),
+                P(" is right 13 times in 28, but it is the ordinary animate plural of "
+                  "Pashto and gating it costs 0.40 points on held-out text; its low "
+                  "precision reflects competition with longer analyses rather than a "
+                  "defect in the rule. The two three-letter length rules sit at 53.8% "
+                  "and 56.2% for the reason the next paragraph describes, and the "
+                  "alternative to a coin-flip there is to leave every short inflected "
+                  "word unstemmed.")], first_line=0.18)
     para(doc, [P("Other rules are correct but under-determined. The rule removing a "
                  "final "), S("ه"), P(" from a short word fires 131 times on the "
                   "development set and is correct 86 times. "), S("لنډه"),
@@ -1079,12 +1166,12 @@ def build():
                   "form can help; only a lexical resource can.")], first_line=0.18)
 
     h2(doc, "B. What limits the current accuracy")
-    para(doc, [P("The 559 development-set errors divide into three kinds. 317 of "
-                 "them, 57%, are over-strips, where the system removed more than the "
-                 "reference does; 201, 36%, are under-strips, and 101 of those are "
+    para(doc, [P("The 536 development-set errors divide into three kinds. 293 of "
+                 "them, 55%, are over-strips, where the system removed more than the "
+                 "reference does; 202, 38%, are under-strips, and 134 of those are "
                  "words the system left untouched altogether; the remaining 41 are the "
                  "same length as the reference but differ in which letters survive. The "
-                 "held-out set behaves the same way, 52% and 43%. Over-stripping is "
+                 "held-out set behaves the same way, 51% and 44%. Over-stripping is "
                  "therefore the larger problem on both sets, which is what one would "
                  "expect of a system whose scorer rewards removing affix material, and "
                  "it is concentrated on the "), S("ه"), P("/"), S("ی"), P("/"), S("ې"),
@@ -1131,8 +1218,8 @@ def build():
               "during development, the system reaches 71.34% exact-match accuracy "
               "against 40.48% for the published baseline, and 70.6% against 16.9% on the "
               "types that require a strip. On a 2,717-type development set it reaches "
-              "79.43% against 50.68%, with Paice's under-stemming index falling from "
-              "0.919 to 0.314.", first_line=0.18)
+              "80.27% against 50.68%, with Paice's under-stemming index falling from "
+              "0.919 to 0.304.", first_line=0.18)
     para(doc, "Three observations generalise beyond this particular system. Exact-match "
               "accuracy is not a sufficient measure for stemming in a language where a "
               "large share of word types carry no affix, because it rewards inactivity; "
@@ -1225,6 +1312,18 @@ def build():
           appendix_rows(),
           widths=[0.9, 0.95, 0.45, 0.95, 1.1, 1.0, 0.7], pashto_cols=(0,),
           body_size=8)
+
+    h1(doc, "Appendix B:  The Irregular-Verb Dictionary")
+    para(doc, "The 42 strong verbs whose present stem cannot be derived from the "
+              "infinitive. The last column names the source; eight entries are marked "
+              "unverified and are labelled as such in the released documentation "
+              "rather than presented as settled. The dictionary returns a lemma, so it "
+              "is off by default and belongs to the lemmatization mode described in "
+              "Section IV.G.")
+    table(doc, "TABLE B.I.  THE IRREGULAR-VERB DICTIONARY",
+          ["Infinitive", "Present stem", "Past", "Gloss", "Source"],
+          verb_rows(),
+          widths=[1.0, 1.0, 1.1, 1.6, 1.4], pashto_cols=(0, 1, 2), body_size=8)
 
     doc.save(OUT)
     return OUT

@@ -75,7 +75,12 @@ _NOMINAL_INFLECTIONAL: List[AffixRule] = [
 _VERBAL_INFLECTIONAL: List[AffixRule] = [
     _s("ېدل", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True, note="inchoative infinitive -edəl"),
     _s("ېده", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True, note="-eda"),
-    _s("لو", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True, note="oblique infinitive: کولو→کول"),
+    # NOT stripped as a unit. Measured on the development set it fired 14
+    # times and was right 0 times: the reference keeps the infinitive ‑ل and
+    # removes only the oblique ‑و (ساتلو→ساتل, not سات). The ‑و rule already
+    # does that, so this entry would only ever take one letter too many.
+    _s("لو", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True,
+       strip_allowed="no", note="oblique infinitive: کولو→کول. NOT stripped as a unit"),
     _s("ول", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True, note="causative -awəl"),
     _s("ل", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True,
        strip_allowed="no", confidence="low",
@@ -123,7 +128,11 @@ _SOURCED: List[AffixRule] = [
     _s("ځی", "derivational", min_stem_len=3, pos=("N",), note="[W] place: ښوونځی→ښوون"),
     # -- skilled-agent noun [W] ----------------------------------------------
     # -- past participle (T&R: "[-ay] forms participles from verbs") --------
-        _s("لې", "derivational", min_stem_len=3, pos=("ADJ", "V"), note="[T&R] fem past participle"),
+        # NOT stripped as a unit: 12 firings, 0 correct. In every case the ل
+        # belongs to the root or to the infinitive and the reference removes
+        # only the final yeh (بریالی→بریال, موندلې→موندل).
+        _s("لې", "derivational", min_stem_len=3, pos=("ADJ", "V"),
+           strip_allowed="no", note="[T&R] fem past participle. NOT stripped as a unit"),
     # -- Arabic sound masculine plural ‑ین (مسلمین→مسلم) ---------------------
         # -- Persian plural ‑جات (سبزیجات→سبزي) ---------------------------------
     _s("جات", "inflectional", min_stem_len=3, pos=("N",), note="Pers. pl -jāt"),

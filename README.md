@@ -43,7 +43,7 @@ This project takes a different route and stays entirely rule-based:
 - **107 suffix rules and 10 prefix rules.** Each records the grammar it came
   from, whether it is inflectional or derivational, a minimum surviving stem
   length, the part of speech it signals, its productivity, a confidence level,
-  and whether it may be stripped at all. **25 of the 117 are documented and
+  and whether it may be stripped at all. **27 of the 117 are documented and
   deliberately never applied** — recording an affix and refusing to strip it is
   not the same as omitting it, because the inventory is also a description of
   the language.
@@ -109,7 +109,7 @@ consulted during development:
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 37.27% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 40.48% | 16.9% | 80.1% | 0.889 |
-| **This stemmer** | **71.34%** | **70.6%** | 72.6% | **0.556** |
+| **This stemmer** | **71.34%** | **70.6%** | 72.6% | **0.500** |
 
 **Development set** — 2,717 annotated word types:
 
@@ -117,7 +117,7 @@ consulted during development:
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 47.77% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 50.68% | 12.2% | 92.8% | 0.919 |
-| **This stemmer** | **79.43%** | **77.0%** | 82.0% | **0.314** |
+| **This stemmer** | **80.27%** | **78.6%** | 82.0% | **0.304** |
 
 **Two external word lists** — 5,000 and 10,000 types, independently annotated,
 neither produced by this project, 96% of them unseen:
@@ -180,19 +180,24 @@ acceptable to a judge and it produces nothing else:
 This does not show the published 87% to be wrong. It shows the measurement
 answers a different question.
 
+Per-rule precision is published too, in the paper's Table XI — how often each
+rule fires in a selected analysis and how often that analysis is right. Building
+it retired two rules (`لو`, `لې`) that fired 26 times between them and were
+never correct, worth +0.85 on the development set.
+
 ### What each component contributes
 
 Leave-one-out, in percentage points:
 
 | Configuration | Development | Held-out |
 |---|:---:|:---:|
-| **Full system** | **79.43%** | **71.34%** |
-| without suffix rules | 71.99% (−7.43) | 58.92% (−12.42) |
-| without the length rules | 76.48% (−2.94) | 69.34% (−2.00) |
-| without the corpus lexicon | 78.32% (−1.10) | 71.74% (+0.40) |
-| without the uniform-strip group | 79.13% (−0.29) | 71.14% (−0.20) |
-| without prefix rules | 79.39% (−0.04) | 71.54% (+0.20) |
-| *with* the verb dictionary | 78.40% (−1.03) | 70.34% (−1.00) |
+| **Full system** | **80.27%** | **71.34%** |
+| without suffix rules | 71.99% (−8.28) | 58.92% (−12.42) |
+| without the length rules | 77.62% (−2.65) | 69.34% (−2.00) |
+| without the corpus lexicon | 80.09% (−0.18) | 71.74% (+0.40) |
+| without the uniform-strip group | 80.05% (−0.22) | 71.14% (−0.20) |
+| without prefix rules | 80.24% (−0.04) | 71.54% (+0.20) |
+| *with* the verb dictionary | 78.91% (−1.36) | 70.54% (−0.80) |
 
 The suffix inventory does most of the work. Three of these rows record
 decisions taken **against** the measured score, stated rather than quietly
@@ -205,7 +210,7 @@ resolved in favour of whatever scored best:
   `غیر‑` are negation prefixes the annotation policy keeps, since `ناقانونه`
   is not an instance of `قانون` but its opposite, and `سر‑` is a free noun as
   often as it is a prefix.
-- **The corpus lexicon** is worth 1.10 points on development data and −0.40 on
+- **The corpus lexicon** is worth 0.18 points on development data and −0.40 on
   held-out. Its contribution is marginal now that the uniform-strip and length
   rules decide most cases before the scorer is consulted, so this system should
   **not** be described as lexicon-driven.
@@ -260,7 +265,7 @@ correct behaviour, not a defect.
 **Lemmatization substitutes one word for another.** `شو → کېدل` and
 `نجونو → نجلۍ` cannot be reached by removing characters. The irregular-verb
 dictionary does exactly this, so it belongs to lemmatization: on the 2,717
-stemming types it changes the output for 61 words and is right on 11 of them,
+stemming types it changes the output for 69 words and is right on 11 of them,
 because it supplies the wrong *kind* of answer. On the 195 lemma types it
 answers 51, against 8 without it. It is therefore off by default and offered
 as an explicit mode:
@@ -328,7 +333,7 @@ dictionary orthography and `ي` in news orthography, so a rule spelled one way
 never fired on the other: of the 500 held-out news types 118 contain `ي`, and
 of the 2,912 development types **none** do. Matching now compares a folded key
 while the letters written out are never changed. On news text that is worth
-a point — the clearest case in the project of a defect a single-source
+1.20 points — the clearest case in the project of a defect a single-source
 evaluation set could not have revealed.
 
 ## Repository layout
@@ -392,6 +397,10 @@ inventory was missing. The procedure is cheap and we recommend it.
   rule fires 131 times on the development set and is right 86 times; removing
   it costs 1.62 points. No reformulation conditioned on the surface form can
   help — only a lexical resource can.
+- **Three rules sit below 60% precision and are kept**: `ان` (46.4%) and the
+  two three-letter length rules (53.8%, 56.2%). Gating `ان` costs 0.40 points on
+  held-out text, so the low precision reflects competition with longer analyses
+  rather than a broken rule.
 - **Compounds are kept whole.** That is a policy, not a solution. A splitter
   was implemented, measured and removed: across both sets it fired on seven
   types and was wrong on all seven, returning a suffix instead of a word
