@@ -146,7 +146,7 @@ the file is written and you get a summary of what went where.
 | `keep_original` | `True` | `False` → only the stem column |
 | `new_column` | `None` | default `<column>_stemmed` |
 | `sheet` | `None` | which Excel worksheet |
-| `unique` | `False` | stem distinct values only |
+| `unique` | `False` | stem each distinct value once and map it back; every row is still written |
 | `trace` | `False` | add a column naming the rules that fired |
 | `warn` | `True` | warn once if cells hold sentences |
 
@@ -209,7 +209,7 @@ Repeated here as the single place to look:
 | `keep_original` | `True` | `False` → only the stem column |
 | `new_column` | `None` | default `<column>_stemmed` |
 | `sheet` | `None` | which Excel worksheet; `None` → the first |
-| `unique` | `False` | stem distinct values only |
+| `unique` | `False` | stem each distinct value once and map it back; every row is still written |
 | `trace` | `False` | add a `<column>_rules` column naming the rules that fired |
 | `warn` | `True` | warn once if the cells hold sentences rather than words |
 
@@ -237,7 +237,7 @@ With no words and no `--file`, words are read from stdin.
 | `--out PATH` | where to write (default stdout) |
 | `--new-column NAME` | name for the stem column |
 | `--only-stems` | write just the stem column |
-| `--unique` | stem distinct values only |
+| `--unique` | stem each distinct value once; every row is still written |
 | `-t`, `--trace` | also report the confidence and the rules that fired |
 | `-q`, `--quiet` | suppress the sentences-in-cells warning |
 

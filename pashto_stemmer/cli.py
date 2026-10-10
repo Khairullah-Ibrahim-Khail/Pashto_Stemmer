@@ -61,7 +61,8 @@ def build_parser() -> argparse.ArgumentParser:
     out.add_argument("--only-stems", action="store_true",
                      help="write just the stem column, not the original columns")
     out.add_argument("--unique", action="store_true",
-                     help="stem distinct values only")
+                     help="stem each distinct value once and map it back; "
+                          "every row is still written")
     out.add_argument("-t", "--trace", action="store_true",
                      help="also report the confidence and the rules that fired")
     out.add_argument("-q", "--quiet", action="store_true",

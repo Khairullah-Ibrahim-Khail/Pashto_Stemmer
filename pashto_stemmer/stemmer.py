@@ -583,7 +583,8 @@ class PashtoStemmer:
         keep_original False drops every column except the stem
         new_column    name for the result; default <column>_stemmed
         sheet         which Excel worksheet; default the first
-        unique        stem distinct values only, then map back
+        unique        stem each distinct value once and map it back onto
+                      every row; no row is dropped
         warn          say so once if the column holds sentences
         trace         add a column naming the rules that fired
         """

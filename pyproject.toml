@@ -6,7 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "pashto-stemmer"
 version = "0.1.0"
 description = "A grammar-driven rule-based stemmer for the Pashto language (no ML)."
-readme = "README.md"
+# The repository README is 728 lines and full of relative links, which PyPI
+# resolves against pypi.org rather than the repo. README-pypi.md is the
+# package page: the API, the flags and the options, with absolute links.
+readme = "README-pypi.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
 authors = [{ name = "Khairullah Ibrahim Khail", email = "ibrahimkhil976@gmail.com" }]
