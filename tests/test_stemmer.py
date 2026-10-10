@@ -183,6 +183,82 @@ def test_lexicalized_compounds_are_kept_whole():
     assert st.stem("لاسلیکونه") == "لاسلیک"
 
 
+def test_relational_yeh_after_a_vowel():
+    """The relational ‑ي on a vowel-final base: both yeh letters come off.
+
+    The inventory held the single-yeh form only, so امریکایی came back whole
+    (removing one yeh leaves امریکاي, not a word, and the scorer then kept the
+    base). Rule matching folds the yeh letters, so one entry covers the
+    dictionary spelling یي and the news spelling يي.
+    """
+    st = PashtoStemmer()
+    assert st.stem("امریکایی") == "امریکا"
+    assert st.stem("امریکايي") == "امریکا"        # the news spelling
+    assert st.stem("اروپایی") == "اروپا"
+    assert st.stem("روغتیایی") == "روغتیا"
+    assert st.stem("اشنايي") == "اشنا"
+    # a single yeh is still a single strip
+    assert st.stem("پاکستاني") == "پاکستان"
+
+
+def test_a_single_corpus_sighting_is_not_evidence_of_a_base():
+    """min_base_freq: a word seen once must not outrank a correct strip.
+
+    انګلیسي occurs once in the lexicon and چینایي twice, and that was enough
+    for "keep the whole word" to beat the affix rule, so both came back
+    unstemmed even though the rule had produced the right candidate.
+    """
+    st = PashtoStemmer()
+    assert st.stem("انګلیسي") == "انګلیس"
+    assert st.stem("چینایي") == "چینا"
+    # a frequent word is still safe: the threshold must not strip common nouns
+    for w in ("خلک", "مور", "کورس", "پلار"):
+        assert st.stem(w) == w, w
+
+
+def test_uniform_group_honours_its_own_minimum_stem():
+    """مکتوب is an Arabic root with no ‑توب in it.
+
+    Every rule in the uniform-strip group declares min_stem_len=3, but the
+    group's own guard was 2, which let ‑توبونه come off مکتوبونه and leave مک.
+    """
+    st = PashtoStemmer()
+    assert st.stem("مکتوب") == "مکتوب"
+    assert st.stem("مکتوبونه") == "مکتوب"
+    assert st.stem("مینتوب") == "مین"      # a real ‑توب still comes off
+
+
+def test_plural_outranks_the_length_rule():
+    """‑ونه is a documented plural; R1 must not pre-empt it at five letters.
+
+    کورونه (six letters) reached the plural rule and gave کور, while غرونه
+    (five) hit R1 first and gave غرون — the same morphology answered two ways
+    by word length alone.
+    """
+    st = PashtoStemmer()
+    assert st.stem("غرونه") == "غر"
+    assert st.stem("پسونه") == "پس"
+    assert st.stem("اسونه") == "اس"
+    assert st.stem("کورونه") == "کور"     # the six-letter case still works
+
+
+def test_the_zwnj_survives_stemming():
+    """The joiner is part of the word; deleting it is a letter change.
+
+    زده‌کوونکي lost its ZWNJ, the halves welded, and a suffix came off the
+    weld giving زدهک. The affix ‑ونکي is real, so removing it is correct —
+    what was wrong is that an invisible character vanished.
+    """
+    st = PashtoStemmer()
+    out = st.stem("زده‌کوونکي")
+    assert "\u200c" in out, repr(out)
+    assert out == "زده\u200cک", repr(out)
+    # ...but a joiner the strip has left at an edge joins nothing and goes:
+    # مجله‌ګانې loses ‑ګانې and must not end in a dangling joiner.
+    assert st.stem("مجله‌ګانې") == "مجله", repr(st.stem("مجله‌ګانې"))
+    assert st.stem("کښتۍ‌ګانې") == "کښتۍ"
+
+
 def test_annotation_policy_claims_hold():
     """The provisions of docs/02_annotation_policy.md that code can check."""
     st = PashtoStemmer()

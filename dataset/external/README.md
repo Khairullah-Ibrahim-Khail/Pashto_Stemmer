@@ -15,9 +15,9 @@ python experiments/evaluate_external.py
 
 | dataset | types | exact | ye-folded |
 |---|---:|---:|---:|
-| 5,000 types | 5,000 | 72.18% | 80.28% |
+| 5,000 types | 5,000 | 72.30% | 80.14% |
 | — Aslamzai & Saad (2015) | | 51.24% | 57.36% |
-| 10,000 types | 10,000 | 70.15% | 77.34% |
+| 10,000 types | 10,000 | 70.18% | 77.17% |
 | — Aslamzai & Saad (2015) | | 47.95% | 53.68% |
 
 ## Two things to know before quoting these numbers
@@ -26,7 +26,7 @@ python experiments/evaluate_external.py
 files write the stem with `ی` while the word keeps `ي`, so a stem that
 correctly preserves the word's own letter is scored wrong. That is the whole
 7–8 point gap between the two columns. The same folded comparison is worth only
-1.51 points on our development set and 0.80 on our held-out set, because those
+1.44 points on our development set and 0.80 on our held-out set, because those
 are internally consistent — which is what locates the problem in their spelling
 rather than in the stemming.
 

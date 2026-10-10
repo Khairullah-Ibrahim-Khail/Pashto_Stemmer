@@ -4,7 +4,7 @@
 
 ### A Grammar-Driven Rule-Based Stemmer for Pashto
 
-*No machine learning anywhere in it. 117 affix rules taken from published
+*No machine learning anywhere in it. 118 affix rules taken from published
 grammars, each carrying its source, its productivity, and an explicit decision
 about whether it may be applied at all — and a scoring step that chooses
 between competing analyses.*
@@ -46,7 +46,7 @@ This project takes a different route and stays entirely rule-based:
   Robson or Penzl by chapter or section. Each records the grammar it came
   from, whether it is inflectional or derivational, a minimum surviving stem
   length, the part of speech it signals, its productivity, a confidence level,
-  and whether it may be stripped at all. **28 of the 117 are documented and
+  and whether it may be stripped at all. **28 of the 118 are documented and
   deliberately never applied** — recording an affix and refusing to strip it is
   not the same as omitting it, because the inventory is also a description of
   the language.
@@ -268,33 +268,41 @@ st = PashtoStemmer(StemmerConfig(use_verb_dictionary=True))
 
 The last two columns are measured, not asserted: how many of the 2,717
 development types the switch changes, and what the accuracy becomes. The
-default row is 80.35%.
+default row is 81.19%.
 
 | field | default | | types changed | accuracy |
 |---|---|---|---:|---:|
-| `use_suffixes` | `True` | strip suffixes | 434 | 71.99% |
-| `use_exceptions` | `True` | stopwords, the length rules, Arabic plurals | 353 | 75.27% |
-| `author_rules` | `True` | the length rules R1 and R2 | 254 | 77.70% |
-| `use_dictionary` | `True` | score candidates against the corpus lexicon | 159 | 80.16% |
-| `strip_final_inflection` | `True` | remove a final `ې`/`و` after stripping | 131 | 77.88% |
-| `strip_derivational` | `True` | `False` → inflection only | 89 | 80.20% |
-| `max_passes` | `1` | re-run the pipeline on its own output (`3`) | 82 | 79.76% |
-| `use_verb_dictionary` | `False` | the lemmatization mode | 69 | 78.98% |
-| `rebuild_derivative_infinitive` | `True` | handle the `ېدل`/`ول` derivative verbs | 45 | 78.98% |
-| `freeze_proper_nouns` | `False` | `True` keeps `افغانستان` whole | 29 | 80.16% |
-| `strip_stan` | `True` | strip `‑ستان` | 17 | 80.05% |
-| `use_pos` | `False` | part-of-speech filtering | 15 | 80.57% |
-| `author_rules_before_dictionary` | `False` | run the length rules first | 11 | 79.98% |
-| `prefix_needs_attested_stem` | `True` | a prefix strip must leave a known word | 7 | 80.20% |
-| `use_compound` | `False` | compound decomposition | 6 | 80.13% |
-| `use_prefixes` | `True` | strip prefixes | 2 | 80.31% |
-| `keep_negation_prefixes` | `True` | `ناقانونه → ناقانون`; `False` gives `ناقان` | 1 | 80.31% |
-| `r1_max_len` | `5` | longest word R1 takes a final letter off | 148 (`99`) | 80.46% |
+| `use_suffixes` | `True` | strip suffixes | 488 | 71.95% |
+| `use_exceptions` | `True` | stopwords, the length rules, Arabic plurals | 305 | 76.81% |
+| `author_rules` | `True` | the length rules R1 and R2 | 213 | 79.39% |
+| `use_dictionary` | `True` | score candidates against the corpus lexicon | 115 | 80.49% |
+| `strip_derivational` | `True` | `False` → inflection only | 104 | 80.82% |
+| `strip_final_inflection` | `True` | remove a final `ې`/`و` after stripping | 92 | 79.87% |
+| `r1_max_len` | `5` | longest word R1 takes a final letter off | 88 (`99`) | 81.97% |
+| `max_passes` | `1` | re-run the pipeline on its own output (`3`) | 74 | 80.20% |
+| `use_verb_dictionary` | `False` | the lemmatization mode | 69 | 79.83% |
+| `min_base_freq` | `3` | sightings needed before an unstripped word counts as a base (`1`) | 45 | 80.71% |
+| `rebuild_derivative_infinitive` | `True` | handle the `ېدل`/`ول` derivative verbs | 42 | 79.90% |
+| `freeze_proper_nouns` | `False` | `True` keeps `افغانستان` whole | 30 | 81.05% |
+| `strip_stan` | `True` | strip `‑ستان` | 17 | 80.90% |
+| `use_pos` | `False` | part-of-speech filtering | 16 | 81.49% |
+| `author_rules_before_dictionary` | `False` | run the length rules first | 11 | 80.82% |
+| `prefix_needs_attested_stem` | `True` | a prefix strip must leave a known word | 9 | 80.93% |
+| `uniform_min_stem` | `3` | shortest stem the `‑توب` group may leave (`2`) | 7 | 81.01% |
+| `use_compound` | `False` | compound decomposition | 6 | 80.97% |
+| `keep_negation_prefixes` | `True` | `ناقانونه → ناقانون`; `False` gives `ناقان` | 3 | 81.16% |
+| `use_prefixes` | `True` | strip prefixes | 2 | 81.16% |
 | `r1_tail` | `"یيېۍئه"` | which final letters R1 removes | — | — |
 
+`min_base_freq` is the one worth understanding. A word the corpus holds once or
+twice is evidence that it exists, not that it is a base form — `انګلیسي`
+appears once, and that sighting used to outrank a correct strip, so the word
+came back whole. At `3` it gives `انګلیسي → انګلیس` and `چینایي → چینا`, and
+frequent words such as `خلک` and `مور` are still safe.
+
 Two of these look like free accuracy on the development set and are not.
-`use_pos=True` gains 0.22 points on development and **loses 0.40 on held-out
-text**; raising `r1_max_len` from 5 to 6 gains 0.40 and loses 1.20. That is why
+`use_pos=True` gains 0.30 points on development and **loses 0.41 on held-out
+text**; raising `r1_max_len` from 5 to 6 gains 0.78 and loses 0.61. That is why
 the defaults are where they are, and it is the reason the held-out set exists.
 
 Two further fields change nothing in the table above because neither applies
@@ -302,7 +310,7 @@ under the default configuration, and both are worth knowing:
 
 | field | default | |
 |---|---|---|
-| `verb_target` | `"stem"` | only reached when `use_verb_dictionary=True`. `"stem"` gives `راغی → راتل`, `"infinitive"` gives `راتلل`. With the dictionary on it moves 51 development types and scores 79.98% against 78.98% — still below the 80.35% of leaving the dictionary off |
+| `verb_target` | `"stem"` | only reached when `use_verb_dictionary=True`. `"stem"` gives `راغی → راتل`, `"infinitive"` gives `راتلل`. With the dictionary on it moves 51 development types and scores 80.75% against 79.83% — still below the 81.19% of leaving the dictionary off |
 | `restore_feminine_ha` | `True` | `ښځو`, `ښځې → ښځه`, for the bases in `feminine_ha_bases` (`ښځ` alone). This is the one place a letter is **added**, which is why those rows count as lemmatization rather than stemming and sit outside the 2,717 types scored above. Restoring the `ه` wherever a three-letter word ended in `و`/`ې` was right 29 times and wrong 55, so it is a listed class and not a rule |
 
 Normalization has its own config, and the setting worth knowing is that no yeh
@@ -330,7 +338,7 @@ consulted during development:
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 37.27% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 40.48% | 16.9% | 80.1% | 0.889 |
-| **This stemmer** | **71.34%** | **70.6%** | 72.6% | **0.500** |
+| **This stemmer** | **72.75%** | **72.8%** | 72.6% | **0.500** |
 
 **Development set** — 2,717 annotated word types:
 
@@ -338,16 +346,16 @@ consulted during development:
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 47.77% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 50.68% | 12.2% | 92.8% | 0.919 |
-| **This stemmer** | **80.35%** | **78.6%** | 82.2% | **0.304** |
+| **This stemmer** | **81.19%** | **81.0%** | 81.4% | **0.291** |
 
 **Two external word lists** — 5,000 and 10,000 types, independently annotated,
 neither produced by this project, 96% of them unseen:
 
 | Dataset | Types | Exact | ye-folded |
 |---|---:|:---:|:---:|
-| External 5k | 5,000 | **72.18%** | **80.28%** |
+| External 5k | 5,000 | **72.30%** | **80.14%** |
 | — Aslamzai & Saad (2015) | | 51.24% | 57.36% |
-| External 10k | 10,000 | **70.15%** | **77.34%** |
+| External 10k | 10,000 | **70.18%** | **77.17%** |
 | — Aslamzai & Saad (2015) | | 47.95% | 53.68% |
 
 Three sets at 70–72% exact is the generalisation evidence. Both lists
@@ -370,7 +378,7 @@ policy. See
 unchanged already scores 37.3% on the held-out set, because a large share of
 Pashto word types carry no affix. That is why both tables split the task in
 two. Aslamzai & Saad reaches 40.5% overall but only **16.9%** on the words that
-actually need stripping; this system reaches **70.6%** on that half, a factor
+actually need stripping; this system reaches **72.8%** on that half, a factor
 of four.
 
 **The development set was annotated independently by three native speakers** —
@@ -399,7 +407,7 @@ acceptable to a judge and it produces nothing else:
 |---|:---:|:---:|:---:|
 | Do nothing | 37.27% | **100.00%** | 0.0% |
 | Aslamzai & Saad (2015) | 40.48% | 80.76% | 37.5% |
-| **This stemmer** | **71.34%** | **98.60%** | 68.3% |
+| **This stemmer** | **72.75%** | **98.60%** | 68.9% |
 
 This does not show the published 87% to be wrong. It shows the measurement
 answers a different question.
@@ -415,13 +423,13 @@ Leave-one-out, in percentage points:
 
 | Configuration | Development | Held-out |
 |---|:---:|:---:|
-| **Full system** | **80.35%** | **71.34%** |
-| without suffix rules | 71.99% (−8.35) | 58.92% (−12.42) |
-| without the length rules | 77.70% (−2.65) | 69.34% (−2.00) |
-| without the corpus lexicon | 80.16% (−0.18) | 71.74% (+0.40) |
-| without the uniform-strip group | 80.13% (−0.22) | 71.14% (−0.20) |
-| without prefix rules | 80.31% (−0.04) | 71.54% (+0.20) |
-| *with* the verb dictionary | 78.98% (−1.36) | 70.54% (−0.80) |
+| **Full system** | **81.19%** | **72.75%** |
+| without suffix rules | 71.95% (−9.24) | 59.12% (−13.63) |
+| without the length rules | 79.39% (−1.80) | 70.54% (−2.20) |
+| without the corpus lexicon | 80.49% (−0.70) | 72.75% (+0.00) |
+| without the uniform-strip group | 80.82% (−0.37) | 72.55% (−0.20) |
+| without prefix rules | 81.16% (−0.04) | 72.95% (+0.20) |
+| *with* the verb dictionary | 79.83% (−1.36) | 71.74% (−1.00) |
 
 The suffix inventory does most of the work. Three of these rows record
 decisions taken **against** the measured score, stated rather than quietly
@@ -451,17 +459,17 @@ one sample.
 
 | What the reference removes | Types | Accuracy |
 |---|---:|---:|
-| Nominal inflection | 1,116 | 86.4% |
+| Nominal inflection | 1,116 | 88.8% |
 | Verbal inflection | 41 | 95.1% |
-| Derivation: nouns | 67 | 89.6% |
-| Derivation: adjectives | 26 | 80.8% |
-| **No affix, word left whole** | **1,347** | **79.2%** |
-| **Nothing in the inventory** | **120** | **26.7%** |
+| Derivation: nouns | 79 | 83.5% |
+| Derivation: adjectives | 26 | 84.6% |
+| **No affix, word left whole** | **1,347** | **78.4%** |
+| **Nothing in the inventory** | **108** | **29.6%** |
 
 Each type is filed under the group of the rule that explains the reference's
 removal, using the same grouping as the inventory table above. Accuracy is high
 wherever the reference removes an affix the inventory holds. The damage is in
-the last two rows: 280 words stripped that should have been left alone, and 120
+the last two rows: 291 words stripped that should have been left alone, and 108
 types the inventory cannot explain at all. Regenerate the table with
 `python experiments/error_analysis.py`.
 
@@ -485,8 +493,8 @@ python experiments/error_analysis.py      # per-rule precision and the error bre
 `reproduce_paper.py` regenerates the four result tables exactly as printed, and
 prints its own warning if any figure drifts. `audit_annotation.py` checks every
 removal in an annotated set against the affix inventory and writes the
-unresolved rows to `dataset/unsupported_removals_*.csv`; 58 of 313 removals in
-the held-out reference and 120 of 1,370 in the development reference match no
+unresolved rows to `dataset/unsupported_removals_*.csv`; 54 of 313 removals in
+the held-out reference and 108 of 1,370 in the development reference match no
 documented affix, and each is either an annotation error, a gap in the
 inventory, or a verbal prefix the inventory deliberately does not hold.
 Note that `ablation.py` scores **all 2,912 development rows**, including the
@@ -669,7 +677,7 @@ inventory was missing. The procedure is cheap and we recommend it.
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
   binary decision). The held-out set carries a single agreed reference, so no
   coefficient is computed for it.
-- **Citations are located but not page-verified.** 111 of 117 rules cite
+- **Citations are located but not page-verified.** 112 of 118 rules cite
   Tegey & Robson by chapter or Penzl by section; the remaining six are entries
   the engine never applies, so no grammar is being appealed to for them. The
   chapter attributions were assembled by the author and have not been checked
@@ -685,7 +693,7 @@ inventory was missing. The procedure is cheap and we recommend it.
 | [paper/main.tex](paper/main.tex) | the paper, LaTeX source — build with XeLaTeX or LuaLaTeX |
 | [paper/Pashto_Stemmer_Paper.pdf](paper/Pashto_Stemmer_Paper.pdf) | the paper, built |
 | [docs/01_affix_inventory.md](docs/01_affix_inventory.md) | the linguistic background: how the affixes were surveyed, with productivity and notes. Not the authoritative list — see `paper/inventory_rows.tsv`, which is generated from the rules themselves |
-| [paper/inventory_rows.tsv](paper/inventory_rows.tsv) | all 117 rules as the engine holds them, with each one's source |
+| [paper/inventory_rows.tsv](paper/inventory_rows.tsv) | all 118 rules as the engine holds them, with each one's source |
 | [docs/02_annotation_policy.md](docs/02_annotation_policy.md) | what counts as a stem, and why |
 | [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | how the verbs were surveyed. Not the dictionary — twelve verbs here are not implemented; see `paper/verbs_sources.tsv` |
 | [paper/verbs_sources.tsv](paper/verbs_sources.tsv) | the 38 verbs the dictionary holds plus the 12 identified but not implemented, each with its source |

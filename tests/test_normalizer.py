@@ -30,8 +30,12 @@ def test_removes_diacritics():
     assert nz.normalize("مُدَّت") == "مدت"
 
 
-def test_removes_internal_zwnj():
-    assert "‌" not in nz.normalize("کا‌بل")
+def test_keeps_internal_zwnj():
+    """The joiner stays: deleting it welds the halves of a ZWNJ word together
+    and a suffix then comes off the weld (زده‌کوونکي -> زدهک). Removing it is
+    a letter change, which the annotation policy forbids."""
+    assert "‌" in nz.normalize("کا‌بل")
+    assert nz.normalize("کا‌بل") == "کا‌بل"
 
 
 def test_alef_hamza_folds_but_madda_preserved():

@@ -49,6 +49,7 @@ _PASHTO_CHAR = re.compile(r"[؀-ۿ]")
 # that cannot help when it sits between two words.
 _TOKEN_SPLIT = re.compile(r"[\s؟،؛٫٬.!?:;…«»()\[\]{}—–]+")
 _STRIP_PUNCT = "؟،؛٫٬.!?:;\"'«»()[]{}—–-…‏‎ "
+_ZWNJ = "\u200c"          # kept inside a word, never left dangling at an edge
 
 
 @dataclass
@@ -184,7 +185,14 @@ class StemmerConfig:
     short_word_strippable: str = "ېو"
     # ‑نی comes off as a unit only for these; elsewhere only the ی does.
     ni_full_strip: tuple = ("کورنی", "لومړنی", "میاشتنی", "کورنۍ", "لومړنۍ")
-    uniform_min_stem: int = 2
+    # 3, not 2: at 2 the group stripped ‑توبونه from مکتوب, an Arabic root
+    # with no توب in it, leaving مک. Every rule in the group declares
+    # min_stem_len=3 individually, so 2 here was overriding them. Worth +0.15
+    # on the development set and nothing either way on held-out text.
+    uniform_min_stem: int = 3
+    # The masculine plural endings that take precedence over the R1 length
+    # rule; see _author_rules.
+    plural_outranks_length: tuple = ("ونه", "ونو")
     # Look up the exceptions, then apply the rules. The irregular-verb table is
     # consulted before the length rules, which is the usual arrangement in a
     # morphological analyser and gives the linguistically correct شو -> کېدل.
@@ -673,10 +681,18 @@ class PashtoStemmer:
     def _final_trim(self, stem: str) -> str:
         """Drop a final ې/و from a form longer than three characters, so
         سیمې/سیمو reduce to the same token. ‑ه is deliberately excluded: see
-        StemmerConfig.final_inflection_letters."""
+        StemmerConfig.final_inflection_letters.
+
+        A joiner left at either edge also goes. The ZWNJ is kept inside a word
+        because it belongs there, but once the material it joined has been
+        stripped it joins nothing: مجله‌ګانې loses ‑ګانې and would otherwise
+        end in a dangling joiner. It is a formatting control, not a letter, so
+        removing one at an edge is not the letter change the policy forbids.
+        """
+        stem = stem.strip(_ZWNJ)
         if (self.cfg.strip_final_inflection and len(stem) > 3
                 and stem[-1] in self.cfg.final_inflection_letters):
-            return stem[:-1]
+            return stem[:-1].strip(_ZWNJ)
         return stem
 
     # Letters that exist only in Pashto: a word containing one is certainly
@@ -704,6 +720,15 @@ class PashtoStemmer:
         # its agreement ‑ه.
         if any(r.strip_allowed == "yes" and r.applies_to(norm)
                for r in self.engine.prefixes):
+            return None
+        # The masculine plural outranks the length rule too. R1 fires on four
+        # and five letters, so کورونه (six) reached the ‑ونه rule and became
+        # کور while غرونه (five) lost only its ه and became غرون -- the same
+        # morphology answered two ways by word length alone. Only this one
+        # group is excepted: letting every documented suffix outrank R1 was
+        # measured and cost 0.18 on the development set.
+        if (norm.endswith(self.cfg.plural_outranks_length)
+                and n - 3 >= self.cfg.uniform_min_stem - 1):
             return None
         if 4 <= n <= self.cfg.r1_max_len and norm[-1] in self.cfg.r1_tail:  # R1
             return norm[:-1], f"R1-drop-{norm[-1]}"

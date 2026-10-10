@@ -164,9 +164,15 @@ This single rule resolves most disagreements (e.g. rejects `صنع`, `جرم`, `
 4. A portion of the gold is held out and never used for tuning the system.
 
 **Version:** v1.2 — decisions in force:
-- **§5 verbs → STEM** (infinitive minus ‑ل), implemented as a paradigm table
-  (lemma / present stem / past stem) grounded in descriptive grammars.
-  *(Supersedes the v1.0 draft, which wrongly targeted the infinitive.)*
+- **§5 the infinitive is kept** and only what is attached to it comes off.
+  Checked against all 124 words ending in ‑ل in the released reference: not
+  one has the bare ‑ل removed. Suppletive forms map to the infinitive through
+  a paradigm table (lemma / present stem / past stem), which produces lemmas
+  and therefore belongs to the lemmatization mode.
+  *(Two earlier drafts said otherwise — one targeted the infinitive as a
+  lemma, one the bare stem. This line itself carried the second of those long
+  after §5 had been rewritten, and said the correct decision was the wrong
+  one.)*
 - **§6 Arabic broken plurals** handled as a **lexical exception dictionary**;
   templatic derivation was tested and measured at 40% precision, so rejected.
 - **§7 proper nouns are NOT frozen** — rules apply to every word, because a

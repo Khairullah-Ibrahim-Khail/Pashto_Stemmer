@@ -1,5 +1,4 @@
 word,annotated_stem,removed,side,in_inventory,verdict,why
-امریکايي,امریکا,یی,suffix,no,missing affix,nisba ‑یي on a vowel-final stem
 وښيي,ښي,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 ووایو,وای,و+و,both,"in part: و, و",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 لومړیتوبونو,لومړی,توبونو,suffix,no,missing affix,‑توب + ‑ونو; each half is in the inventory
@@ -36,7 +35,6 @@ word,annotated_stem,removed,side,in_inventory,verdict,why
 واغوندئ,غوند,وا+ی,both,in part: ی,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 وباسه,باس,و+ه,both,"in part: و, ه",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 څلورویشت,څلورو,یشت,suffix,no,annotation,compound numeral 'twenty-four'
-اشنايي,اشنا,یی,suffix,no,missing affix,nisba ‑یي
 وړولو,وړ,ولو,suffix,no,missing affix,oblique infinitive of the causative ‑ول
 وخندل,خند,و+ل,both,"in part: و, ل",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 راپاڅېدلم,پاڅ,را+یدلم,both,no,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
@@ -47,12 +45,10 @@ word,annotated_stem,removed,side,in_inventory,verdict,why
 ورپېښېږي,پېښ,ور+یږی,both,"in part: ور, یږی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 وارېدو,رېد,وا+و,both,in part: و,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 تکرارولو,تکرار,ولو,suffix,no,missing affix,oblique infinitive of the causative ‑ول
-روتینیايي,روتینیا,یی,suffix,no,missing affix,nisba ‑یي
 ورشو,شو,ور,prefix,"yes, wrong side",missing affix,directional ور‑; same removal
 روزنکی,روزن,کی,suffix,no,ambiguous,‑نکی is held; here the stem itself ends in ن
 پچیراګام,پچیرا,ګام,suffix,no,annotation,place name; ‑ګام is not an affix
 ورپرېښودل,پرېښود,ور+ل,both,"in part: ور, ل",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
-دروازيي,درواز,یی,suffix,no,missing affix,nisba ‑یي
 روښانفکره,روښان,فکره,suffix,no,annotation,compound روښان+فکر+ه; policy keeps compounds whole
 راورسیږي,رس,راو+یږی,both,in part: یږی,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
 ددوي,دوي,د,prefix,no,ambiguous,"د is a preposition written joined, not a prefix"

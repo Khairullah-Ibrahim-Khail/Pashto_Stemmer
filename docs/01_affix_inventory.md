@@ -5,10 +5,9 @@
 > the stemmer actually applies live in `pashto_stemmer/suffixes.py` and
 > `prefixes.py`, and are printed in full in Appendix A of the paper and in
 > `paper/inventory_rows.tsv`, which is generated from them. The two have
-> diverged: at least 22 of the 117 affixes in the code are not mentioned
-> anywhere in this survey — `ګونه`, `والو`, `ونکو`, `مند`, `ېږی`, `جات`,
-> `دار` and others, mostly case and gender variants added during error
-> analysis — and some forms discussed here are handled outside the rule table
+> diverged: 23 of the 118 affixes in the code are not mentioned anywhere in
+> the sections below, mostly case and gender variants added during error
+> analysis. Some forms discussed here are handled outside the rule table
 > altogether (the agent
 > ending ‑غاړی through a configuration list, the directional prefixes را‑, در‑,
 > ور‑ not at all, having been measured and removed). Where the two disagree,

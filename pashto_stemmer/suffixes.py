@@ -171,6 +171,19 @@ _SOURCED: List[AffixRule] = [
 # error bucket AND is a documented affix. Each was measured individually
 # before being added.
 _FROM_ERROR_ANALYSIS: List[AffixRule] = [
+    _s("یي", "derivational", min_stem_len=3, pos=("ADJ", "N"),
+       note="[T&R ch.5 noun-to-adjective suffixes] the relational \u2011ي after a "
+            "vowel-final base, where the glide yeh belongs to the affix: "
+            "\u0627\u0645\u0631\u06cc\u06a9\u0627\u06cc\u06cc\u2192\u0627\u0645\u0631\u06cc\u06a9\u0627\u060c "
+            "\u0627\u0631\u0648\u067e\u0627\u06cc\u06cc\u2192\u0627\u0631\u0648\u067e\u0627\u060c "
+            "\u0631\u0648\u063a\u062a\u06cc\u0627\u06cc\u06cc\u2192\u0631\u0648\u063a\u062a\u06cc\u0627. "
+            "The single-yeh form is the \u2011ی rule below; this is its other "
+            "shape, and the inventory held only one of the two. Rule matching "
+            "folds the yeh letters, so the same entry covers the news spelling "
+            "\u064a\u064a and the dictionary spelling \u06cc\u06cc. Measured: 7 fixes against 2 "
+            "losses on the development set (\u0641\u0631\u0645\u0627\u06cc\u06cc and "
+            "\u0627\u062a\u062d\u0627\u062f\u06cc\u06d0 keep their yeh in the gold), and 4 fixes "
+            "against 0 losses on held-out text."),
     _s("یت", "derivational", min_stem_len=3, pos=("N",), note="[T&R ch.2 morphological loan layers] Arabic abstract-noun -iyyat: فعالیت→فعال، مدیریت→مدیر، شخصیت→شخص"),
     _s("نی", "derivational", min_stem_len=3, pos=("ADJ",),
        strip_allowed="no", confidence="medium",

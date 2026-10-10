@@ -96,7 +96,12 @@ def test_multiword_cells_warn_once():
     with redirect_stderr(err):
         rows = ST.stem_file(p, column="text")
     os.unlink(p)
-    assert "multi-word" in err.getvalue()
+    # the warning must name the offending cell, not just say "multi-word":
+    # the earlier wording told the user to "pass the word column", which they
+    # already had.
+    msg = err.getvalue()
+    assert "more than one word" in msg, msg
+    assert "د کورونو خبرونه" in msg, msg
     assert rows[0]["text_stemmed"] == "د کور خبر"
 
 
@@ -176,6 +181,25 @@ def test_stemming_is_deterministic():
         st.clear_cache()
         assert st.stem(w) == first, w
         assert st.stem(w) == first, w
+
+
+def test_a_renamed_csv_reports_itself_clearly():
+    """openpyxl says "BadZipFile: File is not a zip file", which helps nobody.
+
+    A CSV renamed to .xlsx is a common mistake; the message has to name it.
+    """
+    import pashto_stemmer.files as F
+    p = os.path.join(tempfile.mkdtemp(), "words.xlsx")
+    with open(p, "w", encoding="utf-8") as fh:
+        fh.write("word\nکورونه\n")
+    try:
+        F.read_rows(p)
+    except SystemExit as exc:
+        msg = str(exc)
+        assert "not a readable Excel workbook" in msg, msg
+        assert "plain text" in msg, msg
+    else:
+        raise AssertionError("a text file named .xlsx should have been refused")
 
 
 def _run_all():

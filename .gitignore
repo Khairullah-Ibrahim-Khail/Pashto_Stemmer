@@ -47,11 +47,14 @@ dataset/space_bug_fixes.csv
 # Generated documents: rebuild with the scripts in docs/ and paper/
 docs/*.docx
 
-# The paper itself ships in both formats, so the built Word and PDF versions
-# are tracked rather than ignored. Anything else generated in paper/ is not.
+# The repository ships the paper's LaTeX source and the built PDF. The Word
+# version and the script that generates it are kept locally and not tracked:
+# build_paper_docx.py holds the whole manuscript a second time as Python
+# strings, which duplicates main.tex and drifted from it twice. One source,
+# one built artefact.
 paper/*.docx
 paper/*.pdf
-!paper/Pashto_Stemmer_Paper.docx
+paper/build_paper_docx.py
 !paper/Pashto_Stemmer_Paper.pdf
 
 # Third-party material. Aslamzai & Saad (2015) is someone else's copyrighted

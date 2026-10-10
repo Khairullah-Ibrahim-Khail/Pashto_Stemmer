@@ -87,7 +87,13 @@ class NormalizerConfig:
 
     remove_diacritics: bool = True
     remove_tatweel: bool = True
-    remove_zwnj: bool = True          # strip ZWNJ *inside* a token
+    # False: the joiner is kept. Deleting it welded the halves of a ZWNJ word
+    # together and a suffix then came off the weld (زده‌کوونکي -> زدهک). The
+    # stem need not be a word, so removing the real affix ‑ونکي is right; what
+    # was wrong is that an invisible character disappeared from the output,
+    # which is a letter change. Neither evaluation set contains a ZWNJ word,
+    # so this is worth 0.00 either way and is here for correctness.
+    remove_zwnj: bool = False         # keep ZWNJ *inside* a token
     strip_zwj: bool = True
 
     unify_arabic_kaf: bool = True     # ك -> ک

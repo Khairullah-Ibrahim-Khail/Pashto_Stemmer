@@ -19,10 +19,12 @@ recorded here so that nobody follows them by accident:
 
 - It said proper nouns stay whole, so `افغانستان → افغانستان`. The released
   reference strips `‑ستان` like any other affix: `افغانستان → افغان`.
-- It said verbs are lemmatized to the infinitive, `کوي → کول`. The released
-  reference reduces verbs to the **stem**, `لوستل → لوست`, because `‑ل` is
-  itself an affix. Mapping a form to a different word is lemmatization, and
-  this project keeps the two tasks apart.
+- It said verbs are lemmatized to the infinitive, `کوي → کول`. Mapping a
+  form to a different word is lemmatization, and this project keeps the two
+  tasks apart, so the dictionary that does it is off by default. The
+  infinitive itself is **not** reduced further: the released reference has
+  `لوستل → لوستل`, and of its 124 words ending in `‑ل` not one has the bare
+  `‑ل` removed. (An earlier version of this note claimed the opposite.)
 - It said to write `ي` as `ی`. No yeh letter is ever rewritten. All five
   (`ی ي ې ۍ ئ`) are distinct and are preserved everywhere.
 

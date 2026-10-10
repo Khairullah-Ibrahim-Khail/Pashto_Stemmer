@@ -51,7 +51,7 @@ ibrahimkhil976@gmail.com}}
 Pashto has roughly forty million speakers and very few text-processing tools.
 The only stemmer published for the language applies nine affix rules without a
 lexicon and without any means of choosing between competing analyses. We
-present a rule-based Pashto stemmer built from an affix inventory of 117 rules
+present a rule-based Pashto stemmer built from an affix inventory of 118 rules
 drawn from published grammars, in which every rule records its source, its
 productivity, and whether it may be applied at all. Candidate stems are
 generated separately from the decision of which candidate to keep, so a
@@ -66,8 +66,8 @@ being developed. 499 of its 500 types fall within the stemming task and are the
 denominator below; the remaining one needs a different word and is reported
 apart.
 
-On that set the proposed system reaches 71.34\% exact-match accuracy against
-40.48\% for a faithful reimplementation of the prior system, and 70.6\% against
+On that set the proposed system reaches 72.75\% exact-match accuracy against
+40.48\% for a faithful reimplementation of the prior system, and 72.8\% against
 16.9\% on the types that carry an affix. Paice's under-stemming index falls
 from 0.889 to 0.500.
 
@@ -153,7 +153,7 @@ strong verbs, whose present stem must be known: \ps{لیدل} has the present st
 \subsection{Contributions}
 
 \begin{itemize}
-\item An affix inventory of 117 rules in which each entry records its
+\item An affix inventory of 118 rules in which each entry records its
 grammatical source, its productivity, a confidence level, and an explicit
 decision about whether it may be stripped. Twenty-seven entries are documented
 but never applied.
@@ -252,7 +252,7 @@ The affix inventory was assembled from published descriptions rather than by
 inspecting a corpus. Table~\ref{tab:sources} lists the sources used and the
 tag each carries in the released inventory file.
 
-Of the 117 rules, 111 cite a published source, located by chapter in Tegey and
+Of the 118 rules, 112 cite a published source, located by chapter in Tegey and
 Robson~\cite{tegey1996} or by section in Penzl~\cite{penzl1955}. The remaining
 six---\ps{ستان}، \ps{نی}، \ps{نۍ}، \ps{نې}، \ps{لو}، \ps{ل}---are entries
 the engine never applies. For those no grammar is being appealed to: the affix
@@ -425,8 +425,8 @@ example       & \ps{کورونه}   & \ps{مینتوب}  & \ps{وړوکی}\\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:inventory} groups the 117 rules by what they do. Derivation
-accounts for 81 of them against 36 inflectional rules, which is the opposite of
+Table~\ref{tab:inventory} groups the 118 rules by what they do. Derivation
+accounts for 82 of them against 36 inflectional rules, which is the opposite of
 what a stemmer for English would need and follows from where Pashto puts its
 productive morphology. The grouping also shows where the gated entries are
 concentrated: 17 of the 28 are noun-forming derivational suffixes, which is the
@@ -434,7 +434,7 @@ area where lexicalization is commonest and where a rule is most likely to be
 documented in a grammar and still be unsafe to apply.
 
 \begin{table}[t]
-\caption{The 117 rules by function. ``Published'' counts the rules citing a
+\caption{The 118 rules by function. ``Published'' counts the rules citing a
 published grammar or lexical resource; ``kept'' counts those documented and
 never stripped. The full inventory is Appendix~A.}
 \label{tab:inventory}
@@ -478,7 +478,7 @@ analysis to displace a deeper one.
 
 A word that is already a stem is not passed through untouched by default. Below
 the length rules it enters the same competition as any other word, as the
-no-strip candidate, and it can lose: that is why the system modifies 68.3\% of
+no-strip candidate, and it can lose: that is why the system modifies 68.9\% of
 held-out types while the reference modifies 62.7\%, and why the
 do-nothing floor is not a floor the system inherits.
 
@@ -551,7 +551,7 @@ because \ps{روغ} and \ps{پوهن} are absent from the lexicon.
 
 \subsection{Throughput}
 
-The system is a single pass of string operations over a 117-rule table, with no
+The system is a single pass of string operations over a 118-rule table, with no
 model to load. On one core of a commodity laptop it stems roughly 6{,}800 word
 types per second cold and 7{,}100 warm, measured over the development set. For
 an indexing pipeline the stemmer is not the bottleneck.
@@ -670,11 +670,11 @@ set was not consulted during development, and every figure reported for it comes
 from a single run of the finished system.
 
 The first pass was audited by comparing every removal against the affix
-inventory. On the released first-pass file, 77 of 327 removals, 23.5\%, match no
+inventory. On the released first-pass file, 73 of 327 removals, 22.3\%, match no
 documented affix: words such as \ps{مزاج} and \ps{حارث}, which carry no affix
 at all, had been shortened. Thirty rows were revised in response, and the figure
-falls to 58 of 313, or 18.5\%. The same audit on the development set leaves 120
-of 1{,}370 removals, or 8.8\%, unaccounted for.
+falls to 54 of 313, or 17.3\%. The same audit on the development set leaves 108
+of 1{,}370 removals, or 7.9\%, unaccounted for.
 
 That audit procedure is reusable and we recommend it. For each annotated pair,
 the material removed is compared against the affix inventory; a removal
@@ -682,9 +682,9 @@ matching no affix is either an annotation error or evidence that the inventory
 is incomplete, and inspection separates the two. Applied to the development
 set, the same procedure identified six affixes the inventory lacked.
 
-We went through all 58 removals that the audit leaves unaccounted for in the
-final held-out set, and the split is informative. Thirty-three of them take
-material off one end of the word. Twenty-three of those are gaps in the
+We went through all 54 removals that the audit leaves unaccounted for in the
+final held-out set, and the split is informative. Twenty-nine of them take
+material off one end of the word. Nineteen of those are gaps in the
 inventory rather than errors in the annotation, and most are variants of
 affixes already held: the oblique infinitive \ps{ولو} beside \ps{ول}, the
 oblique \ps{ګرو} beside \ps{ګر}, the feminine \ps{یزې} beside \ps{یزه}, the
@@ -709,7 +709,7 @@ list them at all.
 
 That the one-ended errors run three to one towards missing affixes rather than
 bad annotation is the useful part: it says the reference is sounder than the
-rule list, and it names the twenty-three entries that would close the gap. The
+rule list, and it names the nineteen entries that would close the gap. The
 classified list is released with a verdict and a reason on every row.
 
 \subsection{Annotation policy}
@@ -791,7 +791,7 @@ System & A: exact & B: judged & Modified\\
 \midrule
 Modifies nothing       & 37.27\% & \textbf{100.00\%} & 0.0\%\\
 Aslamzai \& Saad~\cite{aslamzai2015} & 40.48\% & 80.76\% & 37.5\%\\
-\textbf{Proposed}      & \textbf{71.34\%} & \textbf{98.60\%} & 68.3\%\\
+\textbf{Proposed}      & \textbf{72.75\%} & \textbf{98.60\%} & 68.9\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -828,7 +828,7 @@ System & Accuracy & Affixed & Bare & UI\\
 \midrule
 Modifies nothing & 37.27\% & 0.0\% & 100.0\% & 1.000\\
 Aslamzai \& Saad & 40.48\% & 16.9\% & 80.1\% & 0.889\\
-\textbf{Proposed} & \textbf{71.34\%} & \textbf{70.6\%} & 72.6\% & \textbf{0.500}\\
+\textbf{Proposed} & \textbf{72.75\%} & \textbf{72.8\%} & 72.6\% & \textbf{0.500}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -840,10 +840,10 @@ over-strips. Of our 143, 51\% are over-strips and 44\% under-strips. The
 baseline's problem is inaction, ours is excess, which is the trade a stemmer
 has to make and the reason the two halves of the task are reported separately.
 
-The proposed system improves on the baseline by 30.9 points overall. The
+The proposed system improves on the baseline by 32.3 points overall. The
 separation of the two halves is more informative than the overall figure: on
 the types that require a strip the baseline reaches 16.9\% and the proposed
-system 70.6\%, a factor of four. Paice's under-stemming index falls from 0.889
+system 72.8\%, a factor of four. Paice's under-stemming index falls from 0.889
 to 0.500, and over-stemming remains below $4\times10^{-5}$.
 
 \subsection{Development set}
@@ -858,7 +858,7 @@ System & Accuracy & Affixed & Bare & UI\\
 \midrule
 Modifies nothing & 47.77\% & 0.0\% & 100.0\% & 1.000\\
 Aslamzai \& Saad & 50.68\% & 12.2\% & 92.8\% & 0.919\\
-\textbf{Proposed} & \textbf{80.35\%} & \textbf{78.6\%} & 82.2\% & \textbf{0.304}\\
+\textbf{Proposed} & \textbf{81.19\%} & \textbf{81.0\%} & 81.4\% & \textbf{0.291}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -868,7 +868,7 @@ held-out result. The revisions described in Section~\ref{sec:devset} account
 for 0.07 points of that gap, so the explanation lies elsewhere: it is
 orthographic, and Section~\ref{sec:orth} gives it. The development set is
 reported for comparability with the baseline, which is scored identically, and
-because Paice's indices are more stable on the larger set. On the types requiring a strip the margin is wider still: 78.6\%
+because Paice's indices are more stable on the larger set. On the types requiring a strip the margin is wider still: 81.0\%
 against 12.2\%, a factor of six.
 
 \subsection{Two external datasets}
@@ -877,8 +877,8 @@ against 12.2\%, a factor of six.
 After the system was finalised, it was run against two independently annotated
 Pashto word lists of 5{,}000 and 10{,}000 types. Neither was produced by this
 project, and 96\% of their entries appear in neither of our evaluation sets.
-Exact-match accuracy is 72.18\% and 70.15\% (Table~\ref{tab:external}), against
-51.24\% and 47.95\% for the baseline. Those figures sit beside the 71.34\% measured on held-out news text,
+Exact-match accuracy is 72.30\% and 70.18\% (Table~\ref{tab:external}), against
+51.24\% and 47.95\% for the baseline. Those figures sit beside the 72.75\% measured on held-out news text,
 which is the point: the system does not depend on the data it was built
 against.
 
@@ -892,13 +892,13 @@ rewritten.}
 \toprule
 Dataset & Types & Exact & Folded\\
 \midrule
-External, 5{,}000 types & 5{,}000 & 72.18\% & 80.28\%\\
+External, 5{,}000 types & 5{,}000 & 72.30\% & 80.14\%\\
 \quad Aslamzai \& Saad & & 51.24\% & 57.36\%\\
-External, 10{,}000 types & 10{,}000 & 70.15\% & 77.34\%\\
+External, 10{,}000 types & 10{,}000 & 70.18\% & 77.17\%\\
 \quad Aslamzai \& Saad & & 47.95\% & 53.68\%\\
 \midrule
-Our held-out set & 499 & 71.34\% & 72.14\%\\
-Our development set & 2{,}717 & 80.35\% & 81.85\%\\
+Our held-out set & 499 & 72.75\% & 73.55\%\\
+Our development set & 2{,}717 & 81.19\% & 82.63\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -906,8 +906,8 @@ Our development set & 2{,}717 & 80.35\% & 81.85\%\\
 Both lists carry a reference column normalised to \ps{ی} while their word column
 retains \ps{ي}, so a stem is scored wrong whenever it preserves the letter the
 word actually has. Folding the five \emph{ye} letters together for the
-comparison alone raises the two figures to 80.28\% and 77.34\%. The same folded
-comparison is worth 1.51 points on our development set and 0.80 on our held-out
+comparison alone raises the two figures to 80.14\% and 77.17\%. The same folded
+comparison is worth 1.44 points on our development set and 0.80 on our held-out
 set, both of which are internally consistent in their orthography. The size of
 that difference is what the measurement shows: seven to eight points on the
 external lists against one on ours places the disagreement in how they spell the
@@ -938,20 +938,20 @@ generalisation rather than correctness under our policy.
 \toprule
 Configuration & Development & Held-out\\
 \midrule
-\textbf{Full system} & \textbf{80.35\%} & \textbf{71.34\%}\\
-$-$ suffix rules & 71.99\% ($-$8.35) & 58.92\% ($-$12.42)\\
-$-$ length rules & 77.70\% ($-$2.65) & 69.34\% ($-$2.00)\\
-$-$ corpus lexicon & 80.16\% ($-$0.18) & 71.74\% ($+$0.40)\\
-$-$ uniform-strip group & 80.13\% ($-$0.22) & 71.14\% ($-$0.20)\\
-$-$ prefix rules & 80.31\% ($-$0.04) & 71.54\% ($+$0.20)\\
-$+$ verb dictionary & 78.98\% ($-$1.36) & 70.54\% ($-$0.80)\\
+\textbf{Full system} & \textbf{81.19\%} & \textbf{72.75\%}\\
+$-$ suffix rules & 71.95\% ($-$9.24) & 59.12\% ($-$13.63)\\
+$-$ length rules & 79.39\% ($-$1.80) & 70.54\% ($-$2.20)\\
+$-$ corpus lexicon & 80.49\% ($-$0.70) & 72.75\% ($+$0.00)\\
+$-$ uniform-strip group & 80.82\% ($-$0.37) & 72.55\% ($-$0.20)\\
+$-$ prefix rules & 81.16\% ($-$0.04) & 72.95\% ($+$0.20)\\
+$+$ verb dictionary & 79.83\% ($-$1.36) & 71.74\% ($-$1.00)\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The suffix inventory does most of the work, and removing it costs 12.4 points
-on held-out text. The author's length rules contribute between two and three
-points on both sets.
+on held-out text. The length rules contribute between two and three
+points on held-out text and just under two on the development set.
 
 Three rows record decisions taken against the measured score, and we state
 them explicitly rather than quietly adopting whichever setting scored best.
@@ -1021,31 +1021,31 @@ rule took part. Generated by \texttt{experiments/error\_analysis.py}.}
 Rule & Fires & Correct & Precision\\
 \midrule
 R2 keep short word        & 398 & 357 & 89.7\%\\
-R1 drop \ps{ه}            & 228 & 161 & 70.6\%\\
+R1 drop \ps{ه}            & 227 & 161 & 70.9\%\\
 R1 drop \ps{ی}            & 190 & 149 & 78.4\%\\
 R1 drop \ps{ې}            & 160 & 133 & 83.1\%\\
-final trim                & 131 &  81 & 61.8\%\\
-$-$\ps{ۍ}                 & 126 & 106 & 84.1\%\\
-$-$\ps{و}                 & 108 &  88 & 81.5\%\\
+$-$\ps{ۍ}                 & 144 & 129 & 89.6\%\\
+$-$\ps{و}                 & 132 & 109 & 82.6\%\\
+final trim                &  92 &  50 & 54.3\%\\
 $-$\ps{ونو}               &  58 &  54 & 93.1\%\\
+$-$\ps{ه}                 &  47 &  30 & 63.8\%\\
+$-$\ps{ونه}               &  40 &  36 & 90.0\%\\
 R2 drop \ps{ې} at 3 letters&  39 &  21 & 53.8\%\\
-$-$\ps{ونه}               &  39 &  35 & 89.7\%\\
-$-$\ps{ه}                 &  36 &  24 & 66.7\%\\
 R1 drop \ps{ۍ}            &  36 &  31 & 86.1\%\\
+$-$\ps{ان}                 &  36 &  15 & 41.7\%\\
 R2 drop \ps{و} at 3 letters&  32 &  18 & 56.2\%\\
-$-$\ps{ان}                &  28 &  13 & 46.4\%\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Building that table changed the system. Two rules turned out to fire 26 times
+Building that table changed the system. Two rules turned out to fire 31 times
 between them and be right on none of those occasions: \ps{لو}, the oblique
 infinitive, and \ps{لې}, the feminine past participle. Both bundle an \ps{ل}
 into the affix that the reference keeps, either as the infinitive marker
 (\ps{ساتلو}~$\rightarrow$~\ps{ساتل}, not \ps{سات}) or as part of the root
 (\ps{بریالی}~$\rightarrow$~\ps{بریال}). The rules that remove the final vowel
 alone already produce the right answer, so these two could only ever take one
-letter too many. They are now documented and never applied, which is worth 0.85
+letter too many. They are now documented and never applied, which is worth 1.07
 points on the development set and nothing either way on held-out text. This is
 the same defect as the standalone verbal \ps{ل}, which was removed earlier for
 the same reason: it applied only to nouns where \ps{ل} belongs to the root and
@@ -1054,8 +1054,8 @@ one taking \ps{نی} as a unit where the affix is usually the \ps{ی} alone, and
 one restoring a feminine \ps{ه} to any stem that had lost one, which produced
 \ps{کورونو}~$\rightarrow$~\ps{کورونه}.
 
-Three rules remain below 60\% precision and are kept. \ps{ان} is right 13 times
-in 28, but it is the ordinary animate plural of Pashto and gating it costs 0.40
+Four rules remain below 60\% precision and are kept. \ps{ان} is right 15 times
+in 36, but it is the ordinary animate plural of Pashto and gating it costs 0.40
 points on held-out text; its low precision reflects competition with longer
 analyses rather than a defect in the rule. The two three-letter length rules sit
 at 53.8\% and 56.2\% for the reason the next paragraph describes, and the
@@ -1063,20 +1063,20 @@ alternative to a coin-flip there is to leave every short inflected word
 unstemmed.
 
 Other rules are correct but under-determined. The rule removing a final \ps{ه}
-from a short word fires 228 times on the development set and is correct 161 of
+from a short word fires 227 times on the development set and is correct 161 of
 those. \ps{لنډه}~$\rightarrow$~\ps{لنډ} is right and
 \ps{خواړه}~$\rightarrow$~\ps{خواړ} is wrong, and the two words are
 indistinguishable in shape. Removing the rule loses more than it saves: overall
-accuracy falls by 1.62 points. No reformulation conditioned on the surface form
+accuracy falls by 1.44 points. No reformulation conditioned on the surface form
 can help; only a lexical resource can.
 
 \subsection{What limits the current accuracy}
 
-The 534 development-set errors divide into three kinds. 291 of them, 54\%, are
-over-strips, where the system removed more than the reference does; 202, 38\%,
-are under-strips, and 102 of those are words the system left untouched
-altogether; the remaining 41 are the same length as the reference but differ in
-which letters survive. The held-out set behaves the same way, 51\% and 44\%.
+The 511 development-set errors divide into three kinds. 305 of them, 60\%, are
+over-strips, where the system removed more than the reference does; 167, 33\%,
+are under-strips, and 75 of those are words the system left untouched
+altogether; the remaining 39 are the same length as the reference but differ in
+which letters survive. The held-out set behaves the same way, 54\% and 41\%.
 Over-stripping is therefore the larger problem on both sets, which is what one
 would expect of a system whose scorer rewards removing affix material.
 
@@ -1084,12 +1084,12 @@ Table~\ref{tab:bygroup} locates the errors. Each type is assigned to the group
 of the rule that explains the reference's removal, under the same grouping as
 Table~\ref{tab:inventory}, so that the two tables can be read against each
 other. Accuracy is high wherever the reference removes an affix the inventory
-holds---86.4\% on nominal inflection, 89.6\% on noun-forming derivation,
+holds---88.8\% on nominal inflection, 83.5\% on noun-forming derivation,
 95.1\% on verbal inflection---and the two weak rows are the ones that do not
-depend on the inventory being right. 120 types have a reference the inventory
-cannot explain at all, and we reach 26.7\% on those. The larger group is the
-1{,}347 types the reference leaves whole, where we are right 79.2\% of the
-time: 280 words stripped that should not have been, the biggest single source
+depend on the inventory being right. 108 types have a reference the inventory
+cannot explain at all, and we reach 29.6\% on those. The larger group is the
+1{,}347 types the reference leaves whole, where we are right 78.4\% of the
+time: 291 words stripped that should not have been, the biggest single source
 of error in the system.
 
 \begin{table}[t]
@@ -1102,12 +1102,12 @@ grouping is the one in Table~\ref{tab:inventory}. Generated by
 \toprule
 What the reference removes & Types & Accuracy\\
 \midrule
-Nominal inflection        & 1{,}116 & 86.4\%\\
+Nominal inflection        & 1{,}116 & 88.8\%\\
 Verbal inflection         &    41 & 95.1\%\\
-Derivation: nouns         &    67 & 89.6\%\\
-Derivation: adjectives    &    26 & 80.8\%\\
-No affix, word left whole & 1{,}347 & 79.2\%\\
-Nothing in the inventory  &   120 & 26.7\%\\
+Derivation: nouns         &    79 & 83.5\%\\
+Derivation: adjectives    &    26 & 84.6\%\\
+No affix, word left whole & 1{,}347 & 78.4\%\\
+Nothing in the inventory  &   108 & 29.6\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1116,7 +1116,7 @@ We had attributed that bucket to loanwords, and the data does not support it.
 Pashto marks native vocabulary orthographically: a word containing one of
 \ps{ټ ډ ړ ږ ښ ځ څ ڼ ګ ې ۍ} is certainly not a borrowing, though a word without
 one may be either, so the test is one-sided. Among the types the reference
-leaves whole we are wrong on 28.3\% of the certainly-native ones and 17.6\% of
+leaves whole we are wrong on 28.3\% of the certainly-native ones and 18.8\% of
 the rest. Native words are the harder half, not the easier one, and the errors
 bear it out: \ps{خواړه}, \ps{وړاندې}, \ps{داسې}, \ps{پاتې}, \ps{یوازې} and
 \ps{پورې} are ordinary Pashto words ending in \ps{ه} or \ps{ې} that the length
@@ -1140,7 +1140,7 @@ The evaluation is on word types rather than running text, so no measurement of
 retrieval effectiveness is reported, and the relationship between the intrinsic
 gains shown here and downstream performance remains untested.
 
-Of 117 affix rules, 111 cite a published grammar by chapter or section; the
+Of 118 affix rules, 112 cite a published grammar by chapter or section; the
 six that do not are entries the engine never applies. The chapter attributions
 were assembled by the author and have not been independently checked page by
 page, so a reader verifying the inventory should treat each locus as a pointer
@@ -1163,17 +1163,17 @@ specialised domains is under-represented.
 \section{Conclusion}
 
 We presented a rule-based stemmer for Pashto built from an affix inventory of
-117 rules taken from published grammars, each recording its source, its
+118 rules taken from published grammars, each recording its source, its
 productivity and an explicit decision about whether it may be applied. No
 machine learning is used, and every decision the system makes can be traced to
 a rule or a dictionary entry.
 
 On 499 held-out word types from news text, annotated blind and never used
-during development, the system reaches 71.34\% exact-match accuracy against
-40.48\% for the published baseline, and 70.6\% against 16.9\% on the types
-that require a strip. On a 2{,}717-type development set it reaches 80.35\%
+during development, the system reaches 72.75\% exact-match accuracy against
+40.48\% for the published baseline, and 72.8\% against 16.9\% on the types
+that require a strip. On a 2{,}717-type development set it reaches 81.19\%
 against 50.68\%, with Paice's under-stemming index falling from 0.919 to
-0.304.
+0.291.
 
 Three observations generalise beyond this particular system. Exact-match
 accuracy is not a sufficient measure for stemming in a language where a large
@@ -1281,7 +1281,7 @@ art.~536, 2023.
 \appendix
 \section{The complete affix inventory}
 
-The 117 rules in full, in the order the engine holds them. ``Type'' gives the
+The 118 rules in full, in the order the engine holds them. ``Type'' gives the
 side and whether the rule is inflectional or derivational; ``min'' is the
 shortest stem the rule is allowed to leave; ``strip'' is whether the engine may
 remove the affix at all; ``source'' is what backs the rule---a published grammar, this project's

@@ -34,6 +34,34 @@ def _is_excel(path: str) -> bool:
     return os.path.splitext(path)[1].lower() in EXCEL_EXT
 
 
+def _open_workbook(path, load_workbook):
+    """Open an .xlsx, or say plainly that the file is not one.
+
+    A CSV renamed to .xlsx is a common mistake, and openpyxl reports it as
+    "BadZipFile: File is not a zip file" -- an .xlsx *is* a zip archive, but
+    that message tells the user nothing about what to do.
+    """
+    try:
+        return load_workbook(path, data_only=True, read_only=True)
+    except Exception as exc:
+        kind = type(exc).__name__
+        if kind not in ("BadZipFile", "InvalidFileException", "KeyError"):
+            raise
+        looks_like_text = False
+        try:
+            with open(path, "rb") as fh:
+                head = fh.read(4)
+            looks_like_text = not head.startswith(b"PK")
+        except OSError:
+            pass
+        hint = ("It looks like plain text, not a workbook -- if it is really a "
+                "CSV or TSV, give it that extension and it will be read."
+                if looks_like_text else
+                "The file is corrupt or is an old .xls, which openpyxl cannot "
+                "read; re-save it as .xlsx.")
+        raise SystemExit(f"{path}: not a readable Excel workbook. {hint}")
+
+
 def read_rows(path: str, sheet: Optional[str] = None
               ) -> Tuple[List[str], List[Dict[str, str]]]:
     """Read a whole table into memory. Returns (column names, rows)."""
@@ -42,7 +70,12 @@ def read_rows(path: str, sheet: Optional[str] = None
             from openpyxl import load_workbook
         except ImportError:                                   # pragma: no cover
             raise SystemExit("reading .xlsx needs openpyxl: pip install openpyxl")
-        wb = load_workbook(path, data_only=True, read_only=True)
+        wb = _open_workbook(path, load_workbook)
+        if sheet is not None and sheet not in wb.sheetnames:
+            wb.close()
+            raise SystemExit(
+                f"{path}: no worksheet named {sheet!r}. "
+                f"This file has: {', '.join(wb.sheetnames)}")
         ws = wb[sheet] if sheet else wb[wb.sheetnames[0]]
         it = ws.iter_rows(values_only=True)
         header = ["" if c is None else str(c) for c in next(it, ())]
@@ -109,7 +142,8 @@ def warn_multiword(column: str, values, limit: int = 200) -> None:
         if n >= limit:
             break
         if isinstance(v, str) and len(v.split()) > 1:
-            print(f"note: column {column!r} contains multi-word cells; each word "
-                  f"is stemmed separately. Pass the word column if that is not "
-                  f"what you want.", file=sys.stderr)
+            print(f"note: column {column!r} holds cells with more than one word, "
+                  f"such as {v!r}. Each word in them is stemmed separately, "
+                  f"which is right for a text column and wrong if the cell was "
+                  f"meant to be a single word.", file=sys.stderr)
             return

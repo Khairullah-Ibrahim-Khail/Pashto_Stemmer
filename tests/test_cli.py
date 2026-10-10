@@ -184,7 +184,8 @@ def test_every_behaviour_flag_is_wired():
              (["--no-prefixes", "همکار"], "همکار"),
              (["همکار"], "کار"),
              (["--no-derivational", "نیمګړی"], "نیمګړ"),
-             (["--pos", "ښوونځی"], "ښوونځی")]
+             (["--pos", "ښوونځی"], "ښوونځ"),
+             (["ښوونځی"], "ښوون")]
     for argv, expected in cases:
         _, out, _ = _run(argv)
         got = out.strip().split("\t")[1]
