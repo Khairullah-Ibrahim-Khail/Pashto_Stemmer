@@ -115,6 +115,10 @@ class NormalizerConfig:
 
     collapse_whitespace: bool = True
     apply_nfc: bool = True            # canonical Unicode composition first
+    # NFKC additionally folds the Arabic presentation forms onto the ordinary
+    # letters, which is what text copied from a PDF is made of. It leaves every
+    # Pashto letter alone, including all five yeh, so it is on by default.
+    apply_nfkc: bool = True
 
     # --- Deliberately aggressive / for ablation only ---------------------
     unify_yeh: bool = False           # DANGEROUS for Pashto: ي ی ې ۍ ئ ->ی
@@ -222,7 +226,16 @@ class Normalizer:
         if not text:
             return text
 
-        if self.config.apply_nfc:
+        if self.config.apply_nfkc:
+            # NFKC folds the Arabic presentation forms (U+FB50-U+FEFF) onto the
+            # ordinary letters. Text copied out of a PDF or an older website is
+            # full of them -- ﮐﻮﺭﻭﻧﻪ is U+FB90 U+FEEE ... not ک و ر و ن ه -- and
+            # without this it reaches the rules as characters no affix matches,
+            # so the word is returned unstemmed and nothing says why.
+            # Verified safe for Pashto: NFKC leaves all five yeh letters and all
+            # nine Pashto-only consonants (ټ ډ ړ ږ ښ ځ څ ڼ ګ) unchanged.
+            text = unicodedata.normalize("NFKC", text)
+        elif self.config.apply_nfc:
             text = unicodedata.normalize("NFC", text)
 
         # 1) delete noise characters
@@ -248,7 +261,9 @@ class Normalizer:
         """
         if not token:
             return token
-        if self.config.apply_nfc:
+        if self.config.apply_nfkc:
+            token = unicodedata.normalize("NFKC", token)
+        elif self.config.apply_nfc:
             token = unicodedata.normalize("NFC", token)
         if self._delete_chars:
             token = token.translate({ord(ch): None for ch in self._delete_chars})
