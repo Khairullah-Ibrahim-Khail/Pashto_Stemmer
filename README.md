@@ -11,7 +11,7 @@ between competing analyses.*
 
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-48%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-64%20passing-brightgreen.svg)](tests/)
 [![Pashto](https://img.shields.io/badge/language-پښتو-orange.svg)](#)
 
 </div>
@@ -22,7 +22,7 @@ between competing analyses.*
 
 [Why this exists](#why-this-exists) ·
 [Quick start](#quick-start) ·
-[Stemming a file](#stemming-a-file) ·
+[Stemming a dataset](#stemming-a-dataset) ·
 [Results](#results) ·
 [Reproducing the paper](#reproducing-the-paper) ·
 [Stemming or lemmatization](#stemming-or-lemmatization) ·
@@ -98,72 +98,60 @@ python -m pashto_stemmer.cli --file article.txt
 echo "د کورونو خبرونه" | python -m pashto_stemmer.cli --trace
 ```
 
-## Stemming a file
+## Stemming a dataset
 
-**A plain text file.** The CLI reads UTF-8 and writes one `word<TAB>stem` pair
-per line, so the output pipes straight into `cut`, `sort` or `uniq`:
-
-```bash
-python -m pashto_stemmer.cli --file article.txt
-```
-
-```
-د	د
-افغانستان	افغان
-په	په
-کورونو	کور
-خبرونه	خبر
-```
-
-Stopwords come back unchanged, which is what you want for an index. Add
-`--trace` to see the confidence and the rules that fired on each word.
-
-**A dataset — CSV, TSV or Excel.** Point the CLI at the file and name the
-column. Every original column is written back with the stemmed text in a new
-one beside it:
+A stemmer takes a word. The usual input is a column of words — a vocabulary, a
+frequency list, the output of a tokeniser.
 
 ```bash
-python -m pashto_stemmer.cli --csv   articles.csv  --column text --out stemmed.csv
-python -m pashto_stemmer.cli --excel articles.xlsx --column text --out stemmed.xlsx
+pashto-stem --csv words.csv --column word --out stemmed.csv
 ```
 
 ```
-id,text,note,text_stemmed
-1,د کورونو خبرونه,a,د کور خبر
-2,پوهنتون ته ولاړ,b,پوهن ته ولاړ
-3,افغانستان او پاکستان,c,افغان او پاک
+word,frequency,word_stemmed
+کورونه,1420,کور
+پوهنتون,960,پوهن
+کورس,388,کورس
 ```
 
-`--csv`, `--excel` and `--table` are the same option under three names; what
-matters is the file extension. `.csv` and `.tsv` are read as text, `.xlsx` and
-`.xlsm` through openpyxl, and the output format follows the extension you give
-`--out` — so `--out stemmed.xlsx` writes a workbook, and leaving `--out` off
-prints CSV to stdout so it pipes. Use `--sheet` to pick a worksheet other than
-the first.
+Originals are never touched; the stems go in a new column beside them.
 
-Two details that matter in practice. CSV files are read as `utf-8-sig`, so a
-file exported from Excel works without stripping its byte-order mark. And if
-the named column is not there, the CLI lists the column names it did find and
-exits non-zero rather than writing a file with an empty column in it.
-
-Reading `.xlsx` needs openpyxl:
-
-```bash
-pip install openpyxl
-```
-
-From Python, if you want the result in memory rather than on disk:
+From Python, with nothing written unless you ask:
 
 ```python
 from pashto_stemmer import PashtoStemmer
-
 st = PashtoStemmer()
-" ".join(r.stem for r in st.stem_text("د کورونو خبرونه"))   # 'د کور خبر'
+
+rows = st.stem_file("words.csv", column="word")              # returns the rows
+st.stem_file("words.csv", column="word", out="stemmed.csv")  # writes them
 ```
 
-Build the `PashtoStemmer()` once and reuse it — it loads the rule inventory and
-the lexicon on construction, after which it stems about 7,000 word types per
-second.
+| parameter | default | |
+|---|---|---|
+| `column` | `"word"` | which column to stem |
+| `out` | `None` | where to write; `None` returns the rows |
+| `keep_original` | `True` | `False` → only the stem column |
+| `new_column` | `None` | default `<column>_stemmed` |
+| `sheet` | `None` | which Excel worksheet |
+| `unique` | `False` | stem distinct values only |
+| `trace` | `False` | add a column naming the rules that fired |
+| `warn` | `True` | warn once if cells hold sentences |
+
+The same flags exist on the command line: `--only-stems`, `--unique`,
+`--new-column`, `--sheet`, `--trace`. `.csv`, `.tsv`, `.xlsx` and `.xlsm` are
+read and written; a delimited file with an `--out` is streamed, so size is not
+a limit — 200,000 rows takes under a second in 21 MB.
+
+With pandas, if you would rather hold the file yourself:
+
+```python
+df["stem"] = df["word"].apply(st.stem)
+```
+
+`stem` takes a word, a list, or a sentence, and gives back the same shape.
+Repeated words are cached, so a corpus costs about as much as its vocabulary.
+
+A worked example is [examples/stem_csv.py](examples/stem_csv.py).
 
 ## Results
 
@@ -344,7 +332,7 @@ Run the tests with:
 for f in tests/test_*.py; do python "$f"; done
 ```
 
-48 tests across five files: the stemmer end to end, the normalizer's treatment
+64 tests across six files: the stemmer end to end, the normalizer's treatment
 of the yeh letters, the irregular-verb dictionary, Paice's metrics, and the
 command line including both file modes.
 
@@ -444,7 +432,7 @@ pashto_stemmer/     the library
   validation.py       candidate scoring and selection
   baseline.py         Aslamzai & Saad (2015), reimplemented from the paper
   metrics.py          accuracy and Paice's under/over-stemming indices
-  cli.py              command line interface
+  cli.py              command line: words, text files, CSV/TSV/Excel
 dataset/            both annotated sets and the correction log
 docs/               the affix inventory, annotation policy, verb dictionary
 experiments/
@@ -454,8 +442,11 @@ experiments/
   audit_annotation.py checks annotations against the affix inventory
   compare_stemmers.py the development-set comparison
   ablation.py         a wider component sweep (not the paper's table)
+examples/
+  quickstart.py       a sixty-second tour of the library
+  stem_csv.py         stemming a word list end to end
 paper/              the paper: LaTeX source, Word, PDF, and its generators
-tests/              48 tests
+tests/              64 tests
 ```
 
 ## Data
@@ -544,6 +535,13 @@ implementation.
   year   = {2026}
 }
 ```
+
+## Contributing
+
+The useful contributions are an affix with a source, or a word the stemmer
+gets wrong — see [CONTRIBUTING.md](CONTRIBUTING.md). Every pull request runs
+the tests and posts the effect on the published accuracy, so a rule change is
+judged on what it does rather than on argument.
 
 ## License
 

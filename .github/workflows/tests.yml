@@ -1,0 +1,56 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e .[excel]
+      - name: tests
+        run: |
+          fail=0
+          for f in tests/test_*.py; do
+            python "$f" || fail=1
+          done
+          exit $fail
+
+  results:
+    # A rule change has to show what it did to the numbers. This posts the
+    # four result tables on every pull request so the effect is visible before
+    # anyone argues about the linguistics.
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: reproduce the paper's tables
+        run: python experiments/reproduce_paper.py | tee results.txt
+      - name: post them on the pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = '### Results on this branch\n\n```\n'
+                       + fs.readFileSync('results.txt', 'utf8')
+                       + '```\n\nCompare against main: development 80.27%, '
+                       + 'held-out 71.34%.';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
