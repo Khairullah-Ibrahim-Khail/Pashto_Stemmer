@@ -45,7 +45,7 @@ This project takes a different route and stays entirely rule-based:
   Robson or Penzl by chapter or section. Each records the grammar it came
   from, whether it is inflectional or derivational, a minimum surviving stem
   length, the part of speech it signals, its productivity, a confidence level,
-  and whether it may be stripped at all. **27 of the 117 are documented and
+  and whether it may be stripped at all. **28 of the 117 are documented and
   deliberately never applied** — recording an affix and refusing to strip it is
   not the same as omitting it, because the inventory is also a description of
   the language.
@@ -53,7 +53,7 @@ This project takes a different route and stays entirely rule-based:
   all the results compete, so a shallower analysis can displace a deeper one.
   The lexicon informs that choice; it never blocks a strip, because the output
   of a stemmer does not have to be a dictionary word.
-- **A dictionary of 42 irregular verbs** — the strong verbs, whose present stem
+- **A dictionary of 38 irregular verbs** (315 surface forms) — the strong verbs, whose present stem
   cannot be derived from the infinitive (`لیدل → وین`, `تلل → ځ`). It returns a
   **lemma**, which is lemmatization rather than stemming, so it is **off by
   default**. See [Stemming or lemmatization](#stemming-or-lemmatization).
@@ -67,35 +67,41 @@ pip install -e .
 python examples/quickstart.py
 ```
 
+One function. Give it a word, a sentence or a list, and you get back the same
+shape:
+
 ```python
 from pashto_stemmer import PashtoStemmer
-
 st = PashtoStemmer()
 
-st.stem("کورونه")      # 'کور'      plural ‑ونه removed
-st.stem("خبرونه")      # 'خبر'
+st.stem("کورونه")                      # 'کور'
+st.stem("د کورونو خبرونه")              # 'د کور خبر'
+st.stem(["کورونه", "خبرونه"])           # ['کور', 'خبر']
+```
+
+A few words worth seeing, because they show where the line is drawn:
+
+```python
 st.stem("افغانستان")   # 'افغان'    ‑ستان is an affix like any other
-st.stem("پوهنتون")     # 'پوهن'     the stem need not be a word
+st.stem("پوهنتون")     # 'پوهن'     a stem need not be a word
 st.stem("روغتیا")      # 'روغ'
-st.stem("ښوونځی")      # 'ښوون'
 st.stem("لوبغاړی")     # 'لوبغاړ'   agent ‑غاړی, stopping before the bare root
 st.stem("کورس")        # 'کورس'     a loanword, left alone
+```
 
-# a whole line; stopwords are left alone
-[r.stem for r in st.stem_text("د کورونو خبرونه")]   # ['د', 'کور', 'خبر']
+Every decision can be inspected:
 
-# every decision can be inspected
+```python
 r = st.stem_word("بېکاره")
-print(r.stem, r.confidence, r.rules_applied)
-# بېکار 0.65 ('+ه',)
+r.stem, r.confidence, r.rules_applied     # 'بېکار', 0.65, ('+ه',)
 ```
 
 From the shell:
 
 ```bash
-python -m pashto_stemmer.cli کورونه خبرونه افغانستان
-python -m pashto_stemmer.cli --file article.txt
-echo "د کورونو خبرونه" | python -m pashto_stemmer.cli --trace
+pashto-stem کورونه خبرونه افغانستان
+pashto-stem --file article.txt
+pashto-stem کورونه --trace
 ```
 
 ## Stemming a dataset
@@ -104,7 +110,7 @@ A stemmer takes a word. The usual input is a column of words — a vocabulary, a
 frequency list, the output of a tokeniser.
 
 ```bash
-pashto-stem --csv words.csv --column word --out stemmed.csv
+pashto-stem --csv examples/sample_words.csv --column word --out stemmed.csv
 ```
 
 ```
@@ -122,8 +128,10 @@ From Python, with nothing written unless you ask:
 from pashto_stemmer import PashtoStemmer
 st = PashtoStemmer()
 
-rows = st.stem_file("words.csv", column="word")              # returns the rows
-st.stem_file("words.csv", column="word", out="stemmed.csv")  # writes them
+rows = st.stem_file("examples/sample_words.csv")              # returns the rows
+rows[0]           # {'word': 'کورونه', 'frequency': '1420', 'word_stemmed': 'کور'}
+
+st.stem_file("examples/sample_words.csv", out="stemmed.csv")  # writes them
 ```
 
 | parameter | default | |
@@ -174,16 +182,16 @@ consulted during development:
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 47.77% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 50.68% | 12.2% | 92.8% | 0.919 |
-| **This stemmer** | **80.27%** | **78.6%** | 82.0% | **0.304** |
+| **This stemmer** | **80.35%** | **78.6%** | 82.2% | **0.304** |
 
 **Two external word lists** — 5,000 and 10,000 types, independently annotated,
 neither produced by this project, 96% of them unseen:
 
 | Dataset | Types | Exact | ye-folded |
 |---|---:|:---:|:---:|
-| External 5k | 5,000 | **71.96%** | **80.14%** |
+| External 5k | 5,000 | **72.18%** | **80.28%** |
 | — Aslamzai & Saad (2015) | | 51.24% | 57.36% |
-| External 10k | 10,000 | **70.39%** | **77.69%** |
+| External 10k | 10,000 | **70.15%** | **77.34%** |
 | — Aslamzai & Saad (2015) | | 47.95% | 53.68% |
 
 Three sets at 70–72% exact is the generalisation evidence. Both lists
@@ -251,13 +259,13 @@ Leave-one-out, in percentage points:
 
 | Configuration | Development | Held-out |
 |---|:---:|:---:|
-| **Full system** | **80.27%** | **71.34%** |
-| without suffix rules | 71.99% (−8.28) | 58.92% (−12.42) |
-| without the length rules | 77.62% (−2.65) | 69.34% (−2.00) |
-| without the corpus lexicon | 80.09% (−0.18) | 71.74% (+0.40) |
-| without the uniform-strip group | 80.05% (−0.22) | 71.14% (−0.20) |
-| without prefix rules | 80.24% (−0.04) | 71.54% (+0.20) |
-| *with* the verb dictionary | 78.91% (−1.36) | 70.54% (−0.80) |
+| **Full system** | **80.35%** | **71.34%** |
+| without suffix rules | 71.99% (−8.35) | 58.92% (−12.42) |
+| without the length rules | 77.70% (−2.65) | 69.34% (−2.00) |
+| without the corpus lexicon | 80.16% (−0.18) | 71.74% (+0.40) |
+| without the uniform-strip group | 80.13% (−0.22) | 71.14% (−0.20) |
+| without prefix rules | 80.31% (−0.04) | 71.54% (+0.20) |
+| *with* the verb dictionary | 78.98% (−1.36) | 70.54% (−0.80) |
 
 The suffix inventory does most of the work. Three of these rows record
 decisions taken **against** the measured score, stated rather than quietly
@@ -287,16 +295,19 @@ one sample.
 
 | What the reference removes | Types | Accuracy |
 |---|---:|---:|
-| Nominal inflection | 624 | 80.1% |
+| Nominal inflection | 1,116 | 86.4% |
 | Verbal inflection | 41 | 95.1% |
-| Derivation: nouns | 582 | 90.9% |
-| Derivation: adjectives | 18 | 88.9% |
-| **No affix, word left whole** | **1,347** | **79.1%** |
-| **Nothing in the inventory** | **105** | **30.5%** |
+| Derivation: nouns | 67 | 89.6% |
+| Derivation: adjectives | 26 | 80.8% |
+| **No affix, word left whole** | **1,347** | **79.2%** |
+| **Nothing in the inventory** | **120** | **26.7%** |
 
-Accuracy is high wherever the reference removes an affix the inventory holds.
-The damage is in the last two rows: 282 words stripped that should have been
-left alone, and 105 types the inventory cannot explain at all.
+Each type is filed under the group of the rule that explains the reference's
+removal, using the same grouping as the inventory table above. Accuracy is high
+wherever the reference removes an affix the inventory holds. The damage is in
+the last two rows: 280 words stripped that should have been left alone, and 120
+types the inventory cannot explain at all. Regenerate the table with
+`python experiments/error_analysis.py`.
 
 The selection score is published in full — the formula and all six weights are
 in the paper's Table V, and in `pashto_stemmer/validation.py`. They were set by
@@ -312,15 +323,16 @@ python experiments/agreement.py           # inter-annotator agreement and kappa
 python experiments/audit_annotation.py    # removals matching no documented affix
 python experiments/compare_stemmers.py    # the development-set comparison
 python experiments/ablation.py            # a broader component sweep
+python experiments/error_analysis.py      # per-rule precision and the error breakdown
 ```
 
 `reproduce_paper.py` regenerates the four result tables exactly as printed, and
 prints its own warning if any figure drifts. `audit_annotation.py` checks every
 removal in an annotated set against the affix inventory and writes the
-unresolved rows to `dataset/unsupported_removals_*.csv`; 33 of 287 removals in
-the held-out reference and 105 of 1,355 in the development reference match no
-documented affix, and each is either an annotation error or a gap in the
-inventory.
+unresolved rows to `dataset/unsupported_removals_*.csv`; 58 of 313 removals in
+the held-out reference and 120 of 1,370 in the development reference match no
+documented affix, and each is either an annotation error, a gap in the
+inventory, or a verbal prefix the inventory deliberately does not hold.
 Note that `ablation.py` scores **all 2,912 development rows**, including the
 lemma rows a truncating stemmer cannot reach, and toggles a different set of
 switches — so its figures are deliberately not the paper's, and it is kept as a
@@ -502,11 +514,11 @@ inventory was missing. The procedure is cheap and we recommend it.
   binary decision). The held-out set carries a single agreed reference, so no
   coefficient is computed for it.
 - **Citations are located but not page-verified.** 111 of 117 rules cite
-  Tegey & Robson by chapter or Penzl by section; the remaining six are oblique
-  and feminine variants of cited suffixes and are marked author-proposed. The
+  Tegey & Robson by chapter or Penzl by section; the remaining six are entries
+  the engine never applies, so no grammar is being appealed to for them. The
   chapter attributions were assembled by the author and have not been checked
   page by page, so treat each locus as a pointer. Every rule carries its source
-  in the `source` column of `paper/inventory_rows.tsv` and in Appendix A. Of the 42 irregular verbs, 8 are unverified
+  in the `source` column of `paper/inventory_rows.tsv` and in Appendix A. Of the 38 irregular verbs, 15 are unverified
   against a printed grammar and are marked as such in
   [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md).
 
@@ -516,14 +528,18 @@ inventory was missing. The procedure is cheap and we recommend it.
 |---|---|
 | [paper/main.tex](paper/main.tex) | the paper, LaTeX source — build with XeLaTeX or LuaLaTeX |
 | [paper/Pashto_Stemmer_Paper.pdf](paper/Pashto_Stemmer_Paper.pdf) | the paper, built |
-| [docs/01_affix_inventory.md](docs/01_affix_inventory.md) | every affix with its productivity, confidence and whether it may be stripped |
+| [docs/01_affix_inventory.md](docs/01_affix_inventory.md) | the linguistic background: how the affixes were surveyed, with productivity and notes. Not the authoritative list — see `paper/inventory_rows.tsv`, which is generated from the rules themselves |
+| [paper/inventory_rows.tsv](paper/inventory_rows.tsv) | all 117 rules as the engine holds them, with each one's source |
 | [docs/02_annotation_policy.md](docs/02_annotation_policy.md) | what counts as a stem, and why |
-| [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | the verb dictionary, marked verified or not |
+| [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | how the verbs were surveyed. Not the dictionary — twelve verbs here are not implemented; see `paper/verbs_sources.tsv` |
+| [paper/verbs_sources.tsv](paper/verbs_sources.tsv) | the 38 verbs the dictionary holds plus the 12 identified but not implemented, each with its source |
 | [docs/Aslamzai_Saad_2015_Rules.pdf](docs/Aslamzai_Saad_2015_Rules.pdf) | the baseline's nine rules, transcribed from the paper |
 
-The paper's inventory tables are generated straight from the rule objects by
-`paper/make_inventory_tables.py`, so the documentation cannot drift from the
-implementation.
+Both appendices are generated rather than written, so the documentation cannot
+drift from the implementation: `paper/make_inventory_tables.py` emits the affix
+tables straight from the rule objects, and `paper/make_verb_appendix.py` emits
+the verb appendix from the dictionary, refusing to print a verb the code does
+not hold.
 
 ## Citing
 

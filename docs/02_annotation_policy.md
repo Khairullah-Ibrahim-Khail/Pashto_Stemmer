@@ -124,9 +124,23 @@ conflation slightly *better* (UI 0.240 → 0.237).
 
 ## 8. Compounds — keep lexicalized compounds whole
 
-`مرګژوبله`، `سرچینه`، `لوبغاړی` are single lexical items. Strip only the outer
-inflection (`لوبغاړي → لوبغاړی`); **do not split** them into components.
-✗ `سرچینه → سرچین` (the prefix ‑سر is kept)، ✗ `مرګژوبله → مرګژوبل` (compounds stay whole).
+`مرګژوبله`، `سرچینه`، `لاسلیک`، `لوبغاړی` are single lexical items. Strip the
+outer inflection and nothing more; **do not split** them into components.
+
+✓ `سرچینه → سرچین`، `مرګژوبله → مرګژوبل`، `لوبغاړی → لوبغاړ` — the agreement
+ending comes off and the compound survives.
+✗ `سرچینه → چینه` or `لاسلیک → لاس` — splitting the compound into its parts.
+`لاسلیک` carries no ending, so it is returned whole.
+
+An earlier version of this section marked the first two of those as ✗, which
+contradicted the released reference, and gave `لوبغاړي → لوبغاړی` as the target
+where the reference goes on to `لوبغاړ`. The examples above are the reference's
+own labels.
+
+The engine does not reach the reference on every compound: it returns `سرچی`
+for `سرچینه`, one letter too many, and leaves `مرګژوبله` untouched. Both are
+instances of the `ه`/`ې` ambiguity described in the paper, not of compound
+splitting — no part of either compound is removed.
 
 ## 9. Function words — unchanged
 

@@ -36,15 +36,26 @@ def fold(s: str) -> str:
 
 
 def removal(word: str, stem: str):
-    """What was taken off, and from which end. None if the stem is not a cut."""
+    """What was taken off, and from which end. None if the stem is not a cut.
+
+    A removal can take material off both ends of the same word: a perfective
+    prefix and a verbal ending (وبلله → بلل), a directional prefix and an
+    oblique infinitive (رارسېدو → رسېد). An earlier version of this
+    function returned None for those, which dropped 15 development rows and
+    26 held-out rows from the audit without saying so -- and they are exactly
+    the rows the inventory cannot explain, since the verbal prefixes were
+    measured and discarded. They are now reported like any other removal,
+    with both ends named.
+    """
     w, s = fold(word), fold(stem)
-    if not s or w == s:
+    if not s or w == s or s not in w:
         return None
     if w.startswith(s):
         return w[len(s):], "suffix"
     if w.endswith(s):
         return w[:len(w) - len(s)], "prefix"
-    return None
+    cut = w.index(s)
+    return (w[:cut], w[cut + len(s):]), "both"
 
 
 def audit(path, word_col, stem_col, out_name):
@@ -53,11 +64,30 @@ def audit(path, word_col, stem_col, out_name):
     for r in rows:
         w = (r.get(word_col) or "").strip()
         s = (r.get(stem_col) or "").strip()
+        if not w:
+            continue                      # a trailing blank line in the CSV
         cut = removal(w, s)
         if cut is None:
             continue
         removals += 1
         piece, side = cut
+        if side == "both":
+            front, back = piece
+            pre, suf = AFFIX.get(front), AFFIX.get(back)
+            if (pre is not None and pre.side == "prefix"
+                    and suf is not None and suf.side == "suffix"):
+                continue
+            held = [n for n, r in ((front, pre), (back, suf))
+                    if r is not None and r.side in ("prefix", "suffix")]
+            unsupported.append({
+                "word": w,
+                "annotated_stem": s,
+                "removed": f"{front}+{back}",
+                "side": "both",
+                "in_inventory": ("in part: " + ", ".join(held)) if held else "no",
+                "verdict": "",
+            })
+            continue
         rule = AFFIX.get(piece)
         if rule is not None and rule.side == side:
             continue
@@ -70,13 +100,34 @@ def audit(path, word_col, stem_col, out_name):
             "verdict": "",          # fill in: annotation error | missing affix
         })
     out = os.path.join(ROOT, "dataset", out_name)
+
+    # Carry forward any verdict already recorded. Rerunning the audit used to
+    # overwrite the file, which threw away the judgement that is the whole
+    # point of producing it -- a contributor who spent an evening classifying
+    # rows would lose the lot on the next run.
+    previous = {}
+    if os.path.exists(out):
+        with open(out, encoding="utf-8-sig", newline="") as fh:
+            for row in csv.DictReader(fh):
+                if row.get("word"):
+                    previous[(row["word"], row.get("removed", ""))] = row
+    extra = [c for c in ("verdict", "why")
+             if any(c in r for r in previous.values())] or ["verdict"]
+    for row in unsupported:
+        old_row = previous.get((row["word"], row["removed"]), {})
+        for c in extra:
+            row[c] = old_row.get(c, "")
+
+    fields = [c for c in unsupported[0] if c not in extra] + extra
     with open(out, "w", encoding="utf-8", newline="") as fh:
-        wr = csv.DictWriter(fh, fieldnames=list(unsupported[0].keys()))
+        wr = csv.DictWriter(fh, fieldnames=fields)
         wr.writeheader()
         wr.writerows(unsupported)
+    kept = sum(1 for r in unsupported if r.get("verdict"))
     pct = len(unsupported) / removals if removals else 0
+    note = f", {kept} already judged" if kept else ""
     print(f"{os.path.basename(path):34} {removals:5} removals, "
-          f"{len(unsupported):4} unsupported ({pct:.1%})  -> dataset/{out_name}")
+          f"{len(unsupported):4} unsupported ({pct:.1%}){note}  -> dataset/{out_name}")
     return unsupported
 
 

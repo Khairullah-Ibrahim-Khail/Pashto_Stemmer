@@ -176,7 +176,7 @@ _FROM_ERROR_ANALYSIS: List[AffixRule] = [
        note="NOT stripped as a unit. The gold removes only the ی in the common case (پاکستانی→پاکستان، ایرانی→ایران، بهرنی→بهرن) and takes the whole ‑نی in just a few (کورنی→کور، لومړنی→لومړ)، which are listed in the stemmer as exceptions. Taking ‑نی by rule was right 3 times out of 29."),
     _s("یال", "derivational", min_stem_len=3, pos=("N",), productivity="restricted", confidence="medium", strip_allowed="no", note="[T&R ch.5 suffixal adjectives] GATED by the gold standard: مرستیال، خبریال are kept whole (0 of 3). The affix is real Pashto morphology, but the annotation treats these words as whole, so the rule is recorded and not applied."),
     _s("ت", "derivational", min_stem_len=4, pos=("N",), productivity="restricted", confidence="medium", strip_allowed="no", note="[T&R ch.2 loan morphology] GATED by the gold standard: حکومت، وزارت، سفارت are kept whole (0 of 34). The affix is real Pashto morphology, but the annotation treats these words as whole, so the rule is recorded and not applied."),
-    _s("لیک", "derivational", min_stem_len=3, pos=("N",), note="[T&R ch.4 administrative compounds] compounding -lik: لاسلیک→لاس، برخلیک→برخ"),
+    _s("لیک", "derivational", min_stem_len=3, pos=("N",), confidence="medium", strip_allowed="no", note="[T&R ch.4 administrative compounds] GATED by the gold standard and by annotation policy §8: لاسلیک، برخلیک are lexicalized compounds and are kept whole (0 of 2). The compounding morpheme is real, so the rule is recorded and not applied."),
     # --- derivative-verb family, R&T Table 13.16. Added on grammatical
     #     grounds after the held-out news set showed them unhandled; the
     #     effect on the score is small either way.

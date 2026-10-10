@@ -42,7 +42,12 @@ from . import exceptions as exc
 
 # Token is "Pashto-ish" if it contains at least one Arabic-block letter.
 _PASHTO_CHAR = re.compile(r"[؀-ۿ]")
-_TOKEN_SPLIT = re.compile(r"\s+")
+# Split on whitespace *and* punctuation. Splitting on whitespace alone left
+# ‫کورونه،خبرونه‬ as a single token -- Pashto writes the comma without a
+# following space often enough that this is common -- and only the last word
+# came back stemmed. Punctuation is also stripped from token edges below, but
+# that cannot help when it sits between two words.
+_TOKEN_SPLIT = re.compile(r"[\s؟،؛٫٬.!?:;…«»()\[\]{}—–]+")
 _STRIP_PUNCT = "؟،؛٫٬.!?:;\"'«»()[]{}—–-…‏‎ "
 
 
@@ -533,14 +538,19 @@ class PashtoStemmer:
         which return the rules, the confidence and the trace.
         """
         if isinstance(text, str):
-            words = text.split()
+            words = [w for w in _TOKEN_SPLIT.split(text) if w.strip(_STRIP_PUNCT)]
             if not words:
                 return ""
             if len(words) == 1:
                 return self.stem_word(words[0]).stem
             return self.stem_sentence(text)
-        if isinstance(text, (list, tuple)):
+        if isinstance(text, (list, tuple, set)):
             return type(text)(self.stem(x) for x in text)
+        if isinstance(text, dict):
+            # Iterating a dict gives its keys, which is almost certainly not
+            # what the caller meant. Say so instead of stemming the keys.
+            raise TypeError("stem() takes a word, a sentence or a sequence of "
+                            "them, not a dict")
         try:
             return [self.stem(x) for x in text]      # any other iterable
         except TypeError:

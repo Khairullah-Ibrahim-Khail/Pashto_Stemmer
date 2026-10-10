@@ -15,9 +15,9 @@ python experiments/evaluate_external.py
 
 | dataset | types | exact | ye-folded |
 |---|---:|---:|---:|
-| 5,000 types | 5,000 | 71.96% | 80.14% |
+| 5,000 types | 5,000 | 72.18% | 80.28% |
 | — Aslamzai & Saad (2015) | | 51.24% | 57.36% |
-| 10,000 types | 10,000 | 70.39% | 77.69% |
+| 10,000 types | 10,000 | 70.15% | 77.34% |
 | — Aslamzai & Saad (2015) | | 47.95% | 53.68% |
 
 ## Two things to know before quoting these numbers

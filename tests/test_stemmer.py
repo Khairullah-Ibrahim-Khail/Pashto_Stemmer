@@ -8,6 +8,7 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from pashto_stemmer.normalizer import Normalizer                 # noqa: E402
 from pashto_stemmer.stemmer import PashtoStemmer, StemmerConfig  # noqa: E402
 
 _stemmer = PashtoStemmer()
@@ -164,6 +165,44 @@ def test_stem_sentence_matches_stem_text():
     text = "په سیمو کې د ښوونځیو جوړول روان دي"
     assert st.stem_sentence(text) == " ".join(r.stem for r in st.stem_text(text))
     assert st.stem(text) == st.stem_sentence(text)
+
+
+def test_lexicalized_compounds_are_kept_whole():
+    """Annotation policy §8: a lexicalized compound is one lexical item.
+
+    The ‑لیک rule used to split them (لاسلیک → لاس), against both the policy
+    and the reference, and nothing caught it because no test covered §8.
+    """
+    st = PashtoStemmer()
+    assert st.stem("لاسلیک") == "لاسلیک"
+    assert st.stem("برخلیک") == "برخلیک"
+    # the compound head is kept: سر is not stripped off سرچینه
+    assert st.stem("سرچینه").startswith("سرچی")
+    # the outer inflection is still removed from a compound
+    assert st.stem("لاسلیکونه") == "لاسلیک"
+
+
+def test_annotation_policy_claims_hold():
+    """The provisions of docs/02_annotation_policy.md that code can check."""
+    st = PashtoStemmer()
+    nz = Normalizer()
+    # §1 no yeh letter is ever rewritten
+    for c in "یيېۍئ":
+        assert nz.normalize_token(c) == c
+    # §1 other scripts' letters are mapped to their Pashto counterparts
+    assert nz.normalize_token("ك") == "ک" and nz.normalize_token("ة") == "ه"
+    assert nz.normalize_token("ٹ") == "ټ" and nz.normalize_token("ے") == "ې"
+    assert nz.normalize_token("کـــور") == "کور"          # tatweel
+    # short-word rule: nothing is removed from three letters or fewer
+    assert st.stem("کور") == "کور"
+    # §9 function words are returned unchanged
+    assert st.stem("او") == "او" and st.stem("په") == "په"
+    # §4 proper nouns get no special treatment
+    assert st.stem("افغانستان") == "افغان"
+    # §10 no letter is ever added back
+    assert st.stem("سیمو") == "سیم"
+    # the negation prefix is part of the lexeme
+    assert st.stem("ناقانونه") == "ناقانون"
 
 
 def _run_all():

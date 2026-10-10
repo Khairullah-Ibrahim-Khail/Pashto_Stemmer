@@ -1,35 +1,59 @@
-word,annotated_stem,removed,side,in_inventory,verdict
-امریکايي,امریکا,یی,suffix,no,
-لومړیتوبونو,لومړی,توبونو,suffix,no,
-لګېدلې,لګ,یدلی,suffix,no,
-منسوبینو,منسوب,ینو,suffix,no,
-دولسم,دولس,م,suffix,no,
-ځمکنیو,ځمک,نیو,suffix,no,
-ځلېدلي,ځل,یدلی,suffix,no,
-ښاریان,ښار,یان,suffix,no,
-ووشو,شو,وو,prefix,"yes, wrong side",
-پاچاهانو,پاچا,هانو,suffix,no,
-اشغالګرو,اشغال,ګرو,suffix,no,
-پالنځي,پال,نځی,suffix,no,
-خبريالې,خبر,یالی,suffix,no,
-کمېدای,کم,یدای,suffix,no,
-تمامېدی,تمام,یدی,suffix,no,
-ایمرجینګ,ایمرجی,نګ,suffix,no,
-ریسایکلنګ,ریسایکل,نګ,suffix,no,
-بېلولو,بېل,ولو,suffix,no,
-کېلوګرامه,کېلوګ,رامه,suffix,no,
-څلورویشت,څلورو,یشت,suffix,no,
-اشنايي,اشنا,یی,suffix,no,
-وړولو,وړ,ولو,suffix,no,
-رسنيزې,رسن,یزی,suffix,no,
-ضیالرحمان,ضیالرح,مان,suffix,no,
-ډېپلوماتیک,ډېپلوما,تیک,suffix,no,
-تکرارولو,تکرار,ولو,suffix,no,
-روتینیايي,روتینیا,یی,suffix,no,
-ورشو,شو,ور,prefix,"yes, wrong side",
-روزنکی,روزن,کی,suffix,no,
-پچیراګام,پچیرا,ګام,suffix,no,
-دروازيي,درواز,یی,suffix,no,
-روښانفکره,روښان,فکره,suffix,no,
-ددوي,دوي,د,prefix,no,
-,,,,
+word,annotated_stem,removed,side,in_inventory,verdict,why
+امریکايي,امریکا,یی,suffix,no,missing affix,nisba ‑یي on a vowel-final stem
+وښيي,ښي,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+ووایو,وای,و+و,both,"in part: و, و",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+لومړیتوبونو,لومړی,توبونو,suffix,no,missing affix,‑توب + ‑ونو; each half is in the inventory
+لګېدلې,لګ,یدلی,suffix,no,missing affix,past participle of ‑ېدل
+منسوبینو,منسوب,ینو,suffix,no,missing affix,oblique of the Arabic plural ‑ین
+ووژني,وژن,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+رارسېدو,رسېد,را+و,both,in part: و,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+دولسم,دولس,م,suffix,no,missing affix,ordinal ‑م
+ځمکنیو,ځمک,نیو,suffix,no,missing affix,"‑نی + ‑و; ‑نی is gated, so the pair never matches"
+ځلېدلي,ځل,یدلی,suffix,no,missing affix,past participle of ‑ېدل
+وبولي,بول,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+ونیسئ,نیس,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+ښاریان,ښار,یان,suffix,no,missing affix,animate plural ‑یان; 51 more in the external lists
+وکري,کر,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+ووشو,شو,وو,prefix,"yes, wrong side",missing affix,perfective وو‑; the verbal particles were removed
+وکرل,کر,و+ل,both,"in part: و, ل",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+پاچاهانو,پاچا,هانو,suffix,no,missing affix,plural oblique ‑هانو on a vowel-final stem
+اشغالګرو,اشغال,ګرو,suffix,no,missing affix,"oblique of ‑ګر, which the inventory has"
+پالنځي,پال,نځی,suffix,no,missing affix,"‑نځی, the place suffix ‑ځی after ‑ن"
+ولګولې,لګ,و+ولی,both,"in part: و, ولی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+خبريالې,خبر,یالی,suffix,no,missing affix,"feminine of ‑یال, which is held but gated"
+وګورې,ګور,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+کمېدای,کم,یدای,suffix,no,missing affix,"‑ېدای, the potential of ‑ېدل"
+ولیدلې,لید,و+لی,both,"in part: و, لی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+وبخښي,بخښ,و+ی,both,"in part: و, ی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+وازمویل,ازموی,و+ل,both,"in part: و, ل",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+تمامېدی,تمام,یدی,suffix,no,missing affix,"‑ېدی, a variant of ‑ېدای"
+نکړي,کړ,ن+ی,both,in part: ی,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+ایمرجینګ,ایمرجی,نګ,suffix,no,annotation,English loan; ‑نګ is not a Pashto affix
+ریسایکلنګ,ریسایکل,نګ,suffix,no,annotation,English loan; ‑نګ is not a Pashto affix
+بېلولو,بېل,ولو,suffix,no,missing affix,oblique infinitive of the causative ‑ول
+ودرېږم,درېږ,و+م,both,in part: و,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+کېلوګرامه,کېلوګ,رامه,suffix,no,annotation,only the agreement ‑ه should come off
+واغوندئ,غوند,وا+ی,both,in part: ی,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+وباسه,باس,و+ه,both,"in part: و, ه",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+څلورویشت,څلورو,یشت,suffix,no,annotation,compound numeral 'twenty-four'
+اشنايي,اشنا,یی,suffix,no,missing affix,nisba ‑یي
+وړولو,وړ,ولو,suffix,no,missing affix,oblique infinitive of the causative ‑ول
+وخندل,خند,و+ل,both,"in part: و, ل",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+راپاڅېدلم,پاڅ,را+یدلم,both,no,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+وښووله,ښوو,و+له,both,in part: و,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+رسنيزې,رسن,یزی,suffix,no,missing affix,feminine ‑یزې beside ‑یزه
+ضیالرحمان,ضیالرح,مان,suffix,no,annotation,personal name; ‑مان is not an affix here
+ډېپلوماتیک,ډېپلوما,تیک,suffix,no,annotation,loanword; ‑تیک is not a Pashto affix
+ورپېښېږي,پېښ,ور+یږی,both,"in part: ور, یږی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+وارېدو,رېد,وا+و,both,in part: و,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+تکرارولو,تکرار,ولو,suffix,no,missing affix,oblique infinitive of the causative ‑ول
+روتینیايي,روتینیا,یی,suffix,no,missing affix,nisba ‑یي
+ورشو,شو,ور,prefix,"yes, wrong side",missing affix,directional ور‑; same removal
+روزنکی,روزن,کی,suffix,no,ambiguous,‑نکی is held; here the stem itself ends in ن
+پچیراګام,پچیرا,ګام,suffix,no,annotation,place name; ‑ګام is not an affix
+ورپرېښودل,پرېښود,ور+ل,both,"in part: ور, ل",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+دروازيي,درواز,یی,suffix,no,missing affix,nisba ‑یي
+روښانفکره,روښان,فکره,suffix,no,annotation,compound روښان+فکر+ه; policy keeps compounds whole
+راورسیږي,رس,راو+یږی,both,in part: یږی,verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"
+ددوي,دوي,د,prefix,no,ambiguous,"د is a preposition written joined, not a prefix"
+وستايلې,ستای,و+لی,both,"in part: و, لی",verbal prefix not held,"the suffix half is in the inventory; the prefix half is a verbal perfective or directional particle, which was measured against both sets and dropped because it was right between 13% and 50% of the time (see pashto_stemmer/prefixes.py)"

@@ -254,15 +254,16 @@ tag each carries in the released inventory file.
 
 Of the 117 rules, 111 cite a published source, located by chapter in Tegey and
 Robson~\cite{tegey1996} or by section in Penzl~\cite{penzl1955}. The remaining
-six are oblique and feminine variants of suffixes that are themselves
-cited---\ps{ونکو} and \ps{ونکې} beside \ps{ونکی}, \ps{یزو} beside \ps{یز},
-\ps{والو} beside \ps{والی}---and a grammar that gives the base form does not
-always list every case variant. They are marked author-proposed rather than
-left to look unsourced.
+six---\ps{ستان}، \ps{نی}، \ps{نۍ}، \ps{نې}، \ps{لو}، \ps{ل}---are entries
+the engine never applies. For those no grammar is being appealed to: the affix
+is real Pashto morphology, the reason it is recorded is that a reader would
+otherwise wonder why it is absent, and the reason it is not applied is measured
+behaviour, given with each entry in Appendix~A. Every rule the engine can
+actually fire cites a published source.
 
 The provenance of each rule is recorded in Appendix~A rather than summarised,
 so a reader can check any individual entry. One distinction a single citation
-count would hide is worth drawing: sixteen of the cited rules are documented
+count would hide is worth drawing: twenty-two of the cited rules are documented
 and never applied. For those the citation establishes that the affix exists,
 not that removing it is safe, and the decision not to strip rests on measured
 behaviour rather than on the grammar.
@@ -282,7 +283,6 @@ Naeem \& Khan, derivational morphology~\cite{naeem} & [N\&K]\\
 Khan, Pashto diminutives~\cite{khan2023} & [Khan23]\\
 Penzl, \emph{A Grammar of Pashto}~\cite{penzl1955} & [Penzl]\\
 Wiktionary / kaikki.org Pashto suffixes & [W]\\
-Apertium \texttt{apertium-pus} & [AP]\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -429,7 +429,7 @@ Table~\ref{tab:inventory} groups the 117 rules by what they do. Derivation
 accounts for 81 of them against 36 inflectional rules, which is the opposite of
 what a stemmer for English would need and follows from where Pashto puts its
 productive morphology. The grouping also shows where the gated entries are
-concentrated: 16 of the 27 are noun-forming derivational suffixes, which is the
+concentrated: 17 of the 28 are noun-forming derivational suffixes, which is the
 area where lexicalization is commonest and where a rule is most likely to be
 documented in a grammar and still be unsafe to apply.
 
@@ -586,11 +586,14 @@ do not have, and guessing at the boundary was worse than leaving it alone.
 \subsection{The verb dictionary and the scope of the task}
 \label{sec:scope}
 
-The system includes a dictionary of 42 strong verbs, of which 34 are checked
-against a printed grammar and 8 are marked unverified. The dictionary maps an
-inflected form to its verb: \ps{شو}~$\rightarrow$~\ps{کېدل}. That output is a
-lemma, and substituting one word for another is lemmatization rather than
-stemming. On the word types whose reference is a truncation, the dictionary
+The system includes a dictionary of 38 strong verbs covering 315 surface
+forms, of which 23 are checked against a printed grammar and 15 are marked
+unverified. The dictionary maps an inflected form to its verb:
+\ps{شو}~$\rightarrow$~\ps{کېدل}. That output is usually the infinitive---182
+of the 315 forms come back as the infinitive and the remaining 133 as a stem,
+because the \ps{ل} is then removed by a suffix rule---and an infinitive is a
+lemma, so substituting
+one word for another is lemmatization rather than stemming. On the word types whose reference is a truncation, the dictionary
 changes the output on 69 of them and is right on 11, because it supplies the
 wrong kind of answer; it costs 1.36 points on the development set and 0.80 on
 held-out text.
@@ -667,11 +670,11 @@ set was not consulted during development, and every figure reported for it comes
 from a single run of the finished system.
 
 The first pass was audited by comparing every removal against the affix
-inventory. On the released first-pass file, 50 of 299 removals, 16.7\%, match no
+inventory. On the released first-pass file, 77 of 327 removals, 23.5\%, match no
 documented affix: words such as \ps{مزاج} and \ps{حارث}, which carry no affix
 at all, had been shortened. Thirty rows were revised in response, and the figure
-falls to 33 of 287, or 11.5\%. The same audit on the development set leaves 105
-of 1{,}355 removals, or 7.7\%, unaccounted for.
+falls to 58 of 313, or 18.5\%. The same audit on the development set leaves 120
+of 1{,}370 removals, or 8.8\%, unaccounted for.
 
 That audit procedure is reusable and we recommend it. For each annotated pair,
 the material removed is compared against the affix inventory; a removal
@@ -679,12 +682,35 @@ matching no affix is either an annotation error or evidence that the inventory
 is incomplete, and inspection separates the two. Applied to the development
 set, the same procedure identified six affixes the inventory lacked.
 
-The 33 removals that remain unaccounted for in the final held-out set are a
-live defect, not a resolved one. Each is either an annotation error, in which
-case the reported accuracy is measured against a reference that is wrong on
-that row, or a gap in the inventory, in which case the inventory is incomplete.
-They are released as a list so that the question is open to inspection rather
-than settled by assertion.
+We went through all 58 removals that the audit leaves unaccounted for in the
+final held-out set, and the split is informative. Thirty-three of them take
+material off one end of the word. Twenty-three of those are gaps in the
+inventory rather than errors in the annotation, and most are variants of
+affixes already held: the oblique infinitive \ps{ولو} beside \ps{ول}, the
+oblique \ps{ګرو} beside \ps{ګر}, the feminine \ps{یزې} beside \ps{یزه}, the
+past participle \ps{ېدلې} beside \ps{ېدل}. Two more are combinations the
+engine cannot form because it strips one layer at a time: \ps{توبونو} is
+\ps{توب}~+~\ps{ونو}, and both halves are in the inventory. Eight are genuine
+annotation errors, and they cluster where one would expect---the English loans
+\ps{ایمرجینګ} and \ps{ریسایکلنګ}, where \ps{نګ} is not a Pashto affix, the
+personal name \ps{ضیالرحمان}, the place name \ps{پچیراګام}. Two are
+ambiguous.
+
+The remaining twenty-five take material off both ends at once, and all of them
+are verbs: \ps{وښيي}~$\rightarrow$~\ps{ښي},
+\ps{رارسېدو}~$\rightarrow$~\ps{رسېد}. The ending is in the inventory in
+every case; the prefix is a perfective or directional particle, and those are
+not held, for the reason Section~IV.A gives---measured against both sets they
+were right between 13\% and 50\% of the time. These rows are therefore
+neither annotation errors nor an oversight in the inventory but the cost of
+that decision, stated here rather than left out of the count. An earlier
+version of the audit script reported only one-ended removals and so did not
+list them at all.
+
+That the one-ended errors run three to one towards missing affixes rather than
+bad annotation is the useful part: it says the reference is sounder than the
+rule list, and it names the twenty-three entries that would close the gap. The
+classified list is released with a verdict and a reason on every row.
 
 \subsection{Annotation policy}
 
@@ -832,7 +858,7 @@ System & Accuracy & Affixed & Bare & UI\\
 \midrule
 Modifies nothing & 47.77\% & 0.0\% & 100.0\% & 1.000\\
 Aslamzai \& Saad & 50.68\% & 12.2\% & 92.8\% & 0.919\\
-\textbf{Proposed} & \textbf{80.27\%} & \textbf{78.6\%} & 82.0\% & \textbf{0.304}\\
+\textbf{Proposed} & \textbf{80.35\%} & \textbf{78.6\%} & 82.2\% & \textbf{0.304}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -851,8 +877,8 @@ against 12.2\%, a factor of six.
 After the system was finalised, it was run against two independently annotated
 Pashto word lists of 5{,}000 and 10{,}000 types. Neither was produced by this
 project, and 96\% of their entries appear in neither of our evaluation sets.
-Exact-match accuracy is 71.96\% and 70.39\%, against 51.24\% and 47.95\% for the
-baseline. Those figures sit beside the 71.34\% measured on held-out news text,
+Exact-match accuracy is 72.18\% and 70.15\% (Table~\ref{tab:external}), against
+51.24\% and 47.95\% for the baseline. Those figures sit beside the 71.34\% measured on held-out news text,
 which is the point: the system does not depend on the data it was built
 against.
 
@@ -866,13 +892,13 @@ rewritten.}
 \toprule
 Dataset & Types & Exact & Folded\\
 \midrule
-External, 5{,}000 types & 5{,}000 & 71.96\% & 80.14\%\\
+External, 5{,}000 types & 5{,}000 & 72.18\% & 80.28\%\\
 \quad Aslamzai \& Saad & & 51.24\% & 57.36\%\\
-External, 10{,}000 types & 10{,}000 & 70.39\% & 77.69\%\\
+External, 10{,}000 types & 10{,}000 & 70.15\% & 77.34\%\\
 \quad Aslamzai \& Saad & & 47.95\% & 53.68\%\\
 \midrule
 Our held-out set & 499 & 71.34\% & 72.14\%\\
-Our development set & 2{,}717 & 80.27\% & 81.78\%\\
+Our development set & 2{,}717 & 80.35\% & 81.85\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -880,7 +906,7 @@ Our development set & 2{,}717 & 80.27\% & 81.78\%\\
 Both lists carry a reference column normalised to \ps{ی} while their word column
 retains \ps{ي}, so a stem is scored wrong whenever it preserves the letter the
 word actually has. Folding the five \emph{ye} letters together for the
-comparison alone raises the two figures to 80.14\% and 77.69\%. The same folded
+comparison alone raises the two figures to 80.28\% and 77.34\%. The same folded
 comparison is worth 1.51 points on our development set and 0.80 on our held-out
 set, both of which are internally consistent in their orthography. The size of
 that difference is what the measurement shows: seven to eight points on the
@@ -912,13 +938,13 @@ generalisation rather than correctness under our policy.
 \toprule
 Configuration & Development & Held-out\\
 \midrule
-\textbf{Full system} & \textbf{80.27\%} & \textbf{71.34\%}\\
-$-$ suffix rules & 71.99\% ($-$8.28) & 58.92\% ($-$12.42)\\
-$-$ length rules & 77.62\% ($-$2.65) & 69.34\% ($-$2.00)\\
-$-$ corpus lexicon & 80.09\% ($-$0.18) & 71.74\% ($+$0.40)\\
-$-$ uniform-strip group & 80.05\% ($-$0.22) & 71.14\% ($-$0.20)\\
-$-$ prefix rules & 80.24\% ($-$0.04) & 71.54\% ($+$0.20)\\
-$+$ verb dictionary & 78.91\% ($-$1.36) & 70.54\% ($-$0.80)\\
+\textbf{Full system} & \textbf{80.35\%} & \textbf{71.34\%}\\
+$-$ suffix rules & 71.99\% ($-$8.35) & 58.92\% ($-$12.42)\\
+$-$ length rules & 77.70\% ($-$2.65) & 69.34\% ($-$2.00)\\
+$-$ corpus lexicon & 80.16\% ($-$0.18) & 71.74\% ($+$0.40)\\
+$-$ uniform-strip group & 80.13\% ($-$0.22) & 71.14\% ($-$0.20)\\
+$-$ prefix rules & 80.31\% ($-$0.04) & 71.54\% ($+$0.20)\\
+$+$ verb dictionary & 78.98\% ($-$1.36) & 70.54\% ($-$0.80)\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -985,8 +1011,9 @@ still be wrong half the time it fires, and a reader cannot tell the two apart
 from an ablation table.
 
 \begin{table}[t]
-\caption{Precision of the most frequently firing rules on the development set.
-``Fires'' counts the analyses finally selected in which the rule took part.}
+\caption{Precision of the fourteen most frequently firing rules on the
+development set. ``Fires'' counts the analyses finally selected in which the
+rule took part. Generated by \texttt{experiments/error\_analysis.py}.}
 \label{tab:ruleprec}
 \centering
 \begin{tabular}{lrrr}
@@ -1003,6 +1030,8 @@ $-$\ps{و}                 & 108 &  88 & 81.5\%\\
 $-$\ps{ونو}               &  58 &  54 & 93.1\%\\
 R2 drop \ps{ې} at 3 letters&  39 &  21 & 53.8\%\\
 $-$\ps{ونه}               &  39 &  35 & 89.7\%\\
+$-$\ps{ه}                 &  36 &  24 & 66.7\%\\
+R1 drop \ps{ۍ}            &  36 &  31 & 86.1\%\\
 R2 drop \ps{و} at 3 letters&  32 &  18 & 56.2\%\\
 $-$\ps{ان}                &  28 &  13 & 46.4\%\\
 \bottomrule
@@ -1034,8 +1063,8 @@ alternative to a coin-flip there is to leave every short inflected word
 unstemmed.
 
 Other rules are correct but under-determined. The rule removing a final \ps{ه}
-from a short word fires 131 times on the development set and is correct 86
-times. \ps{لنډه}~$\rightarrow$~\ps{لنډ} is right and
+from a short word fires 228 times on the development set and is correct 161 of
+those. \ps{لنډه}~$\rightarrow$~\ps{لنډ} is right and
 \ps{خواړه}~$\rightarrow$~\ps{خواړ} is wrong, and the two words are
 indistinguishable in shape. Removing the rule loses more than it saves: overall
 accuracy falls by 1.62 points. No reformulation conditioned on the surface form
@@ -1043,37 +1072,42 @@ can help; only a lexical resource can.
 
 \subsection{What limits the current accuracy}
 
-The 536 development-set errors divide into three kinds. 293 of them, 55\%, are
+The 534 development-set errors divide into three kinds. 291 of them, 54\%, are
 over-strips, where the system removed more than the reference does; 202, 38\%,
-are under-strips, and 134 of those are words the system left untouched
+are under-strips, and 102 of those are words the system left untouched
 altogether; the remaining 41 are the same length as the reference but differ in
 which letters survive. The held-out set behaves the same way, 51\% and 44\%.
 Over-stripping is therefore the larger problem on both sets, which is what one
 would expect of a system whose scorer rewards removing affix material.
 
-Table~\ref{tab:bygroup} locates the errors. Accuracy is high wherever the
-reference removes an affix the inventory holds---90.9\% on noun-forming
-derivation, 95.1\% on verbal inflection---and the two weak rows are the ones
-that do not depend on the inventory being right. 105 types have a reference the
-inventory cannot explain at all, and we reach 30.5\% on those. The larger group
-is the 1{,}347 types the reference leaves whole, where we are right 79.1\% of
-the time: 282 words stripped that should not have been, the biggest single
-source of error in the system.
+Table~\ref{tab:bygroup} locates the errors. Each type is assigned to the group
+of the rule that explains the reference's removal, under the same grouping as
+Table~\ref{tab:inventory}, so that the two tables can be read against each
+other. Accuracy is high wherever the reference removes an affix the inventory
+holds---86.4\% on nominal inflection, 89.6\% on noun-forming derivation,
+95.1\% on verbal inflection---and the two weak rows are the ones that do not
+depend on the inventory being right. 120 types have a reference the inventory
+cannot explain at all, and we reach 26.7\% on those. The larger group is the
+1{,}347 types the reference leaves whole, where we are right 79.2\% of the
+time: 280 words stripped that should not have been, the biggest single source
+of error in the system.
 
 \begin{table}[t]
-\caption{Accuracy by the affix the reference removes, development set.}
+\caption{Accuracy by the affix the reference removes, development set. The
+grouping is the one in Table~\ref{tab:inventory}. Generated by
+\texttt{experiments/error\_analysis.py}.}
 \label{tab:bygroup}
 \centering
 \begin{tabular}{lrr}
 \toprule
 What the reference removes & Types & Accuracy\\
 \midrule
-Nominal inflection        &   624 & 80.1\%\\
+Nominal inflection        & 1{,}116 & 86.4\%\\
 Verbal inflection         &    41 & 95.1\%\\
-Derivation: nouns         &   582 & 90.9\%\\
-Derivation: adjectives    &    18 & 88.9\%\\
-No affix, word left whole & 1{,}347 & 79.1\%\\
-Nothing in the inventory  &   105 & 30.5\%\\
+Derivation: nouns         &    67 & 89.6\%\\
+Derivation: adjectives    &    26 & 80.8\%\\
+No affix, word left whole & 1{,}347 & 79.2\%\\
+Nothing in the inventory  &   120 & 26.7\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1082,7 +1116,7 @@ We had attributed that bucket to loanwords, and the data does not support it.
 Pashto marks native vocabulary orthographically: a word containing one of
 \ps{ټ ډ ړ ږ ښ ځ څ ڼ ګ ې ۍ} is certainly not a borrowing, though a word without
 one may be either, so the test is one-sided. Among the types the reference
-leaves whole we are wrong on 28.3\% of the certainly-native ones and 17.8\% of
+leaves whole we are wrong on 28.3\% of the certainly-native ones and 17.6\% of
 the rest. Native words are the harder half, not the easier one, and the errors
 bear it out: \ps{خواړه}, \ps{وړاندې}, \ps{داسې}, \ps{پاتې}, \ps{یوازې} and
 \ps{پورې} are ordinary Pashto words ending in \ps{ه} or \ps{ې} that the length
@@ -1106,12 +1140,12 @@ The evaluation is on word types rather than running text, so no measurement of
 retrieval effectiveness is reported, and the relationship between the intrinsic
 gains shown here and downstream performance remains untested.
 
-Of 117 affix rules, 111 cite a published grammar by chapter or section and six
-are marked author-proposed. The chapter attributions were assembled by the
-author and have not been independently checked page by page, so a reader
-verifying the inventory should treat each locus as a pointer rather than as a
-quotation. Of 42 verbs in the dictionary, 34 are checked against a
-printed grammar and 8 are marked unverified in the released documentation. We
+Of 117 affix rules, 111 cite a published grammar by chapter or section; the
+six that do not are entries the engine never applies. The chapter attributions
+were assembled by the author and have not been independently checked page by
+page, so a reader verifying the inventory should treat each locus as a pointer
+rather than as a quotation. Of 38 verbs in the dictionary, 23 are checked against a
+printed grammar and 15 are marked unverified in the released documentation. We
 prefer to label these rather than to present them as settled.
 
 Compounds are kept whole, which is a policy choice rather than a solution: it
@@ -1137,7 +1171,7 @@ a rule or a dictionary entry.
 On 499 held-out word types from news text, annotated blind and never used
 during development, the system reaches 71.34\% exact-match accuracy against
 40.48\% for the published baseline, and 70.6\% against 16.9\% on the types
-that require a strip. On a 2{,}717-type development set it reaches 80.27\%
+that require a strip. On a 2{,}717-type development set it reaches 80.35\%
 against 50.68\%, with Paice's under-stemming index falling from 0.919 to
 0.304.
 
@@ -1251,8 +1285,8 @@ The 117 rules in full, in the order the engine holds them. ``Type'' gives the
 side and whether the rule is inflectional or derivational; ``min'' is the
 shortest stem the rule is allowed to leave; ``strip'' is whether the engine may
 remove the affix at all; ``source'' is what backs the rule---a published grammar, this project's
-inventory document, \texttt{gated} for an entry that is never applied,
-and \texttt{author} for one the author proposes. The entries marked \emph{no} under
+inventory document, and \texttt{gated} for an entry that is never applied and
+appeals to no grammar. The entries marked \emph{no} under
 ``strip'' are documented and never applied, for the reasons given in
 Section~IV.B. This table is generated
 directly from the rule objects by \texttt{paper/make\_inventory\_tables.py},

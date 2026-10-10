@@ -1,8 +1,22 @@
 # Pashto Irregular Verb Dictionary
 
-> **Status: partly unverified.** This file states exactly which entries were
-> checked against a printed source and which were not. Do not cite the
-> unverified block until it is checked. 8 of 42 entries are unverified.
+> **This document is the survey, not the dictionary.** It records which verbs
+> were gathered and which entries were checked against a printed source. The
+> dictionary the stemmer actually loads is
+> `pashto_stemmer/irregular_verbs.py`, which holds **38 paradigms covering 315
+> surface forms**, and it is printed in Appendix B of the paper from
+> `paper/verbs_sources.tsv` by `paper/make_verb_appendix.py`.
+>
+> The two have diverged. Twelve verbs listed here are **not** in the
+> dictionary — `اغوستل`، `اوړل`، `چاودل`، `نغښتل`، `ویشتل`، `وتل`، `رودل`،
+> `ورتلل`، `درتلل`، `راکول`، `درکول`، `پرانیستل` — and eight that are in the
+> dictionary are not described here: `څښل`، `رسېدل`، `پوهېدل`، `اوسېدل`،
+> `پاڅېدل`، `سپارل`، `ژغورل`، `کارول`. Where the two disagree, the code is
+> what runs.
+>
+> **Status: partly unverified.** 15 of the 38 implemented entries are
+> unverified against a printed source. Do not cite the unverified block until
+> it is checked.
 
 ## What belongs here — and what does not
 

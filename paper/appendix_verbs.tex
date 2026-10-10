@@ -1,61 +1,76 @@
 \section{The irregular-verb dictionary}
 
-The 42 strong verbs whose present stem cannot be derived from the infinitive.
-The last column names the source; eight entries are marked unverified and are
-labelled as such in the released documentation rather than presented as
-settled. The dictionary returns a lemma, so it is off by default and belongs
-to the lemmatization mode described in Section~\ref{sec:scope}.
+The 38 strong verbs the dictionary holds, with the 315 surface forms they map. These are the verbs whose present stem cannot be derived from the infinitive. The last column names the source; 15 entries are marked unverified and are labelled as such here rather than presented as settled. The dictionary returns a lemma, so it is off by default and belongs to the lemmatization mode described in Section~\ref{sec:scope}. This table is generated from the dictionary by \texttt{paper/make\_verb\_appendix.py}, so it cannot claim a verb the software does not hold.
+
+\footnotesize
+\begin{longtable}{lllrl}
+\toprule
+Infinitive & Present stem & Past & Forms & Gloss, source\\
+\endfirsthead
+\toprule
+Infinitive & Present stem & Past & Forms & Gloss, source\\
+\endhead
+\midrule
+\ps{کول} & \ps{کو} & \ps{کړ / کاوه} & 23 & to do/make --- Robson \& Tegey\\
+\ps{کېدل} & \ps{کېږ / کیږ} & \ps{شو / شول} & 18 & to become/happen --- Robson \& Tegey\\
+\ps{تلل} & \ps{ځ} & \ps{لاړ / تل} & 16 & to go --- Robson \& Tegey\\
+\ps{راتلل} & \ps{راځ} & \ps{راغل / راغی} & 12 & to come --- Robson \& Tegey\\
+\ps{وړل} & \ps{وړ} & \ps{یووړ / یوړ} & 11 & to carry/take away --- Robson \& Tegey\\
+\ps{راوړل} & \ps{راوړ} & \ps{راووړ} & 6 & to bring --- Robson \& Tegey\\
+\ps{خوړل} & \ps{خور} & \ps{خوړ} & 9 & to eat --- Tegey \& Robson (1996)\\
+\ps{څښل} & — & — & 6 & to drink --- unverified\\
+\ps{لیدل} & \ps{وین} & \ps{لید} & 10 & to see --- Tegey \& Robson (1996)\\
+\ps{کتل} & \ps{ګور} & \ps{کوت / کت} & 8 & to look --- Tegey \& Robson (1996)\\
+\ps{اخیستل} & \ps{اخل} & \ps{اخیست} & 9 & to take/buy --- Tegey \& Robson (1996)\\
+\ps{نیول} & \ps{نیس} & \ps{نیو} & 8 & to catch/hold --- Tegey \& Robson (1996)\\
+\ps{ویل} & \ps{وای} & \ps{ویل} & 10 & to say --- Tegey \& Robson (1996)\\
+\ps{ورکول} & \ps{ورکو} & \ps{ورکړ} & 9 & to give --- Robson \& Tegey\\
+\ps{غوښتل} & \ps{غواړ} & \ps{غوښت} & 10 & to want --- Tegey \& Robson (1996)\\
+\ps{موندل} & \ps{موم} & \ps{موند} & 8 & to find --- Tegey \& Robson (1996)\\
+\ps{لوستل} & \ps{لول} & \ps{لوست} & 6 & to read --- Tegey \& Robson (1996)\\
+\ps{لرل} & \ps{لر} & \ps{درلود / لرل} & 11 & to have --- unverified\\
+\ps{وژل} & \ps{وژن} & \ps{وژل / ووژه} & 7 & to kill --- Tegey \& Robson (1996)\\
+\ps{اورېدل} & \ps{اور} & \ps{اورېد} & 8 & to hear --- unverified\\
+\ps{پېژندل} & \ps{پېژن / پیژن} & \ps{پېژند / پیژند} & 7 & to know/recognize --- Tegey \& Robson (1996)\\
+\ps{رسېدل} & — & — & 9 & to arrive / reach --- unverified\\
+\ps{پوهېدل} & — & — & 7 & to understand --- unverified\\
+\ps{اوسېدل} & — & — & 6 & to live / reside --- unverified\\
+\ps{ښودل} & \ps{ښی} & \ps{ښود} & 7 & to show --- Tegey \& Robson (1996)\\
+\ps{کېښودل} & \ps{ږد} & \ps{کېښود / ایښود} & 7 & to put/place --- unverified\\
+\ps{پرېښودل} & \ps{پرېږد} & \ps{پرېښود} & 5 & to leave/abandon --- unverified\\
+\ps{الوتل} & \ps{الوز} & \ps{الوت} & 6 & to fly --- Tegey \& Robson (1996)\\
+\ps{ختل} & \ps{خېژ} & \ps{خوت / خت} & 6 & to climb/rise --- Tegey \& Robson (1996)\\
+\ps{پرېوتل} & \ps{پرېوځ} & \ps{پرېوت} & 5 & to fall --- unverified\\
+\ps{کښېنستل} & \ps{کښېن} & \ps{کښېناست / ناست} & 6 & to sit down --- unverified\\
+\ps{پاڅېدل} & — & — & 5 & to stand up / rise --- unverified\\
+\ps{ګڼل} & \ps{ګڼ} & \ps{ګاڼه / ګڼل} & 6 & to count/consider --- unverified\\
+\ps{بلل} & \ps{بول} & \ps{بلل} & 6 & to call/consider --- Tegey \& Robson (1996)\\
+\ps{سپارل} & — & — & 6 & to hand over / entrust --- unverified\\
+\ps{ژغورل} & — & — & 5 & to save / rescue --- unverified\\
+\ps{ایستل} & \ps{باس} & \ps{ایست / وېست} & 6 & to pull out/extract --- Tegey \& Robson (1996)\\
+\ps{کارول} & — & — & 5 & to use / operate --- unverified\\
+\bottomrule
+\end{longtable}
+\normalsize
+
+A further 12 strong verbs were identified during the work and are \emph{not} in the dictionary. They are listed because a reader extending the dictionary should start here, and because an earlier version of this appendix presented them as though they were implemented.
 
 \footnotesize
 \begin{longtable}{lllll}
 \toprule
 Infinitive & Present stem & Past & Gloss & Source\\
-\endfirsthead
-\toprule
-Infinitive & Present stem & Past & Gloss & Source\\
-\endhead
 \midrule
-\ps{کول} & \ps{کو} & \ps{کړ / کاوه} & to do/make & Robson \& Tegey\\
-\ps{کېدل} & \ps{کېږ / کیږ} & \ps{شو / شول} & to become/happen & Robson \& Tegey\\
-\ps{تلل} & \ps{ځ} & \ps{لاړ / تل} & to go & Robson \& Tegey\\
-\ps{راتلل} & \ps{راځ} & \ps{راغل / راغی} & to come & Robson \& Tegey\\
-\ps{وړل} & \ps{وړ} & \ps{یووړ / یوړ} & to carry/take away & Robson \& Tegey\\
-\ps{راوړل} & \ps{راوړ} & \ps{راووړ} & to bring & Robson \& Tegey\\
-\ps{خوړل} & \ps{خور} & \ps{خوړ} & to eat & Tegey \& Robson (1996)\\
-\ps{لیدل} & \ps{وین} & \ps{لید} & to see & Tegey \& Robson (1996)\\
-\ps{کتل} & \ps{ګور} & \ps{کوت / کت} & to look & Tegey \& Robson (1996)\\
-\ps{اخیستل} & \ps{اخل} & \ps{اخیست} & to take/buy & Tegey \& Robson (1996)\\
-\ps{نیول} & \ps{نیس} & \ps{نیو} & to catch/hold & Tegey \& Robson (1996)\\
-\ps{ویل} & \ps{وای} & \ps{ویل} & to say & Tegey \& Robson (1996)\\
-\ps{ورکول} & \ps{ورکو} & \ps{ورکړ} & to give & Robson \& Tegey\\
-\ps{غوښتل} & \ps{غواړ} & \ps{غوښت} & to want & Tegey \& Robson (1996)\\
-\ps{موندل} & \ps{موم} & \ps{موند} & to find & Tegey \& Robson (1996)\\
-\ps{لوستل} & \ps{لول} & \ps{لوست} & to read & Tegey \& Robson (1996)\\
-\ps{وژل} & \ps{وژن} & \ps{وژل / ووژه} & to kill & Tegey \& Robson (1996)\\
-\ps{پېژندل} & \ps{پېژن / پیژن} & \ps{پېژند / پیژند} & to know/recognize & Tegey \& Robson (1996)\\
-\ps{ښودل} & \ps{ښی} & \ps{ښود} & to show & Tegey \& Robson (1996)\\
-\ps{الوتل} & \ps{الوز} & \ps{الوت} & to fly & Tegey \& Robson (1996)\\
-\ps{ختل} & \ps{خېژ} & \ps{خوت / خت} & to climb/rise & Tegey \& Robson (1996)\\
-\ps{بلل} & \ps{بول} & \ps{بلل} & to call/consider & Tegey \& Robson (1996)\\
-\ps{ایستل} & \ps{باس} & \ps{ایست / وېست} & to pull out/extract & Tegey \& Robson (1996)\\
 \ps{اغوستل} & \ps{اغوند} & \ps{اغوست} & to wear & Tegey \& Robson (1996)\\
 \ps{اوړل} & \ps{اوړ} & \ps{وښت / اوښت} & to pass/cross & Tegey \& Robson (1996)\\
 \ps{چاودل} & \ps{چو} & \ps{چاود} & to explode & Tegey \& Robson (1996)\\
 \ps{نغښتل} & \ps{نغاړ} & \ps{نغښت} & to wrap/roll up & Tegey \& Robson (1996)\\
 \ps{ویشتل} & \ps{ول} & \ps{وېشت} & to shoot & Tegey \& Robson (1996)\\
-\ps{وتل} & \ps{وځ} & \ps{وت} & to go out & [T\&R\\
+\ps{وتل} & \ps{وځ} & \ps{وت} & to go out & unverified\\
 \ps{رودل} & \ps{رو} & \ps{رود} & to suck & Tegey \& Robson (1996)\\
-\ps{ورتلل} & \ps{ورځ} & \ps{ورتل / ورغل} & to go there & Robson \& Tegey Table \\
-\ps{درتلل} & \ps{درځ} & \ps{درتل / درغل} & to go to you & Robson \& Tegey Table \\
-\ps{راکول} & \ps{راکو} & \ps{راکړ} & to give here & Robson \& Tegey Table \\
-\ps{درکول} & \ps{درکو} & \ps{درکړ} & to give to you & Robson \& Tegey Table \\
-\ps{لرل} & \ps{لر} & \ps{درلود / لرل} & to have & unverified\\
-\ps{اورېدل} & \ps{اور} & \ps{اورېد} & to hear & unverified\\
-\ps{کېښودل} & \ps{ږد} & \ps{کېښود / ایښود} & to put/place & unverified\\
-\ps{پرېښودل} & \ps{پرېږد} & \ps{پرېښود} & to leave/abandon & unverified\\
-\ps{پرېوتل} & \ps{پرېوځ} & \ps{پرېوت} & to fall & unverified\\
-\ps{کښېنستل} & \ps{کښېن} & \ps{کښېناست / ناست} & to sit down & unverified\\
-\ps{ګڼل} & \ps{ګڼ} & \ps{ګاڼه / ګڼل} & to count/consider & unverified\\
+\ps{ورتلل} & \ps{ورځ} & \ps{ورتل / ورغل} & to go there & unverified\\
+\ps{درتلل} & \ps{درځ} & \ps{درتل / درغل} & to go to you & unverified\\
+\ps{راکول} & \ps{راکو} & \ps{راکړ} & to give here & unverified\\
+\ps{درکول} & \ps{درکو} & \ps{درکړ} & to give to you & unverified\\
 \ps{پرانیستل} & \ps{پرانیز} & \ps{پرانیست} & to open & unverified\\
 \bottomrule
 \end{longtable}

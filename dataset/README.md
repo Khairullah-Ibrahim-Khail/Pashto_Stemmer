@@ -75,5 +75,21 @@ their numbers.
 
 `experiments/audit_annotation.py` writes `unsupported_removals_*.csv`: every
 removal in an annotated set that matches no documented affix. Each is either an
-annotation error or a gap in the inventory, and the `verdict` column is left
-empty for whoever rules on it.
+annotation error or a gap in the inventory.
+
+The held-out file has been gone through in full. Of its 58 rows, 33 take
+material off one end of the word: **23 are gaps in the inventory**, mostly case
+and gender variants of affixes already held (`ولو` beside `ول`, `ګرو` beside
+`ګر`, `یزې` beside `یزه`); **8 are annotation errors**, clustering on English
+loans and proper names; **2 are ambiguous**. The remaining **25 take material
+off both ends** and are all verbs (`وښيي → ښي`, `رارسېدو → رسېد`): the ending
+is in the inventory, the perfective or directional prefix is not, because those
+prefixes were measured and dropped. Every row carries a `verdict` and a `why`.
+
+Of the development file's 120 rows, the 15 two-ended ones are classified on the
+same grounds; the other 105 are not yet classified. Rerunning the audit
+preserves any verdict already written, so the work is safe to do in stages.
+
+An earlier version of the audit script reported only one-ended removals, and so
+silently dropped 26 held-out and 15 development rows — exactly the rows the
+inventory cannot explain. The counts above are the corrected ones.
