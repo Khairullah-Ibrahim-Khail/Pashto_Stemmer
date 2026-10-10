@@ -23,6 +23,7 @@ between competing analyses.*
 [Why this exists](#why-this-exists) ·
 [Quick start](#quick-start) ·
 [Stemming a dataset](#stemming-a-dataset) ·
+[Options](#options) ·
 [Results](#results) ·
 [Reproducing the paper](#reproducing-the-paper) ·
 [Stemming or lemmatization](#stemming-or-lemmatization) ·
@@ -131,8 +132,12 @@ st = PashtoStemmer()
 rows = st.stem_file("examples/sample_words.csv")              # returns the rows
 rows[0]           # {'word': 'کورونه', 'frequency': '1420', 'word_stemmed': 'کور'}
 
-st.stem_file("examples/sample_words.csv", out="stemmed.csv")  # writes them
+st.stem_file("examples/sample_words.csv", out="stemmed.csv")
+#  -> {'rows': 14, 'column': 'word_stemmed', 'out': 'stemmed.csv'}
 ```
+
+So: no `out` and you get the rows back to do what you like with; an `out` and
+the file is written and you get a summary of what went where.
 
 | parameter | default | |
 |---|---|---|
@@ -145,10 +150,10 @@ st.stem_file("examples/sample_words.csv", out="stemmed.csv")  # writes them
 | `trace` | `False` | add a column naming the rules that fired |
 | `warn` | `True` | warn once if cells hold sentences |
 
-The same flags exist on the command line: `--only-stems`, `--unique`,
-`--new-column`, `--sheet`, `--trace`. `.csv`, `.tsv`, `.xlsx` and `.xlsm` are
-read and written; a delimited file with an `--out` is streamed, so size is not
-a limit — 200,000 rows takes under a second in 21 MB.
+Every one of those exists on the command line too, under the same name.
+`.csv`, `.tsv`, `.xlsx` and `.xlsm` are read and written; a delimited file with
+an `--out` is streamed, so size is not a limit — 200,000 rows takes under a
+second in 21 MB.
 
 With pandas, if you would rather hold the file yourself:
 
@@ -160,6 +165,157 @@ df["stem"] = df["word"].apply(st.stem)
 Repeated words are cached, so a corpus costs about as much as its vocabulary.
 
 A worked example is [examples/stem_csv.py](examples/stem_csv.py).
+
+## Options
+
+Nothing here has to be set. The defaults are the configuration every number in
+the paper was measured with, and they are the same from Python and from the
+shell — a word gives the same answer either way.
+
+### The five ways in
+
+| call | takes | gives back |
+|---|---|---|
+| `st.stem(x)` | a word, a sentence, a list, a tuple or a set | the same shape, stems only |
+| `st.stem_word(w)` | one word | a `StemResult` — the stem plus how it was reached |
+| `st.stem_sentence(s)` | a sentence | a sentence of stems |
+| `st.stem_text(s)` | a sentence | a `StemResult` per token |
+| `st.stem_file(path, …)` | a CSV, TSV or Excel path | rows, or a written file |
+
+`st.clear_cache()` empties the result cache. Repeated words are cached, so a
+corpus costs about as much as its vocabulary; the cache holds 500,000 entries.
+
+A `StemResult` carries six fields:
+
+```python
+r = st.stem_word("بېکاره")
+r.input            # 'بېکاره'   the word as given
+r.stem             # 'بېکار'
+r.confidence       # 0.65       how sure the selector was, 0.0–1.0
+r.attested         # False      whether the stem is in the corpus lexicon
+r.rules_applied    # ('+ه',)    which rules took part
+r.trace            # a readable account of the decision
+```
+
+### `stem_file` parameters
+
+Repeated here as the single place to look:
+
+| parameter | default | |
+|---|---|---|
+| `path` | — | `.csv`, `.tsv`, `.txt`, `.xlsx` or `.xlsm` |
+| `column` | `"word"` | which column to stem |
+| `out` | `None` | where to write; `None` returns the rows |
+| `keep_original` | `True` | `False` → only the stem column |
+| `new_column` | `None` | default `<column>_stemmed` |
+| `sheet` | `None` | which Excel worksheet; `None` → the first |
+| `unique` | `False` | stem distinct values only |
+| `trace` | `False` | add a `<column>_rules` column naming the rules that fired |
+| `warn` | `True` | warn once if the cells hold sentences rather than words |
+
+### Command line
+
+```
+pashto-stem [words …] [-f FILE] [-c PATH] [options]
+```
+
+With no words and no `--file`, words are read from stdin.
+
+**Input**
+
+| flag | |
+|---|---|
+| `-f`, `--file PATH` | stem every token in a UTF-8 text file |
+| `-c`, `--csv`, `--excel`, `--table PATH` | stem one column of a CSV, TSV or Excel file |
+| `--column NAME` | which column to stem (default `word`) |
+| `--sheet NAME` | which worksheet of an `.xlsx` file |
+
+**Output**
+
+| flag | |
+|---|---|
+| `--out PATH` | where to write (default stdout) |
+| `--new-column NAME` | name for the stem column |
+| `--only-stems` | write just the stem column |
+| `--unique` | stem distinct values only |
+| `-t`, `--trace` | also report the confidence and the rules that fired |
+| `-q`, `--quiet` | suppress the sentences-in-cells warning |
+
+**Behaviour** — each one changes the answer, so each is off or on exactly as
+the library has it:
+
+| flag | default | |
+|---|---|---|
+| `--lemmatize` | off | turn on the irregular-verb dictionary: `شو → کېدل`. This substitutes one word for another, which is lemmatization, not stemming |
+| `--no-dict` | lexicon on | stop using the corpus lexicon to score candidates |
+| `--no-exceptions` | on | drop stopwords, the length rules and the Arabic-plural list |
+| `--no-prefixes` | on | do not strip prefixes |
+| `--no-suffixes` | on | do not strip suffixes |
+| `--no-derivational` | on | strip inflection only, leaving derivation in place |
+| `--pos` | off | enable the part-of-speech filter |
+| `--compound` | off | enable compound decomposition |
+| `--max-passes N` | `1` | re-run the pipeline on its own output N times |
+
+### Changing the behaviour from Python
+
+The same switches, and a few more, live on `StemmerConfig`:
+
+```python
+from pashto_stemmer.stemmer import PashtoStemmer, StemmerConfig
+
+st = PashtoStemmer(StemmerConfig(use_verb_dictionary=True))
+```
+
+The last two columns are measured, not asserted: how many of the 2,717
+development types the switch changes, and what the accuracy becomes. The
+default row is 80.35%.
+
+| field | default | | types changed | accuracy |
+|---|---|---|---:|---:|
+| `use_suffixes` | `True` | strip suffixes | 434 | 71.99% |
+| `use_exceptions` | `True` | stopwords, the length rules, Arabic plurals | 353 | 75.27% |
+| `author_rules` | `True` | the length rules R1 and R2 | 254 | 77.70% |
+| `use_dictionary` | `True` | score candidates against the corpus lexicon | 159 | 80.16% |
+| `strip_final_inflection` | `True` | remove a final `ې`/`و` after stripping | 131 | 77.88% |
+| `strip_derivational` | `True` | `False` → inflection only | 89 | 80.20% |
+| `max_passes` | `1` | re-run the pipeline on its own output (`3`) | 82 | 79.76% |
+| `use_verb_dictionary` | `False` | the lemmatization mode | 69 | 78.98% |
+| `rebuild_derivative_infinitive` | `True` | handle the `ېدل`/`ول` derivative verbs | 45 | 78.98% |
+| `freeze_proper_nouns` | `False` | `True` keeps `افغانستان` whole | 29 | 80.16% |
+| `strip_stan` | `True` | strip `‑ستان` | 17 | 80.05% |
+| `use_pos` | `False` | part-of-speech filtering | 15 | 80.57% |
+| `author_rules_before_dictionary` | `False` | run the length rules first | 11 | 79.98% |
+| `prefix_needs_attested_stem` | `True` | a prefix strip must leave a known word | 7 | 80.20% |
+| `use_compound` | `False` | compound decomposition | 6 | 80.13% |
+| `use_prefixes` | `True` | strip prefixes | 2 | 80.31% |
+| `keep_negation_prefixes` | `True` | `ناقانونه → ناقانون`; `False` gives `ناقان` | 1 | 80.31% |
+| `r1_max_len` | `5` | longest word R1 takes a final letter off | 148 (`99`) | 80.46% |
+| `r1_tail` | `"یيېۍئه"` | which final letters R1 removes | — | — |
+
+Two of these look like free accuracy on the development set and are not.
+`use_pos=True` gains 0.22 points on development and **loses 0.40 on held-out
+text**; raising `r1_max_len` from 5 to 6 gains 0.40 and loses 1.20. That is why
+the defaults are where they are, and it is the reason the held-out set exists.
+
+Two further fields change nothing in the table above because neither applies
+under the default configuration, and both are worth knowing:
+
+| field | default | |
+|---|---|---|
+| `verb_target` | `"stem"` | only reached when `use_verb_dictionary=True`. `"stem"` gives `راغی → راتل`, `"infinitive"` gives `راتلل`. With the dictionary on it moves 51 development types and scores 79.98% against 78.98% — still below the 80.35% of leaving the dictionary off |
+| `restore_feminine_ha` | `True` | `ښځو`, `ښځې → ښځه`, for the bases in `feminine_ha_bases` (`ښځ` alone). This is the one place a letter is **added**, which is why those rows count as lemmatization rather than stemming and sit outside the 2,717 types scored above. Restoring the `ه` wherever a three-letter word ended in `و`/`ې` was right 29 times and wrong 55, so it is a listed class and not a rule |
+
+Normalization has its own config, and the setting worth knowing is that no yeh
+letter is ever rewritten:
+
+```python
+from pashto_stemmer.normalizer import Normalizer, NormalizerConfig
+nz = Normalizer(NormalizerConfig(apply_nfkc=True))   # the default
+```
+
+`apply_nfkc=True` folds Arabic presentation forms (`ﻛ` → `ک`) and is verified
+safe for all five yeh letters and the nine Pashto-only consonants; set it
+`False` for NFC only.
 
 ## Results
 

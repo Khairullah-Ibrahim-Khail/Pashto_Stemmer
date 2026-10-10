@@ -148,6 +148,56 @@ def test_cli_and_library_agree():
         assert out.strip().split("\t")[1] == st.stem(w), w
 
 
+def test_cli_defaults_match_stemmer_config():
+    """Every behaviour flag must leave StemmerConfig's own default in place.
+
+    Two flags had drifted: --no-pos was parsed and never used while use_pos
+    defaulted to True on the command line and False in the library, and
+    --no-compound turned compound decomposition ON by its absence. The same
+    word then came back differently from the CLI and the API.
+    """
+    import argparse
+    from pashto_stemmer.cli import build_parser
+    from pashto_stemmer.stemmer import StemmerConfig
+    args = build_parser().parse_args([])
+    d = StemmerConfig()
+    assert args.column == "word", args.column
+    assert args.max_passes == d.max_passes
+    assert args.pos is d.use_pos
+    assert args.compound is d.use_compound
+    assert args.lemmatize is d.use_verb_dictionary
+    for flag, field in (("no_dict", "use_dictionary"),
+                        ("no_exceptions", "use_exceptions"),
+                        ("no_prefixes", "use_prefixes"),
+                        ("no_suffixes", "use_suffixes"),
+                        ("no_derivational", "strip_derivational")):
+        assert getattr(args, flag) is not getattr(d, field), flag
+
+
+def test_every_behaviour_flag_is_wired():
+    """A flag that parses but changes nothing is how the last bug got in."""
+    cases = [(["--lemmatize", "شو"], "کېدل"),
+             (["شو"], "شو"),
+             (["--no-suffixes", "کورونه"], "کورونه"),
+             (["--no-exceptions", "مخې"], "مخې"),
+             (["مخې"], "مخ"),
+             (["--no-prefixes", "همکار"], "همکار"),
+             (["همکار"], "کار"),
+             (["--no-derivational", "نیمګړی"], "نیمګړ"),
+             (["--pos", "ښوونځی"], "ښوونځی")]
+    for argv, expected in cases:
+        _, out, _ = _run(argv)
+        got = out.strip().split("\t")[1]
+        assert got == expected, f"{argv} gave {got}, expected {expected}"
+
+
+def test_deprecated_flags_are_still_accepted():
+    """Scripts written against the earlier release must keep working."""
+    code, out, _ = _run(["--no-compound", "--no-pos", "کورونه"])
+    assert code == 0
+    assert out.strip().split("\t")[1] == "کور"
+
+
 def _run_all():
     fns = [g for n, g in globals().items() if n.startswith("test_")]
     passed = 0
