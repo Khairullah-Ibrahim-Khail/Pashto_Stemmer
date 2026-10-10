@@ -4,8 +4,8 @@ prefixes.py
 ===========
 Pashto prefix inventory.
 
-Pashto has far fewer productive derivational prefixes than suffixes. We keep
-this list deliberately conservative — spurious prefix stripping is a common
+Pashto has far fewer productive derivational prefixes than suffixes. This
+list is deliberately conservative — spurious prefix stripping is a common
 source of over-stemming (the baseline's Rule 6 blindly strips a leading ز!).
 The lexicon validator gates every strip, but a tight inventory reduces the
 candidate explosion.
@@ -70,8 +70,8 @@ _DERIVATIONAL: List[AffixRule] = [
 
 _LOAN_DERIVATIONAL: List[AffixRule] = [
     # ‑پر REMOVED: it false-strips ordinary words (پراختیا→اختیا،
-    # پروګرام، پرېکړه). A prefix this short needs lexical support we
-    # do not have, so it is not a safe rule.
+    # پروګرام، پرېکړه). A prefix this short needs lexical support that is
+    # not available here, so it is not a safe rule.
 
     _p("هم",  "derivational", min_stem_len=3, note="[T&R ch.2 Persian compounds] co-/fellow: همکار→کار"),
 ]
@@ -81,7 +81,7 @@ _VERBAL_INFLECTIONAL: List[AffixRule] = [
 
 # Only the genuine DERIVATIONAL prefixes are kept. The verbal particles and
 # single-letter prefixes (و‑، را‑، ور‑، در‑، پرې‑، وا‑، کم‑ …) were measured
-# against the author's gold and against held-out news text and came out right
+# against the development gold and against held-out news text and came out right
 # between 13% and 50% of the time. They cannot be told apart from a
 # word-initial letter of the root (بېجينګ, لانسیټ, رارسېدو), so they cost more
 # than they returned and were dropped.

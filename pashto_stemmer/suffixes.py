@@ -14,10 +14,11 @@ POS tags used (coarse): N (noun), ADJ (adjective), V (verb).
 
 NOTE ON ACCURACY: this inventory is a *linguistically-motivated starting
 point*. Some affixes are ambiguous (e.g. و, ي, ه appear in several
-paradigms). We deliberately over-generate candidates and rely on
-dictionary validation to prevent the over-stripping that a commit-early
-stemmer (the baseline) suffers from. The inventory will be refined
-empirically against the gold set (Phase 6).
+paradigms). Candidates are therefore over-generated on purpose and the
+selection is left to dictionary validation, which is what prevents the
+over-stripping a commit-early stemmer such as the baseline suffers from.
+The inventory was refined against the development set; every rule's
+measured precision is in Table XI of the paper.
 """
 
 from __future__ import annotations
@@ -166,9 +167,9 @@ _SOURCED: List[AffixRule] = [
 
 # Full inventory, longest affixes first (helps the lightest-strip tie-break).
 # --- Added after per-rule error analysis on the gold set -------------------- #
-# Every affix below appeared in the "we left the word whole but the gold
-# stripped" error bucket AND is a documented affix. Each was measured
-# individually before being added.
+# Every affix below appeared in the "word left whole but the gold stripped"
+# error bucket AND is a documented affix. Each was measured individually
+# before being added.
 _FROM_ERROR_ANALYSIS: List[AffixRule] = [
     _s("یت", "derivational", min_stem_len=3, pos=("N",), note="[T&R ch.2 morphological loan layers] Arabic abstract-noun -iyyat: فعالیت→فعال، مدیریت→مدیر، شخصیت→شخص"),
     _s("نی", "derivational", min_stem_len=3, pos=("ADJ",),
@@ -183,7 +184,7 @@ _FROM_ERROR_ANALYSIS: List[AffixRule] = [
     _s("ېد", "inflectional", min_stem_len=2, pos=("V",), first_pass_only=True, note="[R&T 13.16] derivative past stem: اوسېد→اوس، ګرځېد→ګرځ"),
     _s("ېدونکي", "derivational", min_stem_len=3, pos=("N", "ADJ"), note="[R&T 13.16] derivative agentive: زیاتېدونکي→زیات"),
     _s("یدونکي", "derivational", min_stem_len=3, pos=("N", "ADJ"), note="[R&T 13.16] derivative agentive, ی spelling: اوسیدونکي→اوس"),
-    # --- revealed by the author's gold annotations (we lacked these) --------
+    # --- found during error analysis on the development set ----------------
     _s("نۍ", "derivational", min_stem_len=3, pos=("ADJ",),
        strip_allowed="no", confidence="medium",
        note="NOT stripped, for the same reason as ‑نی: rule matching folds the yeh letters together, so a ‑نۍ rule also fires on ‑نی and takes پاکستانی to پاکستا. The listed ‑نی words are handled in the stemmer."),

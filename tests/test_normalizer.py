@@ -77,8 +77,8 @@ def test_digits_ascii_option():
 
 def test_ablation_unify_yeh_collapses_forms():
     # ablation arm only — measures the damage aggressive folding does
-    """The dangerous flag, when explicitly enabled, must collapse — this is
-    what we measure the cost of in the ablation study."""
+    """The dangerous flag, when explicitly enabled, must collapse — the
+    cost of which is what the ablation study measures."""
     aggressive = Normalizer(NormalizerConfig(unify_yeh=True))
     forms = {aggressive.normalize("ښکلي"), aggressive.normalize("ښکلې")}
     assert len(forms) == 1

@@ -13,10 +13,10 @@ Scoring philosophy (transparent, rule-based — no ML):
     attested candidate   ->  value = 1.0 + freq_score − λ·strip_len
     unattested candidate ->  value = 0.0            − μ·strip_len
 
-Consequences (exactly the behaviours we want):
+Consequences, which are the intended behaviours:
   * An **unattested** strip always scores below keeping the original word
     (0.0 vs negative), so the stemmer never destroys a word into a
-    non-word — this is precisely how we avoid the baseline's
+    non-word — this is precisely what avoids the baseline's
     پراختيا→لان / پلانونه→لان catastrophe.
   * Among **attested** candidates, the more frequent (usually more basic)
     form wins, with a small penalty against needless over-stripping — so
@@ -24,8 +24,8 @@ Consequences (exactly the behaviours we want):
   * A word already at its base (attested, no strip) is happily kept.
 
 For genuinely out-of-vocabulary words (nothing attested, not even the
-original) we optionally fall back to the lightest *inflectional* strip so
-OOV tokens still get some conflation, but with low confidence.
+original) there is an optional fallback to the lightest *inflectional*
+strip, so OOV tokens still get some conflation, but with low confidence.
 """
 
 from __future__ import annotations
@@ -105,7 +105,7 @@ class Validator:
         v = self.cfg.strip_reward * cand.strip_len
         # FAMILY TEST — the general criterion for stem-hood: a remainder is a
         # stem if other words are built from it (څېړ -> څېړل، څېړنه، څېړونکی).
-        # Our lexicon is a small corpus word-list, so most true stems are NOT
+        # The lexicon is a small corpus word-list, so most true stems are NOT
         # directly attested; without this, every derivational strip was
         # rejected (کارکوونکی، کموالی، اړتیا stayed whole).
         if (self._family_suffixes and len(cand.stem) >= self.cfg.min_stem_len
@@ -119,8 +119,8 @@ class Validator:
         if v > self.cfg.strip_reward * cand.strip_len:
             return v                      # family-supported, though unattested
         # Unattested: a small POSITIVE value proportional to the affix evidence.
-        # It loses to any attested candidate (so we don't invent nonsense
-        # stems), but it still lets the rules act on UNSEEN words, where the
+        # It loses to any attested candidate, which is what keeps invented
+        # stems out, but it still lets the rules act on UNSEEN words, where the
         # lexicon can confirm nothing.
         return self.cfg.unattested_strip * cand.strip_len
 

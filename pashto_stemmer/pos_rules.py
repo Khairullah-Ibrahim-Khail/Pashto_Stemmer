@@ -4,16 +4,16 @@ pos_rules.py
 ============
 Lightweight, rule-based part-of-speech guessing to *constrain* affix
 stripping. There is no statistical tagger here (the project is 100%
-rule-based) — instead we read the coarse POS a word's ending signals and
-only let the rule engine apply affixes compatible with that POS.
+rule-based) — instead the coarse POS a word's ending signals is read off the
+surface, and the rule engine may apply only affixes compatible with it.
 
 Why this helps
 --------------
 Over-generation is the enemy of a candidate-based stemmer. A verbal
 infinitive suffix (ل) should not be tried on an obvious noun plural
 (کورونه). By tagging a likely POS from surface cues and filtering the
-affix inventory to matching POS (plus POS-agnostic affixes), we shrink the
-candidate set, cut runtime, and reduce spurious strips.
+affix inventory to matching POS (plus POS-agnostic affixes), the candidate
+set shrinks, runtime falls, and spurious strips become less likely.
 
 The guesser returns a *set* of plausible POS (coarse: N, ADJ, V) because
 Pashto endings are ambiguous; the lexicon validator still makes the final

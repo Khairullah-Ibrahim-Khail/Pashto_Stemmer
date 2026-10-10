@@ -18,7 +18,7 @@ def S(w):
     return _stemmer.stem(w)
 
 
-# --- baseline CATASTROPHIC failures that we must fix ----------------------
+# --- the baseline's documented catastrophic failures ----------------------
 def test_proper_nouns_follow_the_rules():
     """No name list: the ordinary rules apply, because a hand-written list can
     never cover unseen names. The gold correction log records ‑ستان as a
@@ -80,7 +80,7 @@ def test_irregular_verb_dictionary_is_for_lemmatization():
 
 
 def test_nothing_removed_from_short_words():
-    """Author's rule: no affix comes off a word of 3 characters or fewer."""
+    """Length rule R2: no affix comes off a word of 3 characters or fewer."""
     for w in ["کول", "وژل", "ویل", "لرل", "ښځه", "کور", "خبر", "ښه"]:
         assert S(w) == w, f"{w} was stripped"
 
@@ -109,7 +109,7 @@ def test_feminine_family_conflates():
     the SAME token. Which token it is depends on strip_final_inflection."""
     # NOTE: only the default config is asserted. With strip_final_inflection
     # OFF the family does NOT fully conflate (چاره->چار but چارو->چاره), a
-    # known gap that the author's final ه/ې/و rule is what fixes.
+    # known gap that the final ه/ې/و rule is what fixes.
     for fam in (["سیمه", "سیمې", "سیمو"], ["اداره", "ادارې"],
                 ["چاره", "چارو", "چارې"]):
         assert len({S(w) for w in fam}) == 1, f"{fam} -> {[S(w) for w in fam]}"
@@ -148,8 +148,9 @@ def test_stem_takes_a_word_a_sentence_or_a_list():
     st = PashtoStemmer()
     # one word
     assert st.stem("کورونه") == "کور"
-    # a sentence: every token, not just the last one. An earlier version
-    # treated the whole string as one token and returned "د کورونو خبر".
+    # a sentence: every token, not just the last one. Treating the whole
+    # string as one token returns "د کورونو خبر", which is the regression
+    # this line guards.
     assert st.stem("د کورونو خبرونه") == "د کور خبر"
     # a sequence keeps its shape
     assert st.stem(["کورونه", "خبرونه"]) == ["کور", "خبر"]
@@ -170,8 +171,8 @@ def test_stem_sentence_matches_stem_text():
 def test_lexicalized_compounds_are_kept_whole():
     """Annotation policy §8: a lexicalized compound is one lexical item.
 
-    The ‑لیک rule used to split them (لاسلیک → لاس), against both the policy
-    and the reference, and nothing caught it because no test covered §8.
+    The ‑لیک rule splits them if it is not gated (لاسلیک → لاس), against both
+    the policy and the reference. This is the test that covers §8.
     """
     st = PashtoStemmer()
     assert st.stem("لاسلیک") == "لاسلیک"

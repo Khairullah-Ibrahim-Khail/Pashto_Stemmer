@@ -63,8 +63,13 @@ def short_type(rule) -> str:
     return f"{side}, {cat}"
 
 
-# Rules the author proposed, mostly oblique and feminine variants of forms that
-# are themselves cited. Labelled rather than left looking merely uncited.
+# Oblique and feminine variants of forms that are themselves cited, proposed
+# where a grammar gives the base form without listing every case variant.
+#
+# The set is currently empty of effect: all nine entries acquired a published
+# tag when the citations were located, so source_of() never reaches the
+# "author" branch. It is kept so that a rule losing its tag is labelled rather
+# than left looking merely uncited.
 AUTHOR_PROPOSED = {
     "\u0647\u0645", "\u0648\u0627\u0644\u0648", "\u0648\u0646\u06a9\u0648",
     "\u0648\u0646\u06a9\u06d0", "\u0646\u06a9\u06cc", "\u0646\u06a9\u06d0",
@@ -73,7 +78,7 @@ AUTHOR_PROPOSED = {
 
 
 def source_of(rule) -> str:
-    """What backs this rule: a publication, our inventory, or nothing yet."""
+    """What backs this rule: a publication, the project inventory, or nothing."""
     m = TAG.search(rule.note)
     if m:
         return m.group(1)

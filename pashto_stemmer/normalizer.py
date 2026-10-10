@@ -11,10 +11,10 @@ Most Persian/Urdu normalizers unify *all* "yeh" letters
 (ي / ی / ې / ۍ / ئ) into a single character. For Pashto this is WRONG:
 those yeh forms are morphologically contrastive — they mark gender,
 number, and case (e.g. masculine ي vs. feminine ۍ vs. Pashto ې). The
-whole point of a stemmer is to reason about that morphology, so we must
-NOT destroy it during normalization.
+whole point of a stemmer is to reason about that morphology, so normalization
+must NOT destroy it.
 
-We therefore only remove *true encoding noise* by default:
+Only *true encoding noise* is removed by default:
     - Arabic tashkeel / harakat (diacritics)
     - tatweel / kashida (ـ) elongation
     - zero-width non-joiner inside a token
@@ -27,8 +27,8 @@ We therefore only remove *true encoding noise* by default:
 Every transformation is an independent flag on `NormalizerConfig`, so a
 given normalization *aggressiveness* is a reproducible experimental
 variable for the ablation study (Phase 5). In particular `unify_yeh`
-and `unify_gaf` default to False and exist only so we can *measure* the
-damage aggressive normalization does to Pashto stemming.
+and `unify_gaf` default to False and exist only to *measure* the damage
+aggressive normalization does to Pashto stemming.
 
 References:
     - Larkey et al. (Light stemming philosophy: normalize conservatively)
@@ -96,7 +96,7 @@ class NormalizerConfig:
     unify_heh_variants: bool = True   # ة ہ ھ -> ه
     # Urdu letters that appear in Pashto written in Pakistan. They are the same
     # letters, encoded differently, so folding them is an encoding fix and not a
-    # change of spelling. Taken from the author's Pashto_Normalizer:
+    # change of spelling. Taken from the companion Pashto_Normalizer project:
     #   https://github.com/Khairullah-Ibrahim-Khail/Pashto_Normalizer
     # ے (Urdu yeh barree) is NOT one of the five Pashto yeh; it stands for ې.
     unify_urdu_letters: bool = True    # ٹ ڈ ڑ ے -> ټ ډ ړ ې

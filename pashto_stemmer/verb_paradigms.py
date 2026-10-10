@@ -243,7 +243,7 @@ BASIC_OL_VERBS = {"کول", "ورکول", "راکول", "درکول"}
 # definition of a stem: *a stem is something other words are built from*.
 MIN_FAMILY = 2
 
-# No affix is removed from a word of this length or shorter (author's rule).
+# No affix is removed from a word of this length or shorter (length rule R2).
 MIN_WORD_LEN = 3
 
 # Minimum length of the remainder that may be accepted as a stem.
@@ -265,8 +265,8 @@ def lemma_to_stem(lemma: str, is_word=None, family_fn=None) -> str:
     that deeper strip is taken; otherwise only ‑ل is removed.
     """
     # Nothing is ever removed from a word of three characters or fewer:
-    # کول، ویل، وژل، لرل keep their ل. (Author's ruling — the same guard the
-    # ‑ه rule uses; on short words the affix is part of the lexical item.)
+    # کول، ویل، وژل، لرل keep their ل. (The same guard the ‑ه rule uses;
+    # on short words the affix is part of the lexical item.)
     if len(lemma) <= MIN_WORD_LEN:
         return lemma
 

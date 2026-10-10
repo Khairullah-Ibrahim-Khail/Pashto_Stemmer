@@ -12,12 +12,12 @@ present stem, past stem and source live in paper/verbs_sources.tsv, which is
 keyed by infinitive; the generator refuses to emit a verb that has no row
 there, and reports any row whose verb has left the dictionary.
 
-An earlier, hand-maintained version of the appendix had drifted: it listed 42
-verbs where the dictionary held 38, twelve of its entries were not in the
-dictionary at all, eight that were in the dictionary were missing from it, and
-five source cells had been truncated to "[T&R" or "Robson & Tegey Table" with
-no number. Those five are now recorded as unverified rather than completed
-with a locus nobody has.
+Generating it is the point: a hand-maintained appendix drifts. The one this
+replaced listed 42 verbs against a dictionary of 38, twelve of them not
+implemented and eight implemented ones missing, with five source cells
+truncated to "[T&R" or "Robson & Tegey Table". A truncated locus is not a
+citation, so those five are carried as unverified rather than completed with
+a number nobody recorded.
 """
 from __future__ import annotations
 
@@ -104,9 +104,8 @@ def main() -> int:
     L.append("")
     L.append(f"A further {len(identified)} strong verbs were identified during the "
              "work and are \\emph{not} in the dictionary. They are listed because "
-             "a reader extending the dictionary should start here, and because "
-             "an earlier version of this appendix presented them as though they "
-             "were implemented.")
+             "a reader extending the dictionary should start here, and so that "
+             "the main table is not read as covering them.")
     L.append("")
     L.append("\\footnotesize")
     L.append("\\begin{longtable}{lllll}")

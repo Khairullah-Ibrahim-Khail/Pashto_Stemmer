@@ -12,17 +12,18 @@ e.g. ځي (goes), لاړ (went) and تلل (to go) share no strippable affix. On
 a lexical map can normalize them.
 
 This module maps each attested surface form to its **infinitive lemma**
-(the light stem we return). It is organized verb-by-verb so a native
+(the light stem returned). It is organized verb-by-verb so a native
 speaker can audit and extend it. Forms are stored in canonical normalized
 orthography (ي is written ی per the project normalizer; ې and ۍ preserved).
 
-Coverage: the ~40 most frequent irregular/suppletive verbs of modern
-(journalistic) Pashto. This is a v1 lexicon meant to be verified and grown
-during gold-set annotation.
+Coverage: 38 paradigms over 315 surface forms, the most frequent
+irregular and suppletive verbs of modern journalistic Pashto. 15 of the 38
+are still unverified against a printed grammar and are marked as such in
+paper/verbs_sources.tsv.
 
-Design note: where a form is already its own best light stem, we still map
-it to the shared infinitive so that all paradigm members conflate to ONE
-stem — which is exactly what a stemmer must do for IR/indexing.
+Design note: where a form is already its own best light stem it is still
+mapped to the shared infinitive, so that all paradigm members conflate to
+ONE stem — which is what indexing requires.
 """
 
 from __future__ import annotations

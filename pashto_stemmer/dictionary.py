@@ -19,8 +19,8 @@ Why a frequency-weighted lexicon (and not a plain word set)?
 The hybrid stemmers of Persian (Rahimi 2015) and
 Urdu (Khan 2018) resolve the over-stemming problem by *validating* each
 rule-generated candidate against a lexicon and preferring the candidate
-the corpus actually attests. Frequency lets us break ties between two
-"real word" candidates by corpus evidence — a purely rule-based signal
+the corpus actually attests. Frequency breaks ties between two "real word"
+candidates by corpus evidence — a purely rule-based signal
 (it is a corpus statistic, not a learned model), which keeps the system
 100% rule-based / ML-free.
 

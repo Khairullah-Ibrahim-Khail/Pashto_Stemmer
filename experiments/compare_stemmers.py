@@ -7,9 +7,9 @@ Head-to-head on the gold set:
   1. A stemmer that does nothing      - the floor, since many word types
                                         carry no affix at all
   2. Aslamzai & Saad (2015)           - the published nine-rule baseline
-  3. Ours without the dictionary      - what the rules alone achieve
-  4. Ours, inflection only            - no derivational stripping
-  5. Ours, full system
+  3. This stemmer without the dictionary - what the rules alone achieve
+  4. This stemmer, inflection only       - no derivational stripping
+  5. This stemmer, full system
 
 Metrics: exact-match accuracy and Paice's under/over-stemming indices.
 """
@@ -70,11 +70,11 @@ def main():
     systems = [
         ("Do nothing", lambda w: w),
         ("Aslamzai & Saad (2015)", AslamzaiBaseline().stem),
-        ("Ours, no dictionary", PashtoStemmer(
+        ("This stemmer, no dictionary", PashtoStemmer(
             StemmerConfig(use_dictionary=False)).stem),
-        ("Ours, inflection only", PashtoStemmer(
+        ("This stemmer, inflection only", PashtoStemmer(
             StemmerConfig(strip_derivational=False)).stem),
-        ("Ours, full system", PashtoStemmer().stem),
+        ("This stemmer, full system", PashtoStemmer().stem),
     ]
     print(f"gold words: {len(all_pairs)}")
     print(f"  stemming rows scored : {len(pairs)}")

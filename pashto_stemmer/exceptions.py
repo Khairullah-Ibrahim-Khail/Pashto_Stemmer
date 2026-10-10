@@ -51,7 +51,7 @@ STOPWORDS: Set[str] = {
 # --------------------------------------------------------------------------- #
 # Irregular / suppletive verbs: surface form -> light stem (infinitive lemma).
 # The strong, audited paradigm-organized lexicon lives in irregular_verbs.py
-# (~40 verbs, ~300 forms). We import and use it directly.
+# (38 verbs, 315 forms) and is imported directly.
 # --------------------------------------------------------------------------- #
 from .irregular_verbs import IRREGULAR_VERBS as IRREGULAR  # noqa: E402
 

@@ -10,8 +10,8 @@ Pashto forms closed compounds by concatenation, e.g.
     ولسمشر    = ولس (nation) + مشر (leader)     -> "president"
 
 A single-pass affix stripper cannot handle these; it will hack at the
-edges and produce junk. We instead try to split an *unattested* word into
-two (or more) attested parts using the trie's longest-valid-prefix query,
+edges and produce junk. The approach here is to split an *unattested* word
+into two (or more) attested parts using the trie's longest-valid-prefix query,
 then let the stemmer stem the semantic head.
 
 The splitter is deliberately conservative:

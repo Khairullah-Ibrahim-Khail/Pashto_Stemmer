@@ -109,8 +109,8 @@ def groups_of(pairs):
 
 # --------------------------------------------------------------------------- #
 # Protocol B: a judge is shown the output and asked whether it is an acceptable
-# analysis. We make that reproducible by counting an output as acceptable when
-# nothing was removed that is not a documented affix, and by treating an
+# analysis. That is made reproducible here by counting an output as acceptable
+# when nothing was removed that is not a documented affix, and by treating an
 # unchanged word as acceptable, which is how a judge shown one would score it.
 AFFIXES = {fold(r.affix): r.side for r in list(SUFFIX_RULES) + list(PREFIX_RULES)}
 

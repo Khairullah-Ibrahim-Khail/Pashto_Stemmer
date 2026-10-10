@@ -105,12 +105,12 @@ class StemmerConfig:
         ("ېږم", ""), ("ېږو", ""), ("ېږ", ""), ("ېد", ""),
         ("ولو", ""), ("ولی", ""), ("ولې", ""), ("ول", ""), ("وي", ""),
     )
-    # Author's rule: a form longer than three characters ending in ‑ه، ‑ې or ‑و
+    # Length rule: a form longer than three characters ending in ‑ه، ‑ې or ‑و
     # drops that final letter, so the whole feminine/oblique family collapses
     # to ONE token (سیمه/سیمې/سیمو -> سیم، چاره/چارو -> چار) instead of the
     # inconsistent چار vs چاره. Words of 3 characters or fewer keep it
     # (ښځه، ښه، نو).
-    # Proper nouns are NOT frozen (policy §7, revised by the author).
+    # Proper nouns are NOT frozen (policy §7, as revised).
     # A hand-maintained name list can never be complete, so it makes the
     # system behave inconsistently — freezing the names that happen to be
     # listed while stripping every unseen one. A rule-based stemmer has no
@@ -124,11 +124,11 @@ class StemmerConfig:
     # there, because letting the other rules continue gave ترکمنستان→ترک.
     strip_stan: bool = True
     stan_min_stem: int = 3
-    # --- the author's length rules (gold v2 standard) --------------------- #
+    # --- the length rules (gold v2 standard) ------------------------------ #
     # R2  three letters or fewer            -> keep as is (outranks everything)
     # R1  four letters ending in a yeh/ل/ه  -> remove that letter
     # R3 (NOT Pashto and 7+ letters -> remove the last three) is DISABLED.
-    #   Measured on the author's own annotations, cutting three characters was
+    #   Measured on the development annotations, cutting three characters was
     #   beaten by simply stripping a real affix: 43.5% vs 51.6% on the
     #   re-annotated held-out news set, and 25.0% vs 45.0% on the 2,912-word
     #   gold. Every word it damaged had a genuine affix (درلودلو→درلو not
@@ -199,8 +199,8 @@ class StemmerConfig:
     # a verb. Worth +1.0 on the gold and +0.6 on held-out text.
     r1_tail: str = "یيېۍئه"
     r3_min_len: int = 0          # 0 = R3 off
-    # ‑ه is NOT in this set. A blanket chop of final ه caused 179 of our
-    # errors (موده→مود، برخه→برخ، مینه→مین، اندازه→انداز): in Pashto a final ه
+    # ‑ه is NOT in this set. A blanket chop of final ه caused 179 errors
+    # (موده→مود، برخه→برخ، مینه→مین، اندازه→انداز): in Pashto a final ه
     # is very often part of the word, not an ending. ې and و are far more
     # reliably inflectional, so only those are trimmed.
     final_inflection_letters: str = "ېو"
@@ -349,7 +349,7 @@ class PashtoStemmer:
             if norm in self._stopwords:
                 return StemResult(raw, norm, norm, 1.0, self._att(norm), (),
                                   "stopword (frozen)")
-            # The author's length rules run before everything else: in the
+            # The length rules run before everything else: in the
             # gold v2 standard R2 (three letters or fewer) outranks even the
             # irregular-verb table (شوه stays شوه, it is not mapped to کېدل).
             if self.cfg.author_rules and self.cfg.author_rules_before_dictionary:
@@ -528,9 +528,9 @@ class PashtoStemmer:
             stem(["کورونه", "خبرونه"])     -> ["کور", "خبر"]
             df["text"].apply(st.stem)     -> a stemmed column
 
-        The shape you pass in is the shape you get back. An earlier version
-        took a single token only, and a sentence came back with just its last
-        word stemmed -- a wrong answer rather than an error, which is worse.
+        The shape you pass in is the shape you get back. A sentence has every
+        token stemmed, not just the last one; a dict raises TypeError rather
+        than silently stemming its keys.
 
         Anything that is not a string (a NaN from an empty cell) returns an
         empty string, so one blank row cannot stop a job halfway through a
@@ -689,7 +689,7 @@ class PashtoStemmer:
         return self._att(word)
 
     def _author_rules(self, norm: str):
-        """The author's length rules. Returns (stem, rule_id) or None."""
+        """The length rules R1 and R2. Returns (stem, rule_id) or None."""
         n = len(norm)
         if n <= 3:                                   # R2
             # …except that a three-letter word ending in ‑ې or ‑و still loses
@@ -733,7 +733,7 @@ if __name__ == "__main__":
     stemmer = PashtoStemmer()
     # The baseline's documented catastrophic failures + normal inflection:
     demo = [
-        "افغانستان",   # proper noun: baseline -> افغانست ; we must FREEZE
+        "افغانستان",   # proper noun: baseline -> افغانست ; must be frozen
         "پراختيا",     # baseline -> لان ; light stem should not destroy it
         "پلانونه",     # baseline -> لان ; should -> پلان (plans -> plan)
         "کورونه",      # plural -> کور

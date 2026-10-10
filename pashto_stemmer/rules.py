@@ -20,7 +20,7 @@ inventory where every affix carries linguistic metadata:
 The engine here does NOT decide which candidate is correct — it only
 *generates* candidates. Selection is the job of validation.py, which
 consults the lexicon. Separating generation from validation is the core
-idea we borrow from the Persian/Urdu hybrid stemmers.
+idea taken from the Persian and Urdu hybrid stemmers.
 """
 
 from __future__ import annotations
@@ -35,12 +35,13 @@ from typing import List, Optional, Sequence, Tuple
 # Pashto has five yeh letters and they are morphologically contrastive, so the
 # normalizer preserves every one of them. But the SAME suffix is written ي in
 # news orthography (لومړي، تاریخي، حکومتي) and ی in the dictionary orthography
-# our rule inventory is written in. A rule spelled with ی therefore never fired
+# the rule inventory is written in. A rule spelled with ی therefore never fired
 # on news text: 118 of 499 held-out news words contain ي, while 0 of the 2912
 # gold words do, so the gap was invisible until the news set was annotated.
 #
-# We therefore compare a folded KEY when deciding whether a rule applies, and
-# always slice the ORIGINAL token for the result. No letter is ever rewritten.
+# Matching therefore compares a folded KEY when deciding whether a rule
+# applies, and always slices the ORIGINAL token for the result. No letter
+# is ever rewritten.
 _YEH_FOLD = str.maketrans({"ي": "ی", "ې": "ی", "ۍ": "ی", "ئ": "ی"})
 
 

@@ -40,12 +40,10 @@ def removal(word: str, stem: str):
 
     A removal can take material off both ends of the same word: a perfective
     prefix and a verbal ending (وبلله → بلل), a directional prefix and an
-    oblique infinitive (رارسېدو → رسېد). An earlier version of this
-    function returned None for those, which dropped 15 development rows and
-    26 held-out rows from the audit without saying so -- and they are exactly
-    the rows the inventory cannot explain, since the verbal prefixes were
-    measured and discarded. They are now reported like any other removal,
-    with both ends named.
+    oblique infinitive (رارسېدو → رسېد). Both ends are reported, because
+    counting only one-ended cuts hides 15 development rows and 26 held-out
+    rows -- and those are exactly the rows the inventory cannot explain,
+    since the verbal prefixes were measured and discarded.
     """
     w, s = fold(word), fold(stem)
     if not s or w == s or s not in w:

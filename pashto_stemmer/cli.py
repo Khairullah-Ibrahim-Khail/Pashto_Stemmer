@@ -108,11 +108,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
-    # Every switch below is expressed as a change from StemmerConfig's own
-    # default, so the command line and the library cannot drift apart. They
-    # did twice: use_pos defaulted to True here and False there, so ښوونځی
-    # came out as ښوونځی from the CLI and ښوون from the API, and
-    # use_compound was being turned on by the absence of --no-compound.
+    # Every switch is expressed as a change from StemmerConfig's own default,
+    # so the command line and the library cannot give different answers for the
+    # same word. Hardcoding a default here instead has produced that bug twice,
+    # once for use_pos and once for use_compound; the invariant is enforced by
+    # test_cli_defaults_match_stemmer_config.
     cfg = StemmerConfig(
         use_dictionary=not args.no_dict,
         use_exceptions=not args.no_exceptions,
