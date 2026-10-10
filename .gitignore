@@ -68,3 +68,6 @@ dataset/ANNOTATION_GUIDELINES.pdf
 # longer has. Section IV and Appendix A of the paper replace it.
 docs/Pashto_Stemmer_Rules.pdf
 docs/Pashto_Stemmer_Rules.docx
+
+# Output of examples/stem_csv.py; the script regenerates it.
+examples/sample_words_stemmed.csv

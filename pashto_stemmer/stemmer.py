@@ -259,6 +259,13 @@ class PashtoStemmer:
             family_suffixes={r.affix for r in SUFFIX_RULES
                              if r.category == "derivational"})
 
+        # One result per distinct token, kept for the life of the stemmer.
+        # The limit is a guard against an adversarial stream of unique strings
+        # rather than a tuning knob: a Pashto corpus of any size has far fewer
+        # distinct word types than this.
+        self._cache: dict = {}
+        self._cache_limit = 500_000
+
         # Compound splitter needs a real lexicon; disabled without one.
         self.splitter = (CompoundSplitter(self.lexicon, CompoundConfig())
                          if (self.cfg.use_compound and self.cfg.use_dictionary)
@@ -302,6 +309,28 @@ class PashtoStemmer:
 
     # ------------------------------------------------------------------ #
     def stem_word(self, token: str) -> StemResult:
+        """The full decision for one token: stem, confidence, rules, trace.
+
+        Results are cached on the raw token. A corpus repeats words heavily --
+        five million tokens of news is around seventy thousand distinct words --
+        so the second occurrence of a word costs a dictionary lookup instead of
+        a full pass over the rule inventory. StemResult is immutable, so handing
+        the same object back twice is safe.
+        """
+        hit = self._cache.get(token)
+        if hit is not None:
+            return hit
+        result = self._stem_word_uncached(token)
+        if len(self._cache) < self._cache_limit:
+            self._cache[token] = result
+        return result
+
+    def clear_cache(self) -> None:
+        """Forget every cached result. Only needed if the rules are edited in
+        place at run time, which the experiments do."""
+        self._cache.clear()
+
+    def _stem_word_uncached(self, token: str) -> StemResult:
         raw = token
         norm = self.normalizer.normalize_token(token).strip(_STRIP_PUNCT)
 
@@ -486,14 +515,149 @@ class PashtoStemmer:
             self.error_log.append(result)
         return result
 
-    def stem(self, token: str) -> str:
-        """Convenience: just the stem string."""
-        return self.stem_word(token).stem
+    def stem(self, text):
+        """Stem anything: a word, a sentence, or a sequence of either.
+
+            stem("کورونه")                -> "کور"
+            stem("د کورونو خبرونه")        -> "د کور خبر"
+            stem(["کورونه", "خبرونه"])     -> ["کور", "خبر"]
+            df["text"].apply(st.stem)     -> a stemmed column
+
+        The shape you pass in is the shape you get back. An earlier version
+        took a single token only, and a sentence came back with just its last
+        word stemmed -- a wrong answer rather than an error, which is worse.
+
+        Anything that is not a string (a NaN from an empty cell) returns an
+        empty string, so one blank row cannot stop a job halfway through a
+        file. For the reasoning behind a decision use stem_word or stem_text,
+        which return the rules, the confidence and the trace.
+        """
+        if isinstance(text, str):
+            words = text.split()
+            if not words:
+                return ""
+            if len(words) == 1:
+                return self.stem_word(words[0]).stem
+            return self.stem_sentence(text)
+        if isinstance(text, (list, tuple)):
+            return type(text)(self.stem(x) for x in text)
+        try:
+            return [self.stem(x) for x in text]      # any other iterable
+        except TypeError:
+            return ""
+
+    def stem_file(self, path, column="word", out=None, keep_original=True,
+                  new_column=None, sheet=None, unique=False, warn=True,
+                  trace=False):
+        """Stem one column of a CSV, TSV or Excel file.
+
+            st.stem_file("words.csv")                       # returns the rows
+            st.stem_file("words.csv", out="done.csv")       # writes them
+            st.stem_file("data.xlsx", column="form", keep_original=False)
+
+        With no `out` nothing is written and the rows come back as a list of
+        dicts, so you can inspect the result before deciding to save it. With
+        `out` the format follows that file's extension, and a delimited file is
+        streamed row by row rather than held in memory.
+
+        column        which column to stem
+        out           where to write; None returns the rows instead
+        keep_original False drops every column except the stem
+        new_column    name for the result; default <column>_stemmed
+        sheet         which Excel worksheet; default the first
+        unique        stem distinct values only, then map back
+        warn          say so once if the column holds sentences
+        trace         add a column naming the rules that fired
+        """
+        from . import files
+
+        target = new_column or f"{column}_stemmed"
+        trace_col = f"{column}_rules"
+
+        def fill(row):
+            value = row.get(column) or ""
+            if trace:
+                r = self.stem_word(value.strip()) if len(value.split()) == 1 \
+                    else None
+                row[target] = r.stem if r else self.stem(value)
+                row[trace_col] = "+".join(r.rules_applied) if r else ""
+            else:
+                row[target] = self.stem(value)
+            return row
+
+        # Streaming path: delimited input, a destination, nothing to dedupe.
+        if out and not files._is_excel(path) and not files._is_excel(out) \
+                and not unique:
+            header = files.read_header(path)
+            files.check_column(path, column, header)
+            fields = ([*header, target] if keep_original else [target])
+            if trace:
+                fields.append(trace_col)
+            import csv as _csv
+            n = 0
+            with open(out, "w", encoding="utf-8", newline="") as fh:
+                w = _csv.DictWriter(fh, fieldnames=fields,
+                                    delimiter=files._delimiter(out),
+                                    extrasaction="ignore")
+                w.writeheader()
+                for row in files.iter_rows(path):
+                    w.writerow(fill(row))
+                    n += 1
+            return {"rows": n, "column": target, "out": out}
+
+        header, rows = files.read_rows(path, sheet)
+        files.check_column(path, column, header)
+        if warn:
+            files.warn_multiword(column, (r.get(column) for r in rows))
+
+        if unique:
+            # Stem each distinct value once, then map it back onto every row.
+            # A vocabulary is far smaller than a corpus, and the cache already
+            # makes the repeats cheap -- this skips them entirely.
+            seen = {}
+            for row in rows:
+                v = row.get(column) or ""
+                if v not in seen:
+                    seen[v] = self.stem(v)
+                row[target] = seen[v]
+                if trace:
+                    r = self.stem_word(v.strip()) if len(v.split()) == 1 else None
+                    row[trace_col] = "+".join(r.rules_applied) if r else ""
+        else:
+            for row in rows:
+                fill(row)
+
+        fields = ([*header, target] if keep_original else [target])
+        if trace:
+            fields.append(trace_col)
+        if not keep_original:
+            rows = [{k: r.get(k, "") for k in fields} for r in rows]
+
+        if out:
+            files.write_rows(out, fields, rows)
+            return {"rows": len(rows), "column": target, "out": out}
+        return rows
 
     def stem_text(self, text: str) -> List[StemResult]:
+        """Every token with its full decision. Use stem_sentence for a string."""
         text = self.normalizer.normalize(text)
         tokens = [t for t in _TOKEN_SPLIT.split(text) if t.strip(_STRIP_PUNCT)]
         return [self.stem_word(t) for t in tokens]
+
+    def stem_sentence(self, text: str) -> str:
+        """Text in, stemmed text out.
+
+        This is the one to reach for with pandas or any map over a column:
+
+            df["stemmed"] = df["text"].apply(st.stem_sentence)
+
+        A non-string (a NaN from an empty cell, say) returns an empty string
+        rather than raising, because a single blank row should not stop a job
+        halfway through a file.
+        """
+        if not isinstance(text, str):
+            return ""
+        return " ".join(r.stem for r in self.stem_text(text))
 
     # ------------------------------------------------------------------ #
     def _final_trim(self, stem: str) -> str:

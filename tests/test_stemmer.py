@@ -143,6 +143,29 @@ def test_arabic_broken_plurals_are_dictionary():
     assert S("اخبار") == "خبر"
     assert S("علوم") == "علم"
 
+def test_stem_takes_a_word_a_sentence_or_a_list():
+    st = PashtoStemmer()
+    # one word
+    assert st.stem("کورونه") == "کور"
+    # a sentence: every token, not just the last one. An earlier version
+    # treated the whole string as one token and returned "د کورونو خبر".
+    assert st.stem("د کورونو خبرونه") == "د کور خبر"
+    # a sequence keeps its shape
+    assert st.stem(["کورونه", "خبرونه"]) == ["کور", "خبر"]
+    assert st.stem(("کورونه", "خبرونه")) == ("کور", "خبر")
+    # blanks and non-strings do not raise: one empty cell must not stop a job
+    assert st.stem("") == "" and st.stem("   ") == "" and st.stem(None) == ""
+    # surrounding whitespace is not a second token
+    assert st.stem("  پوهنتون  ") == "پوهن"
+
+
+def test_stem_sentence_matches_stem_text():
+    st = PashtoStemmer()
+    text = "په سیمو کې د ښوونځیو جوړول روان دي"
+    assert st.stem_sentence(text) == " ".join(r.stem for r in st.stem_text(text))
+    assert st.stem(text) == st.stem_sentence(text)
+
+
 def _run_all():
     fns = [g for n, g in globals().items() if n.startswith("test_")]
     passed = 0

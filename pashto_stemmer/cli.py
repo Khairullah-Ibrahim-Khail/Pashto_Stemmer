@@ -40,6 +40,12 @@ def build_parser() -> argparse.ArgumentParser:
                    help="which column to stem (default: text)")
     p.add_argument("--sheet", metavar="NAME",
                    help="which worksheet of an .xlsx file (default: the first)")
+    p.add_argument("--only-stems", action="store_true",
+                   help="output just the stem column, not the original columns")
+    p.add_argument("--unique", action="store_true",
+                   help="stem distinct values only")
+    p.add_argument("--new-column", metavar="NAME",
+                   help="name for the stem column (default: <column>_stemmed)")
     p.add_argument("--out", metavar="PATH",
                    help="where to write the result (default: stdout)")
     p.add_argument("-t", "--trace", action="store_true",
@@ -53,78 +59,6 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--pos", action="store_true",
                    help="enable the POS filter (off by default, as in the library)")
     return p
-
-
-def _read_table(path, sheet):
-    """Return (fieldnames, rows) from a CSV, TSV or .xlsx file.
-
-    CSV is read as utf-8-sig: a file exported from Excel begins with a
-    byte-order mark, and without this the first column name comes back with the
-    mark attached and the lookup fails.
-    """
-    ext = os.path.splitext(path)[1].lower()
-    if ext in (".xlsx", ".xlsm"):
-        try:
-            from openpyxl import load_workbook
-        except ImportError:
-            raise SystemExit("reading .xlsx needs openpyxl: pip install openpyxl")
-        wb = load_workbook(path, data_only=True, read_only=True)
-        ws = wb[sheet] if sheet else wb[wb.sheetnames[0]]
-        it = ws.iter_rows(values_only=True)
-        header = ["" if c is None else str(c) for c in next(it, ())]
-        rows = [dict(zip(header, ["" if c is None else str(c) for c in r]))
-                for r in it]
-        wb.close()
-        return header, rows
-    delim = "\t" if ext in (".tsv", ".tab") else ","
-    with open(path, encoding="utf-8-sig", newline="") as fh:
-        reader = csv.DictReader(fh, delimiter=delim)
-        return reader.fieldnames, list(reader)
-
-
-def _write_table(path, fieldnames, rows):
-    """Write to .xlsx when that is what was asked for, otherwise CSV/TSV."""
-    ext = os.path.splitext(path)[1].lower() if path else ""
-    if ext in (".xlsx", ".xlsm"):
-        from openpyxl import Workbook
-        wb = Workbook(); ws = wb.active
-        ws.append(list(fieldnames))
-        for r in rows:
-            ws.append([r.get(k, "") for k in fieldnames])
-        wb.save(path)
-        return
-    delim = "\t" if ext in (".tsv", ".tab") else ","
-    out = open(path, "w", encoding="utf-8", newline="") if path else sys.stdout
-    try:
-        w = csv.DictWriter(out, fieldnames=list(fieldnames), delimiter=delim)
-        w.writeheader()
-        w.writerows(rows)
-    finally:
-        if path:
-            out.close()
-
-
-def stem_table(stemmer, path, column, out_path, sheet=None):
-    """Stem one column of a table, writing the original rows back with a new
-    column alongside. Works on CSV, TSV and Excel workbooks."""
-    fieldnames, rows = _read_table(path, sheet)
-    if not fieldnames:
-        print(f"{path}: no header row", file=sys.stderr)
-        return 1
-    if column not in fieldnames:
-        print(f"{path}: no column {column!r}; found {', '.join(fieldnames)}",
-              file=sys.stderr)
-        return 1
-
-    field = column + "_stemmed"
-    for row in rows:
-        text = row.get(column) or ""
-        row[field] = " ".join(r.stem for r in stemmer.stem_text(text))
-    _write_table(out_path, list(fieldnames) + [field], rows)
-    if out_path:
-        print(f"{len(rows)} rows -> {out_path} (new column: {field})",
-              file=sys.stderr)
-    return 0
 
 
 def main(argv=None) -> int:
@@ -142,7 +76,24 @@ def main(argv=None) -> int:
     stemmer = PashtoStemmer(cfg)
 
     if args.table:
-        return stem_table(stemmer, args.table, args.column, args.out, args.sheet)
+        try:
+            info = stemmer.stem_file(
+                args.table, column=args.column, out=args.out,
+                keep_original=not args.only_stems, new_column=args.new_column,
+                sheet=args.sheet, unique=args.unique, trace=args.trace,
+            )
+        except (KeyError, SystemExit) as exc:
+            print(str(exc).strip('"\''), file=sys.stderr)
+            return 1
+        if args.out:
+            print(f"{info['rows']} rows -> {info['out']} "
+                  f"(new column: {info['column']})", file=sys.stderr)
+        else:
+            import csv as _csv
+            fields = list(info[0].keys()) if info else []
+            w = _csv.DictWriter(sys.stdout, fieldnames=fields)
+            w.writeheader(); w.writerows(info)
+        return 0
 
     if args.file:
         with open(args.file, encoding="utf-8") as fh:
