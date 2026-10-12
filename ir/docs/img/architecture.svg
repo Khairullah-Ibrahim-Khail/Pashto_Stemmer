@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1000" width="1180" height="1000" font-family="ui-sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="aExt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdf4ff"/><stop offset="1" stop-color="#f5d0fe"/></linearGradient>
+    <linearGradient id="aCore" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eff6ff"/><stop offset="1" stop-color="#dbeafe"/></linearGradient>
+    <linearGradient id="aData" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#e2e8f0"/></linearGradient>
+    <linearGradient id="aP1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecfeff"/><stop offset="1" stop-color="#cffafe"/></linearGradient>
+    <linearGradient id="aP2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbeb"/><stop offset="1" stop-color="#fef3c7"/></linearGradient>
+    <linearGradient id="aP3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5f3ff"/><stop offset="1" stop-color="#ede9fe"/></linearGradient>
+    <linearGradient id="aP4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecfdf5"/><stop offset="1" stop-color="#d1fae5"/></linearGradient>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+    <marker id="gd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker>
+    <style>
+      .h  { font-size:19px; font-weight:700; fill:#0f172a }
+      .lb { font-size:10.5px; letter-spacing:.1em; font-weight:700 }
+      .t  { font-size:13px; font-weight:650; fill:#0f172a }
+      .m  { font-size:11.5px; font-family:ui-monospace,"SF Mono",Menlo,monospace; fill:#1e293b }
+      .s  { font-size:10.5px; fill:#64748b }
+      .n  { font-size:14px; font-weight:700 }
+      .ps { font-size:13px; font-family:"Noto Naskh Arabic","Scheherazade New",serif; direction:rtl }
+    </style>
+  </defs>
+  <rect width="1180" height="1000" fill="#ffffff"/>
+
+  <text x="34" y="38" class="lb" fill="#64748b">SYSTEM ARCHITECTURE</text>
+  <text x="34" y="64" class="h">How the pieces fit together</text>
+  <text x="34" y="84" class="s">solid arrow = data flows · dashed arrow = code depends on</text>
+
+  <!-- ============ EXTERNAL ============ -->
+  <rect x="34" y="104" width="1112" height="86" rx="12" fill="none" stroke="#e9d5ff" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="48" y="124" class="lb" fill="#a21caf">EXTERNAL — NOT PART OF THIS FOLDER</text>
+  <rect x="48" y="132" width="300" height="46" rx="9" fill="url(#aExt)" stroke="#a21caf" stroke-width="1.4"/>
+  <text x="62" y="151" class="m">pashto_stemmer</text>
+  <text x="62" y="167" class="s">PashtoStemmer · Normalizer — the thing being tested</text>
+  <rect x="366" y="132" width="196" height="46" rx="9" fill="url(#aExt)" stroke="#a21caf" stroke-width="1.4"/>
+  <text x="380" y="151" class="m">rank_bm25</text>
+  <text x="380" y="167" class="s">BM25Okapi ranking</text>
+  <rect x="580" y="132" width="196" height="46" rx="9" fill="url(#aExt)" stroke="#a21caf" stroke-width="1.4"/>
+  <text x="594" y="151" class="m">corpus/</text>
+  <text x="594" y="167" class="s">44,814 .txt documents</text>
+  <rect x="794" y="132" width="338" height="46" rx="9" fill="url(#aExt)" stroke="#a21caf" stroke-width="1.4"/>
+  <text x="808" y="151" class="m">data/queries_all.tsv</text>
+  <text x="808" y="167" class="s">the full query pool you supply</text>
+
+  <!-- ============ CORE ============ -->
+  <rect x="34" y="208" width="1112" height="96" rx="12" fill="none" stroke="#bfdbfe" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="48" y="228" class="lb" fill="#1d4ed8">CORE — SHARED BY EVERY TOOL</text>
+  <rect x="48" y="236" width="196" height="56" rx="9" fill="url(#aCore)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="62" y="256" class="m">config.py</text>
+  <text x="62" y="272" class="s">paths · TOP_K 1000</text>
+  <text x="62" y="286" class="s">EVAL_K 10 · POOL 25</text>
+  <rect x="258" y="236" width="206" height="56" rx="9" fill="url(#aCore)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="272" y="256" class="m">tokenizer.py</text>
+  <text x="272" y="272" class="s">normalize + split</text>
+  <text x="272" y="286" class="s">uses the project Normalizer</text>
+  <rect x="478" y="236" width="206" height="56" rx="9" fill="url(#aCore)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="492" y="256" class="m">index.py</text>
+  <text x="492" y="272" class="s">builds both indexes</text>
+  <text x="492" y="286" class="s">retrieve() · stem_word()</text>
+  <rect x="698" y="236" width="196" height="56" rx="9" fill="url(#aCore)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="712" y="256" class="m">data_loader.py</text>
+  <text x="712" y="272" class="s">corpus · queries · qrels</text>
+  <text x="712" y="286" class="s">checks the query lock</text>
+  <rect x="908" y="236" width="224" height="56" rx="9" fill="url(#aCore)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="922" y="256" class="m">metrics.py</text>
+  <text x="922" y="272" class="s">P@k · Recall@k</text>
+  <text x="922" y="286" class="s">MAP · nDCG@k</text>
+
+  <!-- dependency arrows external -> core -->
+  <path d="M198,178 V232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="4 4" fill="none" marker-end="url(#gd)"/>
+  <path d="M340,178 V230 H352" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="4 4" fill="none" marker-end="url(#gd)"/>
+  <path d="M464,178 V214 H560 V232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="4 4" fill="none" marker-end="url(#gd)"/>
+  <path d="M678,178 V214 H780 V232" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="4 4" fill="none" marker-end="url(#gd)"/>
+
+  <!-- ============ PHASES ============ -->
+  <text x="34" y="344" class="lb" fill="#64748b">THE FOUR PHASES — LEFT TO RIGHT</text>
+
+  <!-- phase 1 -->
+  <rect x="34" y="356" width="258" height="234" rx="12" fill="url(#aP1)" stroke="#0891b2" stroke-width="1.6"/>
+  <text x="50" y="380" class="lb" fill="#0e7490">1 · CHOOSE THE QUERIES</text>
+  <rect x="50" y="392" width="226" height="40" rx="8" fill="#ffffff" stroke="#0891b2" stroke-width="1.2"/>
+  <text x="62" y="410" class="m">select_queries.py</text>
+  <text x="62" y="425" class="s">random, fixed seed, keeps judged</text>
+  <text x="50" y="454" class="t">writes</text>
+  <rect x="50" y="462" width="226" height="34" rx="8" fill="url(#aData)" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="62" y="478" class="m">data/queries.tsv</text>
+  <text x="62" y="491" class="s">the 30 chosen queries</text>
+  <rect x="50" y="504" width="226" height="34" rx="8" fill="url(#aData)" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="62" y="520" class="m">data/queries.lock.tsv</text>
+  <text x="62" y="533" class="s">maps each id to its text</text>
+  <rect x="50" y="546" width="226" height="32" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="62" y="567" class="s">backs up everything first</text>
+
+  <!-- phase 2 -->
+  <rect x="306" y="356" width="292" height="234" rx="12" fill="url(#aP2)" stroke="#b45309" stroke-width="1.6"/>
+  <text x="322" y="380" class="lb" fill="#92400e">2 · JUDGE</text>
+  <rect x="322" y="392" width="260" height="52" rx="8" fill="#ffffff" stroke="#b45309" stroke-width="1.2"/>
+  <text x="334" y="410" class="m">judge_web.py</text>
+  <text x="334" y="425" class="s">browser · pools top 25 from EACH</text>
+  <text x="334" y="438" class="s">index, shuffles, shows full text</text>
+  <rect x="322" y="450" width="260" height="30" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="334" y="470" class="s">make_qrels.py — the same, in a terminal</text>
+  <text x="322" y="500" class="t">writes, after every key press</text>
+  <rect x="322" y="508" width="260" height="34" rx="8" fill="url(#aData)" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="334" y="524" class="m">results/qrels_&lt;judge&gt;.tsv</text>
+  <text x="334" y="537" class="s">qid · docid · 0|1</text>
+  <rect x="322" y="548" width="260" height="34" rx="8" fill="url(#aData)" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="334" y="564" class="m">results/judged_&lt;judge&gt;.tsv</text>
+  <text x="334" y="577" class="s">+ full text + content hash</text>
+
+  <!-- phase 3 -->
+  <rect x="612" y="356" width="246" height="234" rx="12" fill="url(#aP3)" stroke="#6d28d9" stroke-width="1.6"/>
+  <text x="628" y="380" class="lb" fill="#5b21b6">3 · CHECK AND COMBINE</text>
+  <rect x="628" y="392" width="214" height="40" rx="8" fill="#ffffff" stroke="#6d28d9" stroke-width="1.2"/>
+  <text x="640" y="410" class="m">judge_agreement.py</text>
+  <text x="640" y="425" class="s">raw agreement · Cohen's κ</text>
+  <rect x="628" y="440" width="214" height="40" rx="8" fill="#ffffff" stroke="#6d28d9" stroke-width="1.2"/>
+  <text x="640" y="458" class="m">merge_qrels.py</text>
+  <text x="640" y="473" class="s">agreed labels only</text>
+  <text x="628" y="500" class="t">writes</text>
+  <rect x="628" y="508" width="214" height="34" rx="8" fill="url(#aData)" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="640" y="524" class="m">data/qrels.tsv</text>
+  <text x="640" y="537" class="s">the graded answer key</text>
+  <rect x="628" y="548" width="214" height="34" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="640" y="564" class="s">disagreements.tsv</text>
+  <text x="640" y="577" class="s">set aside, never guessed</text>
+
+  <!-- phase 4 -->
+  <rect x="872" y="356" width="274" height="234" rx="12" fill="url(#aP4)" stroke="#047857" stroke-width="1.6"/>
+  <text x="888" y="380" class="lb" fill="#065f46">4 · MEASURE AND DIAGNOSE</text>
+  <rect x="888" y="392" width="242" height="36" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.2"/>
+  <text x="900" y="409" class="m">run_experiment.py</text>
+  <text x="900" y="422" class="s">the headline table</text>
+  <rect x="888" y="434" width="242" height="36" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.2"/>
+  <text x="900" y="451" class="m">per_query.py</text>
+  <text x="900" y="464" class="s">per query · t-test · sign · bootstrap</text>
+  <rect x="888" y="476" width="242" height="36" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.2"/>
+  <text x="900" y="493" class="m">inspect_query.py</text>
+  <text x="900" y="506" class="s">why one query behaved that way</text>
+  <rect x="888" y="518" width="242" height="36" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.2"/>
+  <text x="900" y="535" class="m">test_gating.py</text>
+  <text x="900" y="548" class="s">re-run with a suffix switched off</text>
+  <rect x="888" y="560" width="242" height="22" rx="7" fill="url(#aData)" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="900" y="575" class="s">results/results.json · run_*.txt</text>
+
+  <!-- flow arrows between phases -->
+  <path d="M292,470 H302" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#g)"/>
+  <path d="M598,470 H608" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#g)"/>
+  <path d="M858,470 H868" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#g)"/>
+
+  <!-- ============ SAFETY NET ============ -->
+  <rect x="34" y="614" width="552" height="150" rx="12" fill="#fff7ed" stroke="#fdba74" stroke-width="1.6"/>
+  <text x="50" y="638" class="lb" fill="#9a3412">SAFETY NET — WHY NOTHING GETS LOST</text>
+  <text x="50" y="662" class="t">archive_judged.py</text>
+  <text x="200" y="662" class="s">saves the full text of every judged document</text>
+  <text x="50" y="686" class="t">remap_qrels.py</text>
+  <text x="200" y="686" class="s">re-split the corpus? matches by content hash, not filename</text>
+  <text x="50" y="710" class="t">queries.lock.tsv</text>
+  <text x="200" y="710" class="s">refuses to run if a query id now names different text</text>
+  <text x="50" y="734" class="t">one file per judge</text>
+  <text x="200" y="734" class="s">two people can never overwrite each other</text>
+  <text x="50" y="756" class="s">Every judgement is written to disk the moment it is made.</text>
+
+  <!-- ============ SUPPORTING ANALYSIS ============ -->
+  <rect x="606" y="614" width="540" height="150" rx="12" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.6"/>
+  <text x="622" y="638" class="lb" fill="#0f766e">SUPPORTING ANALYSIS</text>
+  <text x="622" y="662" class="t">conflation_report.py</text>
+  <text x="790" y="662" class="s">what the stemmer merges, and whether it should</text>
+  <text x="622" y="686" class="s">114,644 word types reduced to 72,129 stems · 37.1% collapse</text>
+  <text x="622" y="706" class="s">16.2% spelling variants (a gain) · 78.4% one affix · 4.2% stacked</text>
+  <text x="622" y="726" class="s">1.2% coincidence (the only genuine errors)</text>
+  <text x="622" y="752" class="s">Full account in CONFLATION_ANALYSIS.md</text>
+
+  <!-- ============ THE RESULT ============ -->
+  <rect x="34" y="788" width="1112" height="178" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+  <text x="50" y="812" class="lb" fill="#334155">WHAT COMES OUT</text>
+
+  <text x="50" y="842" class="t">30 queries · 1,174 judgements · 44,814 documents</text>
+
+  <rect x="50" y="856" width="520" height="94" rx="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="66" y="876" class="s">measure</text>
+  <text x="300" y="876" class="s" text-anchor="end">unstemmed</text>
+  <text x="430" y="876" class="s" text-anchor="end">stemmed</text>
+  <text x="556" y="876" class="s" text-anchor="end">gated</text>
+  <text x="508" y="878" class="ps" text-anchor="end" fill="#64748b">تون</text>
+  <text x="66" y="898" class="m">MAP</text><text x="300" y="898" class="m" text-anchor="end">0.5792</text><text x="430" y="898" class="m" text-anchor="end">0.6367</text><text x="552" y="898" class="m" text-anchor="end" fill="#047857" font-weight="700">0.6474</text>
+  <text x="66" y="918" class="m">nDCG@10</text><text x="300" y="918" class="m" text-anchor="end">0.7210</text><text x="430" y="918" class="m" text-anchor="end">0.7088</text><text x="552" y="918" class="m" text-anchor="end" fill="#047857" font-weight="700">0.7236</text>
+  <text x="66" y="938" class="m">P@10</text><text x="300" y="938" class="m" text-anchor="end">0.6867</text><text x="430" y="938" class="m" text-anchor="end">0.6867</text><text x="552" y="938" class="m" text-anchor="end" fill="#047857" font-weight="700">0.6967</text>
+
+  <rect x="590" y="856" width="556" height="94" rx="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="606" y="878" class="t">21 of 30 queries improve</text>
+  <text x="606" y="898" class="s">sign test p = 0.043 — significant</text>
+  <text x="606" y="918" class="s">paired t-test p = 0.196 — not significant; 134 queries would be needed</text>
+  <text x="606" y="938" class="s">Three queries lose 1.52 MAP; the other 27 gain 3.24.</text>
+</svg>

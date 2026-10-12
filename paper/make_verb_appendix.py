@@ -36,8 +36,22 @@ OUT = os.path.join(HERE, "appendix_verbs.tex")
 
 
 def ps(s: str) -> str:
-    """Wrap Pashto in the paper's \\ps macro; an em dash stays plain."""
-    return s if s in ("—", "") else "\\ps{%s}" % s
+    """Wrap Pashto in the paper's \\ps macro.
+
+    Two points of care. A field may hold two alternative forms separated by a
+    slash; the slash is Latin punctuation and Noto Naskh Arabic has no glyph
+    for it, so lualatex drops it silently and the printed appendix shows the
+    two forms running together. Each form is therefore wrapped separately and
+    the slash left outside. An empty field is written as "none" rather than a
+    dash, so that the column reads the same way in every row.
+    """
+    s = s.strip()
+    if s in ("—", "-", ""):
+        return "none"
+    if "/" in s:
+        return " / ".join("\\ps{%s}" % part.strip()
+                          for part in s.split("/") if part.strip())
+    return "\\ps{%s}" % s
 
 
 def tex(s: str) -> str:
@@ -97,7 +111,7 @@ def main() -> int:
     for r in implemented:
         L.append(" & ".join([ps(r["infinitive"]), ps(r["present"]), ps(r["past"]),
                              r["forms"],
-                             tex(r["gloss"]) + " --- " + tex(r["source"])]) + "\\\\")
+                             tex(r["gloss"]) + ", " + tex(r["source"])]) + "\\\\")
     L.append("\\bottomrule")
     L.append("\\end{longtable}")
     L.append("\\normalsize")

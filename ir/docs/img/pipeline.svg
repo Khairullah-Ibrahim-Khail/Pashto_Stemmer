@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 880" width="960" height="880" font-family="ui-sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="gCorpus" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="gPlain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eff6ff"/><stop offset="1" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="gStem" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffbeb"/><stop offset="1" stop-color="#fef3c7"/>
+    </linearGradient>
+    <linearGradient id="gJudge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f3ff"/><stop offset="1" stop-color="#ede9fe"/>
+    </linearGradient>
+    <linearGradient id="gScore" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ecfdf5"/><stop offset="1" stop-color="#d1fae5"/>
+    </linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    </marker>
+    <marker id="arB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b45309"/>
+    </marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#92400e"/>
+    </marker>
+    <style>
+      .t  { font-size:15px; fill:#0f172a; font-weight:600 }
+      .s  { font-size:12.5px; fill:#475569 }
+      .n  { font-size:21px; font-weight:700 }
+      .lb { font-size:11px; fill:#64748b; letter-spacing:.09em; font-weight:700 }
+      .ps { font-size:16px; font-family:"Noto Naskh Arabic","Scheherazade New",serif; direction:rtl }
+      .mono { font-size:12px; font-family:ui-monospace,"SF Mono",Menlo,monospace; fill:#334155 }
+    </style>
+  </defs>
+
+  <rect width="960" height="880" fill="#ffffff"/>
+  <text x="34" y="40" class="lb">PASHTO STEMMER — RETRIEVAL EVALUATION</text>
+  <text x="34" y="66" style="font-size:20px;font-weight:700;fill:#0f172a">Does stemming make search better?</text>
+
+  <!-- corpus -->
+  <rect x="300" y="92" width="360" height="74" rx="12" fill="url(#gCorpus)" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="480" y="122" class="n" fill="#0f172a" text-anchor="middle">44,814</text>
+  <text x="480" y="145" class="s" text-anchor="middle">Pashto news documents · 8.0 million words</text>
+
+  <!-- split -->
+  <path d="M480,166 V190" stroke="#64748b" stroke-width="1.8" fill="none"/>
+  <path d="M250,190 H710" stroke="#64748b" stroke-width="1.8" fill="none"/>
+  <path d="M250,190 V214" stroke="#1d4ed8" stroke-width="2" fill="none" marker-end="url(#arB)"/>
+  <path d="M710,190 V214" stroke="#b45309" stroke-width="2" fill="none" marker-end="url(#arA)"/>
+
+  <!-- ===== left track: no stemmer ===== -->
+  <rect x="88" y="220" width="324" height="252" rx="14" fill="none" stroke="#bfdbfe" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="250" y="246" class="lb" fill="#1d4ed8" text-anchor="middle">TRACK A · NO STEMMER</text>
+
+  <rect x="110" y="260" width="280" height="62" rx="10" fill="url(#gPlain)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="250" y="283" class="t" text-anchor="middle">split into words</text>
+  <text x="250" y="304" class="mono" text-anchor="middle">normalize · then cut on letters</text>
+
+  <path d="M250,322 V346" stroke="#1d4ed8" stroke-width="2" fill="none" marker-end="url(#arB)"/>
+
+  <rect x="110" y="352" width="280" height="98" rx="10" fill="url(#gPlain)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="250" y="376" class="t" text-anchor="middle">index A</text>
+  <text x="250" y="402" class="n" fill="#1d4ed8" text-anchor="middle">114,644</text>
+  <text x="250" y="423" class="s" text-anchor="middle">different words</text>
+  <text x="250" y="441" class="mono" text-anchor="middle">a word matches only itself</text>
+
+  <!-- ===== right track: with stemmer ===== -->
+  <rect x="548" y="220" width="324" height="252" rx="14" fill="none" stroke="#fde68a" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="710" y="246" class="lb" fill="#b45309" text-anchor="middle">TRACK B · WITH STEMMER</text>
+
+  <rect x="570" y="260" width="280" height="62" rx="10" fill="url(#gStem)" stroke="#b45309" stroke-width="1.4"/>
+  <text x="710" y="283" class="t" text-anchor="middle">split into words</text>
+  <text x="710" y="304" class="mono" text-anchor="middle">the same normalizer, the same split</text>
+
+  <path d="M710,322 V336" stroke="#b45309" stroke-width="2" fill="none" marker-end="url(#arA)"/>
+
+  <rect x="570" y="340" width="280" height="44" rx="10" fill="#fef9c3" stroke="#b45309" stroke-width="1.8"/>
+  <text x="600" y="367" class="t" fill="#92400e">cut each word</text>
+  <text x="840" y="368" class="ps" text-anchor="end">کورونه</text>
+  <path d="M784,362 H754" stroke="#92400e" stroke-width="2.2" fill="none" marker-end="url(#arW)"/>
+  <text x="742" y="368" class="ps" text-anchor="end">کور</text>
+
+  <path d="M710,384 V398" stroke="#b45309" stroke-width="2" fill="none" marker-end="url(#arA)"/>
+
+  <rect x="570" y="402" width="280" height="62" rx="10" fill="url(#gStem)" stroke="#b45309" stroke-width="1.4"/>
+  <text x="710" y="424" class="t" text-anchor="middle">index B</text>
+  <text x="648" y="451" class="n" fill="#b45309" text-anchor="middle">72,129</text>
+  <text x="766" y="450" class="s" text-anchor="middle">37% fewer</text>
+
+  <!-- merge -->
+  <path d="M250,472 V500" stroke="#1d4ed8" stroke-width="2" fill="none"/>
+  <path d="M710,464 V500" stroke="#b45309" stroke-width="2" fill="none"/>
+  <path d="M250,500 H710" stroke="#64748b" stroke-width="1.8" fill="none"/>
+  <path d="M480,500 V524" stroke="#64748b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+
+  <!-- queries -->
+  <rect x="290" y="530" width="380" height="68" rx="12" fill="url(#gCorpus)" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="392" y="558" class="n" fill="#0f172a" text-anchor="end">30</text>
+  <text x="402" y="557" class="t" text-anchor="start">queries · run against BOTH indexes</text>
+  <text x="480" y="580" class="mono" text-anchor="middle">BM25 ranking · top 1,000 kept · top 10 scored</text>
+
+  <!-- two rankings -->
+  <path d="M480,598 V614" stroke="#64748b" stroke-width="1.8" fill="none"/>
+  <path d="M250,614 H710" stroke="#64748b" stroke-width="1.8" fill="none"/>
+  <path d="M250,614 V638" stroke="#1d4ed8" stroke-width="2" fill="none" marker-end="url(#arB)"/>
+  <path d="M710,614 V638" stroke="#b45309" stroke-width="2" fill="none" marker-end="url(#arA)"/>
+
+  <rect x="140" y="644" width="220" height="46" rx="10" fill="url(#gPlain)" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="250" y="673" class="t" text-anchor="middle">ranking A</text>
+  <rect x="600" y="644" width="220" height="46" rx="10" fill="url(#gStem)" stroke="#b45309" stroke-width="1.4"/>
+  <text x="710" y="673" class="t" text-anchor="middle">ranking B</text>
+
+  <path d="M250,690 V714" stroke="#1d4ed8" stroke-width="2" fill="none"/>
+  <path d="M710,690 V714" stroke="#b45309" stroke-width="2" fill="none"/>
+  <path d="M250,714 H710" stroke="#64748b" stroke-width="1.8" fill="none"/>
+  <path d="M480,714 V730" stroke="#64748b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+
+  <!-- judgements -->
+  <rect x="268" y="736" width="424" height="62" rx="12" fill="url(#gJudge)" stroke="#6d28d9" stroke-width="1.6"/>
+  <text x="432" y="764" class="n" fill="#6d28d9" text-anchor="end">1,174</text>
+  <text x="442" y="763" class="t" text-anchor="start">human judgements</text>
+  <text x="480" y="784" class="s" text-anchor="middle">does this document answer this query?  y / n</text>
+
+  <path d="M480,798 V816" stroke="#64748b" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+
+  <!-- scores -->
+  <rect x="236" y="822" width="488" height="44" rx="12" fill="url(#gScore)" stroke="#047857" stroke-width="1.6"/>
+  <text x="480" y="850" class="t" fill="#065f46" text-anchor="middle">MAP · nDCG@10 · P@10 · Recall@10</text>
+
+  <!-- the one-difference note -->
+  <rect x="34" y="742" width="212" height="94" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.3"/>
+  <text x="46" y="766" class="lb" fill="#9a3412">THE ONLY DIFFERENCE</text>
+  <text x="46" y="789" class="s">Same documents, queries,</text>
+  <text x="46" y="806" class="s">algorithm and judgements.</text>
+  <text x="46" y="823" class="s" style="font-weight:700;fill:#9a3412">Only the stemmer changes.</text>
+
+  <!-- pooling note -->
+  <rect x="724" y="742" width="202" height="94" rx="10" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.3"/>
+  <text x="736" y="766" class="lb" fill="#0f766e">POOL FROM BOTH</text>
+  <text x="736" y="789" class="s">Top 25 from each index,</text>
+  <text x="736" y="806" class="s">shuffled, so the judge</text>
+  <text x="736" y="823" class="s">cannot tell them apart.</text>
+</svg>

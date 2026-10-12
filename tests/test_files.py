@@ -162,7 +162,7 @@ def test_excel_sheet_can_be_chosen():
     wb.save(src.name)
     rows = ST.stem_file(src.name, column="word", sheet="Other")
     os.unlink(src.name)
-    assert rows[0]["word_stemmed"] == "پوهن"
+    assert rows[0]["word_stemmed"] == "پوهنتون"
 
 
 def test_stemming_is_deterministic():

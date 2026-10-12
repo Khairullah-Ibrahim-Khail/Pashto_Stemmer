@@ -157,15 +157,19 @@ class StemmerConfig:
     # analysis for the scorer to choose between, and leaving them arbitrated
     # meant روغتیا and پوهنتون stayed whole because روغ and پوهن are not in the
     # lexicon. Order matters: longest first.
-    # Longest first. The stacked forms (‑تونونو، ‑تیاوې …) are listed in full
-    # rather than peeled in two passes, so the plural and the place suffix come
-    # off together: روغتونونو→روغ.
+    # Longest first. The stacked forms (‑تیاوې، ‑توبونو …) are listed in full
+    # rather than peeled in two passes, so the plural and the derivational
+    # suffix come off together: نیکمرغیاوو→نیکمرغ.
     # ‑ځی is NOT here: it collides with verb forms (ګرځی is ګرځېدل, not
     # ګر+ځی), so it stays with the arbitrated rules where the scorer can see
     # the alternative.
-    uniform_strip: tuple = ("تونونو", "تونونه", "تیاوو", "تیاوې", "والیو",
+    # ‑تون and its stacked forms are NOT here either: the place suffix is
+    # gated in suffixes.py, because merging a place with the quality it is
+    # named for costs more in retrieval than it gains. Listing ‑تونونو here
+    # would reintroduce the merge the gate exists to prevent.
+    uniform_strip: tuple = ("تیاوو", "تیاوې", "والیو",
                             "توبونو", "توبونه", "والی", "تانو", "تانه",
-                            "تیا", "توب", "تون")
+                            "تیا", "توب")
     # 2(a) The agent ‑غاړی keeps its stem: the log gives لوبغاړی→لوبغاړ, so only
     # the agreement ending comes off. Uniform, because لوبغاړ is not in the
     # lexicon and the scorer was keeping the word whole.

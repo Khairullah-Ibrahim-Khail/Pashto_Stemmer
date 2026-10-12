@@ -1,3 +1,15 @@
+# Pashto word-frequency list: one  word<TAB>count  per line.
+#
+# Drawn from a corpus of Pashto news and general text assembled from VOA
+# Pashto, BBC Pashto and a topic-labelled collection -- about 5.4 million
+# tokens and 68,850 distinct types. This file is the 5,443-type head of that
+# frequency list, not the whole corpus: a larger lexicon was tried and made
+# results worse, because a raw corpus holds inflected forms as well as base
+# forms, so attestation stopped meaning "this is a stem". Section IV of the
+# paper reports the measurement.
+#
+# The list is used only to score candidates the rules have already produced.
+# It never adds a rule and never decides a strip on its own.
 افغانستان	326
 مارچ	302
 ایران	290

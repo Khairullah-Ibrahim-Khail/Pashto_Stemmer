@@ -4,7 +4,7 @@ A rule-based stemmer for Pashto (پښتو). No machine learning: 118 affix rules
 taken from published grammars, a corpus lexicon used to choose between
 candidates, and every decision traceable to a rule.
 
-**81.19%** exact-match accuracy on a 2,717-word development set and **72.75%**
+**80.97%** exact-match accuracy on a 2,717-word development set and **72.55%**
 on 499 held-out news types, against 50.68% and 40.48% for the previously
 published Pashto stemmer.
 
@@ -15,7 +15,7 @@ pip install "pashto-stemmer[excel]"   # add .xlsx support
 
 ## One function
 
-Give it a word, a sentence or a list — you get back the same shape.
+Give it a word, a sentence or a list, you get back the same shape.
 
 ```python
 from pashto_stemmer import PashtoStemmer
@@ -49,14 +49,14 @@ letter the word had.
 | call | takes | gives back |
 |---|---|---|
 | `st.stem(x)` | a word, a sentence, a list, a tuple or a set | the same shape, stems only |
-| `st.stem_word(w)` | one word | a `StemResult` — the stem plus how it was reached |
+| `st.stem_word(w)` | one word | a `StemResult`, the stem plus how it was reached |
 | `st.stem_sentence(s)` | a sentence | a sentence of stems |
 | `st.stem_text(s)` | a sentence | a `StemResult` per token |
 | `st.stem_file(path, …)` | a CSV, TSV or Excel path | rows, or a written file |
-| `st.clear_cache()` | — | empties the result cache |
+| `st.clear_cache()` | none | empties the result cache |
 
 Repeated words are cached (500,000 entries), so a corpus costs about as much
-as its vocabulary — roughly 7,000 words/second cold, 3 million cached.
+as its vocabulary, roughly 7,000 words/second cold, 3 million cached.
 
 ## Why a decision was made
 
@@ -73,7 +73,7 @@ r.trace            # "strip ('+ه',) -> 'بېکار' (rule evidence, not in lexi
 
 ## Stemming a dataset
 
-A stemmer takes a word. The usual input is a column of words — a vocabulary, a
+A stemmer takes a word. The usual input is a column of words, a vocabulary, a
 frequency list, the output of a tokeniser.
 
 ```python
@@ -85,14 +85,14 @@ st.stem_file("words.csv", out="stemmed.csv")
 ```
 
 No `out` and you get the rows back; an `out` and the file is written and you
-get a summary. Originals are never touched — the stems go in a new column
+get a summary. Originals are never touched, the stems go in a new column
 beside them.
 
 ### `stem_file` parameters
 
 | parameter | default | |
 |---|---|---|
-| `path` | — | `.csv`, `.tsv`, `.txt`, `.xlsx` or `.xlsm` |
+| `path` | none | `.csv`, `.tsv`, `.txt`, `.xlsx` or `.xlsm` |
 | `column` | `"word"` | which column to stem |
 | `out` | `None` | where to write; `None` returns the rows |
 | `keep_original` | `True` | `False` → only the stem column |
@@ -109,7 +109,7 @@ st.stem_file("words.xlsx", column="لغت", sheet="Sheet2",
              out="stems.csv")
 ```
 
-A delimited file with an `out` is streamed, so size is not a limit — 200,000
+A delimited file with an `out` is streamed, so size is not a limit, 200,000
 rows takes under a second. Excel is read into memory.
 
 With pandas, if you would rather hold the file yourself:
@@ -148,7 +148,7 @@ pashto-stem --csv words.csv --column word --out stemmed.csv
 | `-t`, `--trace` | also report the confidence and the rules that fired |
 | `-q`, `--quiet` | suppress the sentences-in-cells warning |
 
-**Behaviour** — every default is the library's default, so the command line
+**Behaviour**, every default is the library's default, so the command line
 and the API give the same answer for the same word.
 
 | flag | default | |
@@ -165,7 +165,7 @@ and the API give the same answer for the same word.
 
 ## Stemming or lemmatization
 
-**Stemming removes characters.** The output is a class label, not a word —
+**Stemming removes characters.** The output is a class label, not a word,
 `پوهنتون → پوهن`, as Porter gives *relat* for *relational*. That is correct
 behaviour, not a defect.
 
@@ -177,7 +177,7 @@ this, so it is off by default and offered as an explicit mode:
 from pashto_stemmer.stemmer import PashtoStemmer, StemmerConfig
 
 lem = PashtoStemmer(StemmerConfig(use_verb_dictionary=True))
-lem.stem("شو")      # 'کېدل'  — a lemma, not a stem
+lem.stem("شو")      # 'کېدل'  (a lemma, not a stem)
 ```
 
 ## Changing the behaviour
@@ -224,25 +224,32 @@ safe for all five yeh letters and the nine Pashto-only consonants.
 ## Results
 
 Exact-match accuracy, with Paice's under-stemming index. The *affixed* column
-is the half of the data that actually needs a strip — the honest test, since a
+is the half of the data that actually needs a strip, the honest test, since a
 stemmer that modifies nothing already scores 47.77% on Pashto word types.
 
 | system | development | affixed | held-out | UI |
 |---|---:|---:|---:|---:|
 | modifies nothing | 47.77% | 0.0% | 37.27% | 1.000 |
 | Aslamzai & Saad (2015) | 50.68% | 12.2% | 40.48% | 0.919 |
-| **this stemmer** | **81.19%** | **81.0%** | **72.75%** | **0.291** |
+| **this stemmer** | **80.97%** | **80.6%** | **72.55%** | **0.296** |
 
 On two independently annotated external word lists, 5,000 and 10,000 types
-neither produced by this project: **72.30%** and **70.18%**.
+neither produced by this project: **72.46%** and **70.37%**.
 
-Every figure is reproducible from the repository —
+On a retrieval test of 39 Pashto queries over 44,814 news documents with 1,489
+relevance judgements, stemming raises mean average precision from **0.5407** to
+**0.6517** (p = 0.005; 30 of 39 queries improved). One suffix is recorded in
+the inventory and never applied because of that test: stripping the
+place-forming `‑تون` merges `روغتون` *hospital* with `روغتیا` *health*.
+
+Every figure is reproducible from the repository,
 `python experiments/reproduce_paper.py`.
 
 ## Limitations
 
-- **Word types, not running text.** No retrieval evaluation is reported, so
-  the relationship between these gains and downstream performance is untested.
+- **The retrieval evaluation is small.** 39 queries, one assessor, and a
+  three-query agreement check. Enough for the MAP result, not for the
+  rank-10 measures.
 - **The corpus lexicon is the limiting factor.** Where the right stem is not
   in the word list, the system keeps the word whole or over-strips:
   `چینایي → چینایي`, `الماني → الم`.
@@ -250,7 +257,7 @@ Every figure is reproducible from the repository —
   Robson by chapter or Penzl by section; the remaining six are entries the
   engine never applies. Of the 38 irregular verbs, 15 are unverified against a
   printed grammar and are marked as such.
-- **28 of the 118 rules are documented and deliberately never applied**,
+- **29 of the 118 rules are documented and deliberately never applied**,
   each with the measurement that overruled the grammar.
 
 ## Links

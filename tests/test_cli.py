@@ -60,7 +60,7 @@ def test_csv_adds_a_column_and_keeps_the_originals():
     assert list(rows[0].keys()) == ["id", "text", "text_stemmed"]
     assert rows[0]["text"] == "د کورونو خبرونه"      # original is untouched
     assert rows[0]["text_stemmed"] == "د کور خبر"
-    assert rows[1]["text_stemmed"] == "پوهن ته ولاړ"
+    assert rows[1]["text_stemmed"] == "پوهنتون ته ولاړ"
 
 
 def test_csv_writes_to_a_file():

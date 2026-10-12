@@ -105,8 +105,8 @@ class PashtoLexicon:
         with open(path, "r", encoding=encoding) as fh:
             for line in fh:
                 line = line.rstrip("\n")
-                if not line.strip():
-                    continue
+                if not line.strip() or line.startswith("#"):
+                    continue          # blank line, or a provenance header
                 parts = line.split("\t")
                 surface = parts[0]
                 try:

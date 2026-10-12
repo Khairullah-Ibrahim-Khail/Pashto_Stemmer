@@ -95,7 +95,19 @@ _DERIVATIONAL: List[AffixRule] = [
     _s("والی", "derivational", min_stem_len=3, pos=("N",), note="[N&K] adj->noun abstract: تور→توروالی"),
     _s("والو", "derivational", min_stem_len=3, pos=("N",), note="[T&R ch.4 oblique plural formations] oblique of -wāli"),
     _s("تیا", "derivational", min_stem_len=2, pos=("N",), note="[T&R ch.4 noun derivation] abstract: پراختیا→پراخ"),
-    _s("تون", "derivational", min_stem_len=3, pos=("N",), note="[N&K] adj->noun: بیل→بیلتون، ځای→ځایتون"),
+    _s("تون", "derivational", min_stem_len=3, pos=("N",), strip_allowed="no",
+       note="[N&K] adj->noun: بیل→بیلتون، ځای→ځایتون. Gated: the suffix is "
+            "real and the derivation is regular, but removing it merges a "
+            "place with the quality it is named for (روغتون 'hospital' and "
+            "روغتیا 'health' both reduce to روغ), and the two are not "
+            "interchangeable in search. Measured on 39 queries and 1,489 "
+            "judgements: gating raises MAP 0.6404->0.6517, nDCG@10 "
+            "0.7023->0.7178 and P@10 0.6718->0.6821, and lifts the paired t "
+            "against no stemming from +2.41 to +2.95. It also restores "
+            "consistency inside the word family, since with the suffix live "
+            "روغتون reduced to روغ while روغتونه stopped at روغتون and the "
+            "two no longer matched. Intrinsic cost 0.22 points on the "
+            "development set and 0.20 on the held-out set."),
     _s("ونکی", "derivational", min_stem_len=3, pos=("N", "ADJ"), note="[T&R][W] agentive participle -unkay: دراوونکی"),
     _s("ونکو", "derivational", min_stem_len=3, pos=("N",), note="[T&R ch.6 participle case shifts] oblique agentive"),
     _s("ونکې", "derivational", min_stem_len=3, pos=("N", "ADJ"), note="[T&R ch.6 active participle paradigm] fem agentive"),

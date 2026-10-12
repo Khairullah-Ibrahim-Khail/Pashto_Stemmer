@@ -6,7 +6,7 @@
 
 *No machine learning anywhere in it. 118 affix rules taken from published
 grammars, each carrying its source, its productivity, and an explicit decision
-about whether it may be applied at all — and a scoring step that chooses
+about whether it may be applied at all, and a scoring step that chooses
 between competing analyses.*
 
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
@@ -46,15 +46,15 @@ This project takes a different route and stays entirely rule-based:
   Robson or Penzl by chapter or section. Each records the grammar it came
   from, whether it is inflectional or derivational, a minimum surviving stem
   length, the part of speech it signals, its productivity, a confidence level,
-  and whether it may be stripped at all. **28 of the 118 are documented and
-  deliberately never applied** — recording an affix and refusing to strip it is
+  and whether it may be stripped at all. **29 of the 118 are documented and
+  deliberately never applied**, recording an affix and refusing to strip it is
   not the same as omitting it, because the inventory is also a description of
   the language.
 - **Generation separated from selection.** Every rule that fits is applied and
   all the results compete, so a shallower analysis can displace a deeper one.
   The lexicon informs that choice; it never blocks a strip, because the output
   of a stemmer does not have to be a dictionary word.
-- **A dictionary of 38 irregular verbs** (315 surface forms) — the strong verbs, whose present stem
+- **A dictionary of 38 irregular verbs** (315 surface forms): the strong verbs, whose present stem
   cannot be derived from the infinitive (`لیدل → وین`, `تلل → ځ`). It returns a
   **lemma**, which is lemmatization rather than stemming, so it is **off by
   default**. See [Stemming or lemmatization](#stemming-or-lemmatization).
@@ -107,7 +107,7 @@ pashto-stem کورونه --trace
 
 ## Stemming a dataset
 
-A stemmer takes a word. The usual input is a column of words — a vocabulary, a
+A stemmer takes a word. The usual input is a column of words: a vocabulary, a
 frequency list, the output of a tokeniser.
 
 ```bash
@@ -152,7 +152,7 @@ the file is written and you get a summary of what went where.
 
 Every one of those exists on the command line too, under the same name.
 `.csv`, `.tsv`, `.xlsx` and `.xlsm` are read and written; a delimited file with
-an `--out` is streamed, so size is not a limit — 200,000 rows takes under a
+an `--out` is streamed, so size is not a limit. 200,000 rows takes under a
 second in 21 MB.
 
 With pandas, if you would rather hold the file yourself:
@@ -170,14 +170,14 @@ A worked example is [examples/stem_csv.py](examples/stem_csv.py).
 
 Nothing here has to be set. The defaults are the configuration every number in
 the paper was measured with, and they are the same from Python and from the
-shell — a word gives the same answer either way.
+shell, a word gives the same answer either way.
 
 ### The five ways in
 
 | call | takes | gives back |
 |---|---|---|
 | `st.stem(x)` | a word, a sentence, a list, a tuple or a set | the same shape, stems only |
-| `st.stem_word(w)` | one word | a `StemResult` — the stem plus how it was reached |
+| `st.stem_word(w)` | one word | a `StemResult`, the stem plus how it was reached |
 | `st.stem_sentence(s)` | a sentence | a sentence of stems |
 | `st.stem_text(s)` | a sentence | a `StemResult` per token |
 | `st.stem_file(path, …)` | a CSV, TSV or Excel path | rows, or a written file |
@@ -203,7 +203,7 @@ Repeated here as the single place to look:
 
 | parameter | default | |
 |---|---|---|
-| `path` | — | `.csv`, `.tsv`, `.txt`, `.xlsx` or `.xlsm` |
+| `path` | none | `.csv`, `.tsv`, `.txt`, `.xlsx` or `.xlsm` |
 | `column` | `"word"` | which column to stem |
 | `out` | `None` | where to write; `None` returns the rows |
 | `keep_original` | `True` | `False` → only the stem column |
@@ -241,7 +241,7 @@ With no words and no `--file`, words are read from stdin.
 | `-t`, `--trace` | also report the confidence and the rules that fired |
 | `-q`, `--quiet` | suppress the sentences-in-cells warning |
 
-**Behaviour** — each one changes the answer, so each is off or on exactly as
+**Behaviour**, each one changes the answer, so each is off or on exactly as
 the library has it:
 
 | flag | default | |
@@ -268,34 +268,34 @@ st = PashtoStemmer(StemmerConfig(use_verb_dictionary=True))
 
 The last two columns are measured, not asserted: how many of the 2,717
 development types the switch changes, and what the accuracy becomes. The
-default row is 81.19%.
+default row is 80.97%.
 
 | field | default | | types changed | accuracy |
 |---|---|---|---:|---:|
-| `use_suffixes` | `True` | strip suffixes | 488 | 71.95% |
-| `use_exceptions` | `True` | stopwords, the length rules, Arabic plurals | 305 | 76.81% |
-| `author_rules` | `True` | the length rules R1 and R2 | 213 | 79.39% |
-| `use_dictionary` | `True` | score candidates against the corpus lexicon | 115 | 80.49% |
-| `strip_derivational` | `True` | `False` → inflection only | 104 | 80.82% |
-| `strip_final_inflection` | `True` | remove a final `ې`/`و` after stripping | 92 | 79.87% |
-| `r1_max_len` | `5` | longest word R1 takes a final letter off | 88 (`99`) | 81.97% |
-| `max_passes` | `1` | re-run the pipeline on its own output (`3`) | 74 | 80.20% |
-| `use_verb_dictionary` | `False` | the lemmatization mode | 69 | 79.83% |
-| `min_base_freq` | `3` | sightings needed before an unstripped word counts as a base (`1`) | 45 | 80.71% |
-| `rebuild_derivative_infinitive` | `True` | handle the `ېدل`/`ول` derivative verbs | 42 | 79.90% |
-| `freeze_proper_nouns` | `False` | `True` keeps `افغانستان` whole | 30 | 81.05% |
-| `strip_stan` | `True` | strip `‑ستان` | 17 | 80.90% |
-| `use_pos` | `False` | part-of-speech filtering | 16 | 81.49% |
-| `author_rules_before_dictionary` | `False` | run the length rules first | 11 | 80.82% |
-| `prefix_needs_attested_stem` | `True` | a prefix strip must leave a known word | 9 | 80.93% |
+| `use_suffixes` | `True` | strip suffixes | 491 | 71.73% |
+| `use_exceptions` | `True` | stopwords, the length rules, Arabic plurals | 302 | 76.70% |
+| `author_rules` | `True` | the length rules R1 and R2 | 213 | 79.17% |
+| `use_dictionary` | `True` | score candidates against the corpus lexicon | 118 | 80.27% |
+| `strip_derivational` | `True` | `False` → inflection only | 104 | 80.60% |
+| `strip_final_inflection` | `True` | remove a final `ې`/`و` after stripping | 92 | 79.65% |
+| `r1_max_len` | `5` | longest word R1 takes a final letter off | 88 (`99`) | 81.74% |
+| `max_passes` | `1` | re-run the pipeline on its own output (`3`) | 74 | 79.98% |
+| `use_verb_dictionary` | `False` | the lemmatization mode | 69 | 79.61% |
+| `min_base_freq` | `3` | sightings needed before an unstripped word counts as a base (`1`) | 45 | 80.49% |
+| `rebuild_derivative_infinitive` | `True` | handle the `ېدل`/`ول` derivative verbs | 42 | 79.68% |
+| `freeze_proper_nouns` | `False` | `True` keeps `افغانستان` whole | 30 | 80.82% |
+| `strip_stan` | `True` | strip `‑ستان` | 17 | 80.68% |
+| `use_pos` | `False` | part-of-speech filtering | 16 | 81.27% |
+| `author_rules_before_dictionary` | `False` | run the length rules first | 11 | 80.60% |
+| `prefix_needs_attested_stem` | `True` | a prefix strip must leave a known word | 9 | 80.71% |
 | `uniform_min_stem` | `3` | shortest stem the `‑توب` group may leave (`2`) | 7 | 81.01% |
 | `use_compound` | `False` | compound decomposition | 6 | 80.97% |
 | `keep_negation_prefixes` | `True` | `ناقانونه → ناقانون`; `False` gives `ناقان` | 3 | 81.16% |
 | `use_prefixes` | `True` | strip prefixes | 2 | 81.16% |
-| `r1_tail` | `"یيېۍئه"` | which final letters R1 removes | — | — |
+| `r1_tail` | `"یيېۍئه"` | which final letters R1 removes | none | none |
 
 `min_base_freq` is the one worth understanding. A word the corpus holds once or
-twice is evidence that it exists, not that it is a base form — `انګلیسي`
+twice is evidence that it exists, not that it is a base form, `انګلیسي`
 appears once, and that sighting used to outrank a correct strip, so the word
 came back whole. At `3` it gives `انګلیسي → انګلیس` and `چینایي → چینا`, and
 frequent words such as `خلک` and `مور` are still safe.
@@ -310,7 +310,7 @@ under the default configuration, and both are worth knowing:
 
 | field | default | |
 |---|---|---|
-| `verb_target` | `"stem"` | only reached when `use_verb_dictionary=True`. `"stem"` gives `راغی → راتل`, `"infinitive"` gives `راتلل`. With the dictionary on it moves 51 development types and scores 80.75% against 79.83% — still below the 81.19% of leaving the dictionary off |
+| `verb_target` | `"stem"` | only reached when `use_verb_dictionary=True`. `"stem"` gives `راغی → راتل`, `"infinitive"` gives `راتلل`. With the dictionary on it moves 51 development types and scores 80.60% against 79.61%, still below the 80.97% of leaving the dictionary off |
 | `restore_feminine_ha` | `True` | `ښځو`, `ښځې → ښځه`, for the bases in `feminine_ha_bases` (`ښځ` alone). This is the one place a letter is **added**, which is why those rows count as lemmatization rather than stemming and sit outside the 2,717 types scored above. Restoring the `ه` wherever a three-letter word ended in `و`/`ې` was right 29 times and wrong 55, so it is a listed class and not a rule |
 
 Normalization has its own config, and the setting worth knowing is that no yeh
@@ -329,7 +329,7 @@ safe for all five yeh letters and the nine Pashto-only consonants; set it
 
 Two evaluations. The first is the one that matters.
 
-**Held-out news words** — 499 word types drawn from a Pashto news corpus, none
+**Held-out news words**, 499 word types drawn from a Pashto news corpus, none
 of them in the development set, annotated by the same three native speakers with
 the reference field initially empty, all three agreeing on the result, and never
 consulted during development:
@@ -338,31 +338,31 @@ consulted during development:
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 37.27% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 40.48% | 16.9% | 80.1% | 0.889 |
-| **This stemmer** | **72.75%** | **72.8%** | 72.6% | **0.500** |
+| **This stemmer** | **72.55%** | **72.5%** | 72.6% | **0.500** |
 
-**Development set** — 2,717 annotated word types:
+**Development set**, 2,717 annotated word types:
 
 | System | Accuracy | On words needing a strip | On words to leave alone | Paice UI ↓ |
 |---|:---:|:---:|:---:|:---:|
 | Do nothing | 47.77% | 0.0% | 100.0% | 1.000 |
 | Aslamzai & Saad (2015) | 50.68% | 12.2% | 92.8% | 0.919 |
-| **This stemmer** | **81.19%** | **81.0%** | 81.4% | **0.291** |
+| **This stemmer** | **80.97%** | **80.6%** | 81.4% | **0.296** |
 
-**Two external word lists** — 5,000 and 10,000 types, independently annotated,
+**Two external word lists**, 5,000 and 10,000 types, independently annotated,
 neither produced by this project, 96% of them unseen:
 
 | Dataset | Types | Exact | ye-folded |
 |---|---:|:---:|:---:|
-| External 5k | 5,000 | **72.30%** | **80.14%** |
-| — Aslamzai & Saad (2015) | | 51.24% | 57.36% |
-| External 10k | 10,000 | **70.18%** | **77.17%** |
-| — Aslamzai & Saad (2015) | | 47.95% | 53.68% |
+| External 5k | 5,000 | **72.46%** | **80.32%** |
+| &nbsp;&nbsp;Aslamzai & Saad (2015) | | 51.24% | 57.36% |
+| External 10k | 10,000 | **70.37%** | **77.38%** |
+| &nbsp;&nbsp;Aslamzai & Saad (2015) | | 47.95% | 53.68% |
 
 Three sets at 70–72% exact is the generalisation evidence. Both lists
 ye-normalise their reference column while leaving `ي` in the word column, so a
 stem is scored wrong for keeping the letter the word actually has; folding the
-five ye letters for the comparison alone — the output is never rewritten —
-gives the second column. The same folding is worth 1.51 points on our
+five ye letters for the comparison alone, the output is never rewritten,
+gives the second column. The same folding is worth 1.44 points on our
 development set and 0.80 on our held-out set, which are internally consistent.
 They also follow a different annotation policy, agreeing with our reference on
 70.8% and 64.1% of shared words. Those disagreements sort cleanly: about a
@@ -378,11 +378,11 @@ policy. See
 unchanged already scores 37.3% on the held-out set, because a large share of
 Pashto word types carry no affix. That is why both tables split the task in
 two. Aslamzai & Saad reaches 40.5% overall but only **16.9%** on the words that
-actually need stripping; this system reaches **72.8%** on that half, a factor
+actually need stripping; this system reaches **72.5%** on that half, a factor
 of four.
 
-**The development set was annotated independently by three native speakers** —
-the author, a Pashto-medium school principal and a university teacher of Pashto —
+**The development set was annotated independently by three native speakers**,
+the author, a Pashto-medium school principal and a university teacher of Pashto,
 and adjudicated by the author. Two of the three passes are released, so the
 agreement between them is recomputable, not asserted: they chose the same stem
 on **96.88%** of the 2,725 types both annotated (Cohen's κ **0.969**), and
@@ -390,8 +390,8 @@ agreed on **98.24%** of the binary judgement of whether a word carries an affix
 at all (κ **0.965**). Run `python experiments/agreement.py` to reproduce it.
 
 **Both sets exclude the rows a truncating stemmer cannot reach.** Where the
-reference is an Arabic broken plural or a suppletive form — `اثارو → اثر`,
-`نجونو → نجلۍ` — the answer is a lemma that no affix rule can produce, and
+reference is an Arabic broken plural or a suppletive form, `اثارو → اثر`,
+`نجونو → نجلۍ`, the answer is a lemma that no affix rule can produce, and
 marking a stemmer wrong there penalises it for not being a lemmatizer. That is
 195 of 2,912 development types and 1 of 500 held-out types, reported
 separately rather than hidden.
@@ -407,12 +407,12 @@ acceptable to a judge and it produces nothing else:
 |---|:---:|:---:|:---:|
 | Do nothing | 37.27% | **100.00%** | 0.0% |
 | Aslamzai & Saad (2015) | 40.48% | 80.76% | 37.5% |
-| **This stemmer** | **72.75%** | **98.60%** | 68.9% |
+| **This stemmer** | **72.55%** | **98.60%** | 68.9% |
 
 This does not show the published 87% to be wrong. It shows the measurement
 answers a different question.
 
-Per-rule precision is published too, in the paper's Table XI — how often each
+Per-rule precision is published too, in the paper's Table XI, how often each
 rule fires in a selected analysis and how often that analysis is right. Building
 it retired two rules (`لو`, `لې`) that fired 26 times between them and were
 never correct, worth +0.85 on the development set.
@@ -423,13 +423,13 @@ Leave-one-out, in percentage points:
 
 | Configuration | Development | Held-out |
 |---|:---:|:---:|
-| **Full system** | **81.19%** | **72.75%** |
-| without suffix rules | 71.95% (−9.24) | 59.12% (−13.63) |
-| without the length rules | 79.39% (−1.80) | 70.54% (−2.20) |
-| without the corpus lexicon | 80.49% (−0.70) | 72.75% (+0.00) |
-| without the uniform-strip group | 80.82% (−0.37) | 72.55% (−0.20) |
-| without prefix rules | 81.16% (−0.04) | 72.95% (+0.20) |
-| *with* the verb dictionary | 79.83% (−1.36) | 71.74% (−1.00) |
+| **Full system** | **80.97%** | **72.55%** |
+| without suffix rules | 71.73% (−9.24) | 58.72% (−13.83) |
+| without the length rules | 79.17% (−1.80) | 70.34% (−2.20) |
+| without the corpus lexicon | 80.27% (−0.70) | 72.55% (+0.00) |
+| without the uniform-strip group | 80.71% (−0.26) | 72.34% (−0.20) |
+| without prefix rules | 80.93% (−0.04) | 72.75% (+0.20) |
+| *with* the verb dictionary | 79.61% (−1.36) | 71.54% (−1.00) |
 
 The suffix inventory does most of the work. Three of these rows record
 decisions taken **against** the measured score, stated rather than quietly
@@ -473,10 +473,49 @@ the last two rows: 291 words stripped that should have been left alone, and 108
 types the inventory cannot explain at all. Regenerate the table with
 `python experiments/error_analysis.py`.
 
-The selection score is published in full — the formula and all six weights are
+The selection score is published in full, the formula and all six weights are
 in the paper's Table V, and in `pashto_stemmer/validation.py`. They were set by
 hand and adjusted on the development set; none were fitted automatically and
 the held-out set was never used to choose them.
+
+### Does it help search?
+
+Word-type accuracy says whether the analysis is right. It does not say whether
+the analysis helps. So the stemmer was put through a retrieval experiment: the
+same BM25 search engine over 44,814 Pashto news documents, run twice, once on
+plain text and once on stemmed text, scored against 1,489 relevance judgements
+made by hand on pooled results from both runs.
+
+| | no stemming | stemmed | difference | p |
+|---|---:|---:|---:|---:|
+| **MAP** | 0.5407 | **0.6517** | +0.1110 | **0.005** |
+| nDCG@10 | 0.6675 | 0.7178 | +0.0503 | 0.253 |
+| P@10 | 0.6359 | 0.6821 | +0.0462 | 0.272 |
+| Recall@10 | 0.2946 | 0.3479 | +0.0533 | 0.083 |
+
+Stemming improves MAP significantly (paired t = 2.95, p = 0.005; 30 of 39
+queries improved, sign test p = 0.001; bootstrap 95% CI [+0.039, +0.184]). The
+three rank-10 measures all improve and none reaches significance on 39
+queries, which is reported as such rather than claimed.
+
+**This experiment changed the stemmer.** The place-forming `‑تون` is a regular
+Pashto derivation, so the inventory stripped it, which merged `روغتون`
+*hospital* with `روغتیا` *health*: both reduce to `روغ`. Counting the corpus
+shows why that is a one-way loss. 38% of the documents containing `روغتون`
+also contain `روغتیا`, but only 13% of those containing `روغتیا` contain
+`روغتون`, so conflation adds 4,681 documents about health that never mention a
+hospital, and no hospital document the plain index did not already reach.
+Gating the suffix improves all four measures and costs 0.22 points of
+development accuracy. It is the one place where the word-level and the
+retrieval evaluations disagree.
+
+The superficially identical `‑ستان` was tested the same way and left in place,
+because gating it measured slightly worse. The inventory records the
+measurement in both cases rather than the generalisation.
+
+Everything is in [ir/](ir/): `python ir/verify_integrity.py` runs 12 checks on
+the collection, `ir/significance.py` reproduces the table, and
+`ir/test_gating.py` reproduces the two gating decisions.
 
 ## Reproducing the paper
 
@@ -499,7 +538,7 @@ documented affix, and each is either an annotation error, a gap in the
 inventory, or a verbal prefix the inventory deliberately does not hold.
 Note that `ablation.py` scores **all 2,912 development rows**, including the
 lemma rows a truncating stemmer cannot reach, and toggles a different set of
-switches — so its figures are deliberately not the paper's, and it is kept as a
+switches, so its figures are deliberately not the paper's, and it is kept as a
 wider exploration rather than as the paper's evidence.
 
 Run the tests with:
@@ -534,7 +573,7 @@ as an explicit mode:
 from pashto_stemmer.stemmer import PashtoStemmer, StemmerConfig
 
 lem = PashtoStemmer(StemmerConfig(use_verb_dictionary=True))
-lem.stem("شو")      # 'کېدل'  — a lemma, not a stem
+lem.stem("شو")      # 'کېدل'  (a lemma, not a stem)
 ```
 
 ## How it works
@@ -561,7 +600,7 @@ separate stage, which is what allows a shallower analysis to win.
 **Selection** scores each candidate on how much affix material was removed,
 whether other words in the corpus are built on the same stem, and whether the
 stem itself is attested. Being attested raises a candidate's score; it is never
-required. The unstripped word gets only a small bonus — it is almost always in
+required. The unstripped word gets only a small bonus, it is almost always in
 the corpus, and giving it the full one made inaction the default winner and
 concealed every single-letter inflection.
 
@@ -573,7 +612,7 @@ simply losing its last letter.
 ## The five yeh letters
 
 Pashto writes five distinct characters called *yeh*. They are not
-interchangeable — they carry gender, number and case:
+interchangeable, they carry gender, number and case:
 
 | Letter | Example | Function |
 |---|---|---|
@@ -593,7 +632,7 @@ dictionary orthography and `ي` in news orthography, so a rule spelled one way
 never fired on the other: of the 500 held-out news types 118 contain `ي`, and
 of the 2,912 development types **none** do. Matching now compares a folded key
 while the letters written out are never changed. On news text that is worth
-1.20 points — the clearest case in the project of a defect a single-source
+1.20 points, the clearest case in the project of a defect a single-source
 evaluation set could not have revealed.
 
 ## Repository layout
@@ -636,8 +675,8 @@ tests/              64 tests
 | `dataset/pashto_gold_changes(1).md` | every hand correction and the reason for it |
 | `dataset/ANNOTATION_GUIDELINES.md` | what counts as a stem |
 
-Both sets were annotated independently by three native speakers — the author, a
-Pashto-medium school principal and a university teacher of Pashto — and
+Both sets were annotated independently by three native speakers, the author, a
+Pashto-medium school principal and a university teacher of Pashto, and
 adjudicated by the author. The two released development-set passes agree at
 96.88% on the exact stem (κ 0.969). The held-out set was annotated with the
 reference field initially empty, so that nothing anchored them to any system's
@@ -661,7 +700,7 @@ inventory was missing. The procedure is cheap and we recommend it.
   `خواړه → خواړ` is wrong, and nothing in the surface form separates them. The
   rule fires 131 times on the development set and is right 86 times; removing
   it costs 1.62 points. No reformulation conditioned on the surface form can
-  help — only a lexical resource can.
+  help, only a lexical resource can.
 - **Three rules sit below 60% precision and are kept**: `ان` (46.4%) and the
   two three-letter length rules (53.8%, 56.2%). Gating `ان` costs 0.40 points on
   held-out text, so the low precision reflects competition with longer analyses
@@ -670,9 +709,10 @@ inventory was missing. The procedure is cheap and we recommend it.
   was implemented, measured and removed: across both sets it fired on seven
   types and was wrong on all seven, returning a suffix instead of a word
   (`نړۍوال → وال`, `پټرولیم → یم`).
-- **The evaluation is on word types, not running text**, so there is no
-  measurement of retrieval effectiveness and no evidence yet about downstream
-  gains.
+- **The retrieval evaluation rests on 39 queries and one assessor.** A second
+  assessor judged three of them (κ 0.244 on 132 documents). That is enough to
+  establish the effect on MAP and not the smaller effects at rank 10, and the
+  provenance of the document collection is not yet documented.
 - **Agreement is measured on the development set.** Two of its three
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
   binary decision). The held-out set carries a single agreed reference, so no
@@ -690,14 +730,16 @@ inventory was missing. The procedure is cheap and we recommend it.
 
 | File | Contents |
 |---|---|
-| [paper/main.tex](paper/main.tex) | the paper, LaTeX source — build with XeLaTeX or LuaLaTeX |
+| [paper/main.tex](paper/main.tex) | the paper, LaTeX source, build with XeLaTeX or LuaLaTeX |
 | [paper/Pashto_Stemmer_Paper.pdf](paper/Pashto_Stemmer_Paper.pdf) | the paper, built |
-| [docs/01_affix_inventory.md](docs/01_affix_inventory.md) | the linguistic background: how the affixes were surveyed, with productivity and notes. Not the authoritative list — see `paper/inventory_rows.tsv`, which is generated from the rules themselves |
+| [docs/01_affix_inventory.md](docs/01_affix_inventory.md) | the linguistic background: how the affixes were surveyed, with productivity and notes. Not the authoritative list, see `paper/inventory_rows.tsv`, which is generated from the rules themselves |
 | [paper/inventory_rows.tsv](paper/inventory_rows.tsv) | all 118 rules as the engine holds them, with each one's source |
 | [docs/02_annotation_policy.md](docs/02_annotation_policy.md) | what counts as a stem, and why |
-| [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | how the verbs were surveyed. Not the dictionary — twelve verbs here are not implemented; see `paper/verbs_sources.tsv` |
+| [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | how the verbs were surveyed. Not the dictionary, twelve verbs here are not implemented; see `paper/verbs_sources.tsv` |
 | [paper/verbs_sources.tsv](paper/verbs_sources.tsv) | the 38 verbs the dictionary holds plus the 12 identified but not implemented, each with its source |
 | [docs/Aslamzai_Saad_2015_Rules.pdf](docs/Aslamzai_Saad_2015_Rules.pdf) | the baseline's nine rules, transcribed from the paper |
+| [ir/](ir/) | the retrieval evaluation: the search engine, the judging tool, the queries, the 1,489 relevance judgements and the frozen result. The 44,814-document collection itself is not tracked; `ir/data_loader.py` rebuilds it |
+| [ir/docs/IR_FINDINGS.md](ir/docs/IR_FINDINGS.md) | the full record of the retrieval experiment: results, every bug found, every decision and all the limitations |
 
 Both appendices are generated rather than written, so the documentation cannot
 drift from the implementation: `paper/make_inventory_tables.py` emits the affix
@@ -719,7 +761,7 @@ not hold.
 ## Contributing
 
 The useful contributions are an affix with a source, or a word the stemmer
-gets wrong — see [CONTRIBUTING.md](CONTRIBUTING.md). Every pull request runs
+gets wrong, see [CONTRIBUTING.md](CONTRIBUTING.md). Every pull request runs
 the tests and posts the effect on the published accuracy, so a rule change is
 judged on what it does rather than on argument.
 

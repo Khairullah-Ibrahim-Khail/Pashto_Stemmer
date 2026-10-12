@@ -52,7 +52,7 @@ affix	group	type	min	pos	productivity	confidence	strip	source
 اوی	Derivation: nouns	suf, der	3	N	restricted	medium	no	T&R ch.6 verbal nouns
 بان	Derivation: nouns	suf, der	3	N	borrowed	high	yes	Penzl §52 suffixes of the doer
 توب	Derivation: nouns	suf, der	3	N	productive	high	yes	N&K
-تون	Derivation: nouns	suf, der	3	N	productive	high	yes	N&K
+تون	Derivation: nouns	suf, der	3	N	productive	high	no	N&K
 تیا	Derivation: nouns	suf, der	2	N	productive	high	yes	T&R ch.4 noun derivation
 خور	Derivation: nouns	suf, der	3	N	borrowed	medium	yes	T&R ch.4 synthetic compounds
 دار	Derivation: nouns	suf, der	3	N	productive	high	yes	T&R ch.2 Persianate compounds
@@ -114,6 +114,6 @@ affix	group	type	min	pos	productivity	confidence	strip	source
 بې	Prefixes	pre, der	3	ADJ/N	productive	high	no	T&R ch.5 prefixed adjectives
 سر	Prefixes	pre, der	4	N	restricted	medium	no	T&R ch.4 nominal compounding
 ضد	Prefixes	pre, der	3	N	borrowed	medium	yes	T&R ch.2 modern loan vocabulary
-لا	Prefixes	pre, der	3	—	borrowed	medium	yes	T&R ch.2 Arabic/Persian bound morphemes
+لا	Prefixes	pre, der	3	any	borrowed	medium	yes	T&R ch.2 Arabic/Persian bound morphemes
 نا	Prefixes	pre, der	3	ADJ/N	productive	high	no	T&R ch.5 prefixed adjectives
-هم	Prefixes	pre, der	3	—	productive	high	yes	T&R ch.2 Persian compounds
+هم	Prefixes	pre, der	3	any	productive	high	yes	T&R ch.2 Persian compounds

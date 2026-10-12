@@ -97,7 +97,10 @@ def rows():
             "group": group_of(r),
             "type": short_type(r),
             "min": str(r.min_stem_len),
-            "pos": "/".join(r.pos) or "\u2014",
+            # "any" rather than a dash: the column is read in a table where
+            # a dash could be mistaken for a missing value instead of a rule
+            # that applies to every part of speech.
+            "pos": "/".join(r.pos) or "any",
             "productivity": r.productivity,
             "confidence": r.confidence,
             "strip": r.strip_allowed,

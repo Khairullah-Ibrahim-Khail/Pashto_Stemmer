@@ -158,7 +158,7 @@ def test_stem_takes_a_word_a_sentence_or_a_list():
     # blanks and non-strings do not raise: one empty cell must not stop a job
     assert st.stem("") == "" and st.stem("   ") == "" and st.stem(None) == ""
     # surrounding whitespace is not a second token
-    assert st.stem("  پوهنتون  ") == "پوهن"
+    assert st.stem("  پوهنتون  ") == "پوهنتون"
 
 
 def test_stem_sentence_matches_stem_text():
@@ -298,3 +298,32 @@ def _run_all():
 
 if __name__ == "__main__":
     sys.exit(0 if _run_all() else 1)
+
+
+def test_place_suffix_is_gated_and_its_family_is_consistent():
+    """‑تون stays on the stem, and every form of a place noun agrees.
+
+    The suffix is a real Pashto derivation, but removing it merges a place
+    with the quality it is named for: روغتون 'hospital' and روغتیا 'health'
+    both reduce to روغ, and a search for one then returns the other. On 39
+    queries and 1,489 relevance judgements gating it raised MAP from 0.6404
+    to 0.6517 and won nDCG@10, P@10 and Recall@10 as well.
+
+    Leaving the suffix live also split the word family, because روغتون lost
+    the suffix while روغتونه spent its single pass on the inflectional ‑ه and
+    stopped at روغتون, so a query for the singular no longer reached a
+    document holding the plural. The second assertion is the one that guards
+    that: every surface form must arrive at the same stem.
+    """
+    from pashto_stemmer import PashtoStemmer
+    st = PashtoStemmer()
+
+    assert st.stem("روغتون") == "روغتون"
+    assert st.stem("پوهنتون") == "پوهنتون"
+
+    family = ["روغتون", "روغتونه", "روغتونو", "روغتونونه", "روغتونونو"]
+    stems = {st.stem(w) for w in family}
+    assert stems == {"روغتون"}, stems
+
+    # the quality noun is a different word and keeps its own behaviour
+    assert st.stem("روغتیا") == "روغ"
