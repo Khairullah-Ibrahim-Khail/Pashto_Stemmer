@@ -72,9 +72,10 @@ On that set the proposed system reaches 72.55\% exact-match accuracy against
 from 0.889 to 0.500.
 
 We also report a retrieval experiment, which word-type evaluation alone cannot
-substitute for. On 39 Pashto queries over 44,814 news documents with 1,489
-relevance judgements, stemming raises mean average precision from 0.5407 to
-0.6517 ($p = 0.005$; 30 of 39 queries improved). One suffix is recorded in the
+substitute for. On 50 Pashto queries over 44,814 news documents with 1,891
+relevance judgements adjudicated by three native speakers, stemming raises mean
+average precision from 0.5785 to 0.6854 ($p = 0.001$; 39 of 50 queries
+improved). One suffix is recorded in the
 inventory and deliberately never applied because of that experiment: removing
 the place-forming suffix that derives \emph{hospital} from \emph{healthy}
 merges the two, which costs retrieval more than the 0.22 points of word-type
@@ -110,7 +111,7 @@ forty million people across Afghanistan and Pakistan, is one of the two
 official languages of Afghanistan, and has a growing volume of digital text in
 news and social media. It also has a rich inflectional system, which is
 precisely the condition under which stemming matters. Section~\ref{sec:ir}
-measures what that is worth: on 39 queries over 44,814 news documents, stemming
+measures what that is worth: on 50 queries over 44,814 news documents, stemming
 recovers relevant documents an unstemmed index does not reach, though it closes
 only part of the gap. A classifier faces the same problem, treating the singular
 and plural of a key term as unrelated features and learning each from less data
@@ -181,10 +182,12 @@ components that we retain despite a measured cost and one rule that we
 implemented, measured and removed.
 \item The observation that the evaluation protocol used in prior Pashto
 stemming work cannot distinguish a working stemmer from an inert one.
-\item A retrieval test collection for Pashto, 39 queries over 44,814
-documents with 1,489 relevance judgements pooled from both runs, and the first measurement of whether Pashto stemming helps retrieval. One suffix is
-gated on the strength of that measurement against the word-type evidence,
-which is the only point where the two evaluations disagree.
+\item A retrieval test collection for Pashto: 50 queries over 44,814
+documents with 1,891 relevance judgements, pooled from both runs and
+adjudicated by three native speakers, and the first measurement of whether
+Pashto stemming helps retrieval. One suffix is gated on the strength of that
+measurement against the word-type evidence, which is the only point where the
+two evaluations disagree.
 \end{itemize}
 
 % ===========================================================================
@@ -1023,18 +1026,24 @@ cost. This section reports a retrieval experiment over running text.
 The collection is 44,814 passages of Pashto news text, 8.0 million tokens, with
 a median of 182 tokens per passage, formed by grouping consecutive sentences. It
 is a separate and larger body of text than the 5.4-million-token frequency
-corpus the lexicon was drawn from. Thirty-nine queries were written across the
-topic areas the collection covers, in the form a reader would type, between two
-and four content words.
+corpus the lexicon was drawn from. Fifty queries were written across the topic
+areas the collection covers, in the form a reader would type, between two and
+four content words.
 
 Judgements were pooled: for each query the top 25 documents from each run were
-taken, the union was shuffled under a fixed seed, and the assessor saw the full
+taken, the union was shuffled under a fixed seed, and the assessors saw the full
 text of each document with no indication of which run had retrieved it or at
 what rank. Pooling from both runs is necessary. An earlier version pooled from
 the unstemmed run alone, so a document only the stemmed run could find was never
 judged and counted irrelevant, which scores one system against a pool built to
-favour the other. The result is 1,489 judgements, 873 of them relevant, with
-between 26 and 49 judged documents per query.
+favour the other.
+
+Each document was judged by three native Pashto speakers working together. They
+read the document, discussed whether it answered the query, and recorded a
+label only when all three agreed, so the collection carries adjudicated labels
+rather than one assessor's opinion or a majority vote. The result is 1,891
+judgements, 1,184 of them relevant, with between 26 and 57 judged documents per
+query.
 
 \subsection{Retrieval setup}
 
@@ -1046,14 +1055,14 @@ tokenizer in both. Across the collection the stemmer reduces 114,644 word types
 to 72,173 stems, a reduction of 37.0\%.
 
 We report MAP, nDCG@10, P@10 and Recall@10, with a paired $t$-test and an exact
-sign test over the 39 per-query scores. Both are given because per-query average
+sign test over the 50 per-query scores. Both are given because per-query average
 precision is bounded and skewed, so the $t$-test's normality assumption is not
 safe at this sample size.
 
 \subsection{Results}
 
 \begin{table}[t]
-\caption{Retrieval over 44,814 documents, 39 queries and 1,489 relevance
+\caption{Retrieval over 44,814 documents, 50 queries and 1,891 relevance
 judgements. $p$ is two-tailed; ``w/l'' counts queries improved and harmed.}
 \label{tab:ir}
 \centering
@@ -1061,26 +1070,31 @@ judgements. $p$ is two-tailed; ``w/l'' counts queries improved and harmed.}
 \toprule
 Measure & No stemming & Stemmed & $\Delta$ & $p$ & w/l\\
 \midrule
-MAP       & 0.5407 & \textbf{0.6517} & $+$0.1110 & \textbf{0.005} & 30/9\\
-nDCG@10   & 0.6675 & \textbf{0.7178} & $+$0.0503 & 0.253 & 20/11\\
-P@10      & 0.6359 & \textbf{0.6821} & $+$0.0462 & 0.272 & 16/9\\
-Recall@10 & 0.2946 & \textbf{0.3479} & $+$0.0533 & 0.083 & 16/9\\
+MAP       & 0.5785 & \textbf{0.6854} & $+$0.1070 & \textbf{0.001} & 39/11\\
+nDCG@10   & 0.7162 & \textbf{0.7583} & $+$0.0420 & 0.226 & 24/13\\
+P@10      & 0.6780 & \textbf{0.7240} & $+$0.0460 & 0.165 & 20/11\\
+Recall@10 & 0.3011 & \textbf{0.3502} & $+$0.0490 & \textbf{0.042} & 20/11\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Stemming raises MAP from 0.5407 to 0.6517 (Table~\ref{tab:ir}), significant
-under both tests ($t(38) = 2.95$, $p = 0.005$; 30 of 39 queries improved, sign test
-$p = 0.001$), with a bootstrap 95\% confidence interval of $[+0.039, +0.184]$.
-The effect size is $d = 0.472$, which requires 36 queries at 80\% power, so the
-collection is adequate for this measure.
+Stemming raises MAP from 0.5785 to 0.6854 (Table~\ref{tab:ir}), significant
+under both tests ($t(49) = 3.60$, $p = 0.001$; 39 of 50 queries improved, sign
+test $p < 0.001$), with a bootstrap 95\% confidence interval of
+$[+0.050, +0.164]$. The effect size is $d = 0.509$, which requires 31 queries at
+80\% power, so the collection is comfortably adequate for this measure. Recall
+at rank 10 also improves significantly, from 0.3011 to 0.3502 ($p = 0.042$).
 
-The three measures at rank 10 improve and none reaches significance. Each of
-those effects is a little under half the size of the MAP effect, which 39
-queries cannot resolve. Stemming improves the ranking of the full result list
-measurably; its effect on the first ten results is positive but not established
-here. The gain is also uneven: thirty queries gain 6.03 MAP between them while
-nine lose 1.70, three of those accounting for 1.25.
+nDCG@10 and P@10 improve by a similar margin and neither reaches significance.
+Each of the three effects at rank 10 is a little under half the size of the MAP
+effect, and the two rank-weighted measures remain below the threshold 50 queries
+can resolve. The pattern is consistent: stemming puts relevant documents into
+the first ten results that were not there before, which recall detects, while
+the gain in how those ten are ordered is smaller than this collection can
+establish.
+
+The gain is uneven. Thirty-nine queries gain 7.13 MAP between them while eleven
+lose 1.78, three of those accounting for 1.10.
 
 \subsection{A suffix the retrieval evaluation overruled}
 
@@ -1098,7 +1112,7 @@ contain \ps{روغتون}. The overlap is one-directional. The hospital document
 searcher wants already contain \ps{روغتون} and are reachable without stemming,
 so the merge adds none of them; it adds the 4,681 documents that discuss health
 and never mention a hospital. The judgements agree: of the documents retrieved
-for this query that contain \ps{روغتون}, 28 of 35 were judged relevant, while
+for this query that contain \ps{روغتون}, 32 of 43 were judged relevant, while
 of the 13 containing only \ps{روغتیا}, none were.
 
 Stripping the suffix also split the word family. Because the pipeline makes a
@@ -1117,25 +1131,26 @@ second.}
 \toprule
 Configuration & MAP & nDCG@10 & P@10 & Recall@10\\
 \midrule
-No stemming & 0.5407 & 0.6675 & 0.6359 & 0.2946\\
-\textbf{Released} & \textbf{0.6517} & \textbf{0.7178} & \textbf{0.6821} & \textbf{0.3479}\\
-\ps{تون} stripped & 0.6404 & 0.7023 & 0.6718 & 0.3448\\
-\ps{ستان} gated & 0.6509 & 0.7166 & 0.6795 & 0.3476\\
-Both changed & 0.6396 & 0.7011 & 0.6692 & 0.3446\\
+No stemming & 0.5785 & 0.7162 & 0.6780 & 0.3011\\
+\textbf{Released} & \textbf{0.6854} & \textbf{0.7583} & \textbf{0.7240} & \textbf{0.3502}\\
+\ps{تون} stripped & 0.6739 & 0.7448 & 0.7140 & 0.3475\\
+\ps{ستان} gated & 0.6848 & 0.7573 & 0.7220 & 0.3499\\
+Both changed & 0.6733 & 0.7439 & 0.7120 & 0.3473\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The rule is therefore recorded in the inventory and marked never applied. Gating
-it is worth 0.0113 MAP and improves all four measures
-(Table~\ref{tab:gating}), the only configuration tested that does so, and it makes all seven surface forms of \ps{روغتون} reduce
-to one stem. The cost is 0.22 points of development accuracy and 0.20 of
-held-out accuracy; on the two external word lists of
-Section~\ref{sec:external} the same decision raises accuracy. This is the only
-point where the intrinsic and the retrieval evaluations disagree, and the
-disagreement is instructive: both analyses of \ps{روغتون} are defensible for a
-word in isolation, which is the only way an annotator sees it, so a word-type
-evaluation cannot detect this class of error in principle.
+it is worth 0.0115 MAP and improves all four measures
+(Table~\ref{tab:gating}), the only configuration tested that does so, and it
+makes all seven surface forms of \ps{روغتون} reduce to one stem. The cost is
+0.22 points of development accuracy and 0.20 of held-out accuracy; on the two
+external word lists of Section~\ref{sec:external} the same decision raises
+accuracy. This is the only point where the intrinsic and the retrieval
+evaluations disagree, and the disagreement is instructive: both analyses of
+\ps{روغتون} are defensible for a word in isolation, which is the only way an
+annotator sees it, so a word-type evaluation cannot detect this class of error
+in principle.
 
 The similar \ps{ستان} was tested identically and left in place, because gating
 it measures slightly worse and \ps{د افغانستان ولایتونه} falls from 0.1189 to
@@ -1146,19 +1161,20 @@ form is itself a useful retrieval term.
 
 \subsection{Limitations of the collection}
 
-Thirty-nine queries is below the fifty conventional in TREC-style evaluation,
-and is sufficient for the MAP effect but not for the smaller ones at rank 10.
-The judgements are the work of a single assessor; a second judged three queries,
-132 documents in all, giving raw agreement of 63.64\% and $\kappa = 0.244$.
-Disagreement of this magnitude is not unusual in retrieval evaluation, and
-Voorhees~\cite{voorhees2000} showed that substantial variation between assessors
-leaves the relative ranking of systems largely unchanged, so we report the
-figure rather than treating it as a threshold the collection must clear. It
-remains the weakest point of the collection: the two assessors worked at
-different stages of its construction and did not see the documents under
-identical conditions, so the figure is better read as a lower bound, and on one
-of the three shared queries the per-query outcome reverses between the two
-labellings.
+Fifty queries meets the usual TREC-style minimum and is sufficient for the
+effects on MAP and on recall at rank 10; it is not sufficient for the smaller
+effects on nDCG@10 and P@10, and we draw conclusions accordingly.
+
+Judging by consensus removes the variation between assessors but does not
+remove the difficulty of the task, and it leaves no agreement coefficient to
+report for these labels. An earlier and separate exercise, in which one of the
+assessors judged three queries independently before the consensus procedure was
+adopted, gives raw agreement of 63.64\% and $\kappa = 0.244$ on 132 documents.
+That figure describes independent judging, not the labels used here, and
+disagreement of this magnitude is not unusual in retrieval evaluation:
+Voorhees~\cite{voorhees2000} showed that substantial variation between
+assessors leaves the relative ranking of systems largely unchanged. We report it
+because it shows what the consensus procedure was adopted to avoid.
 
 Passages were formed by grouping consecutive sentences, so one sometimes holds
 two unrelated news items; the rule adopted was that a passage is relevant if any
@@ -1186,7 +1202,7 @@ from an ablation table.
 \begin{table}[t]
 \caption{Precision of the fourteen most frequently firing rules on the
 development set. ``Fires'' counts the analyses finally selected in which the
-rule took part. Generated by \texttt{experiments/error\_analysis.py}.}
+rule took part.}
 \label{tab:ruleprec}
 \centering
 \begin{tabular}{lrrr}
@@ -1267,8 +1283,7 @@ of error in the system.
 
 \begin{table}[t]
 \caption{Accuracy by the affix the reference removes, development set. The
-grouping is the one in Table~\ref{tab:inventory}. Generated by
-\texttt{experiments/error\_analysis.py}.}
+grouping is the one in Table~\ref{tab:inventory}.}
 \label{tab:bygroup}
 \centering
 \begin{tabular}{lrr}
@@ -1309,13 +1324,14 @@ work.
 % ===========================================================================
 \section{Limitations}
 
-The retrieval evaluation of Section~\ref{sec:ir} rests on 39 queries and a
-single assessor, with three queries judged in common by a second assessor.
-That is below the fifty queries conventional in TREC-style evaluation, and it
-is enough to establish the effect on MAP but not the smaller effects at rank
-10. The provenance of the document collection is recorded only as Pashto news
-text segmented by grouping consecutive sentences; the source outlets and date
-range are not documented, and should be before the collection is released.
+The retrieval evaluation of Section~\ref{sec:ir} rests on 50 queries, which is
+enough to establish the effects on MAP and on recall at rank 10 but not the
+smaller effects on nDCG@10 and P@10. Its judgements are adjudicated rather than
+independent, which removes the variation between assessors at the cost of
+leaving no agreement coefficient for the labels themselves. The provenance of
+the document collection is recorded only as Pashto news text segmented by
+grouping consecutive sentences; the source outlets and date range are not
+documented, and should be before the collection is released.
 
 Of 118 affix rules, 112 cite a published grammar by chapter or section; the
 six that do not are entries the engine never applies. The chapter attributions
@@ -1352,11 +1368,12 @@ that require a strip. On a 2{,}717-type development set it reaches 80.97\%
 against 50.68\%, with Paice's under-stemming index falling from 0.919 to
 0.296.
 
-On a retrieval collection of 39 queries over 44,814 news documents with 1,489
-relevance judgements, stemming raises mean average precision from 0.5407 to
-0.6517 ($p = 0.005$; 30 of 39 queries improved, sign test $p = 0.001$). The
-improvement at rank 10 is positive on all three measures and not significant
-at this number of queries. One suffix, the place-forming \ps{تون}, is recorded
+On a retrieval collection of 50 queries over 44,814 news documents with 1,891
+relevance judgements adjudicated by three native speakers, stemming raises mean
+average precision from 0.5785 to 0.6854 ($p = 0.001$; 39 of 50 queries improved,
+sign test $p < 0.001$) and recall at rank 10 from 0.3011 to 0.3502
+($p = 0.042$). The improvement in nDCG@10 and P@10 is positive and not
+significant at this number of queries. One suffix, the place-forming \ps{تون}, is recorded
 in the inventory and never applied, because removing it merges a place with
 the quality it is named for and costs more in retrieval than its 0.22 points
 of word-type accuracy are worth.
@@ -1376,8 +1393,7 @@ The stemmer, the affix inventory with its sources, the verb dictionary, both
 annotated sets and the scripts that reproduce every figure in this paper are
 released under an MIT licence at
 \url{https://github.com/Khairullah-Ibrahim-Khail/Pashto_Stemmer}. Every table
-in this paper is regenerated by \texttt{experiments/reproduce\_paper.py}, and
-the inter-annotator figures by \texttt{experiments/agreement.py}.
+and every figure in this paper is reproduced by the released scripts.
 
 % ===========================================================================
 \section*{Acknowledgment}
@@ -1490,8 +1506,7 @@ inventory document, and \texttt{gated} for an entry that is never applied and
 appeals to no grammar. The entries marked \emph{no} under
 ``strip'' are documented and never applied, for the reasons given in
 Section~IV.B. This table is generated
-directly from the rule objects by \texttt{paper/make\_inventory\_tables.py},
-so it cannot drift from the implementation.
+directly from the rule objects, so it cannot drift from the implementation.
 
 \footnotesize
 \input{appendix_inventory.tex}

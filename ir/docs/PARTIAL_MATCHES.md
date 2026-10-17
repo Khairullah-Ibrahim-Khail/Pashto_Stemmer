@@ -169,9 +169,9 @@ test was significant (21 of 30 improved, p = 0.043). **Report both**, because
 the disagreement is itself informative: stemming helps many queries a little
 and hurts a few a lot, which is exactly the shape a t-test handles badly.
 
-On the final 39 queries both tests agree for MAP (+0.1110, t-test p = 0.005,
-sign test p = 0.001) and both fail to reach significance for nDCG@10, P@10 and
-Recall@10. So the rule still holds — report both, and say which claims the
+On the final 50 queries both tests agree for MAP (+0.1070, t-test p = 0.001,
+sign test p < 0.001); recall@10 is significant under the t-test (p = 0.042) and
+nDCG@10 and P@10 are not. So the rule still holds — report both, and say which claims the
 collection can actually support.
 
 ---
@@ -202,7 +202,7 @@ Then switch that suffix off and re-measure:
 $PY test_gating.py
 ```
 
-**Result here:** gating `‑تون` raised MAP from 0.6404 to **0.6517** and
+**Result here:** gating `‑تون` raised MAP from 0.6739 to **0.6854** and
 improved all four measures, costing 0.22 points of intrinsic word-type
 accuracy.
 

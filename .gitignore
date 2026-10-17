@@ -92,6 +92,7 @@ ir/results/run_stemmed.txt
 
 # Dated safety copies written automatically before each destructive step.
 ir/results/backup-*/
+ir/data/backup-*/
 
 # NOT ignored, deliberately: ir/data/ holds the queries and the qrels, and
 # ir/results/judged_*.tsv and ir/results/frozen/ hold the relevance

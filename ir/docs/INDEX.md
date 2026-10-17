@@ -13,13 +13,14 @@ Read in this order.
 
 ## In one paragraph
 
-44,814 Pashto news documents, 39 queries, 1,489 human relevance judgements.
+44,814 Pashto news documents, 50 queries, 1,891 human relevance judgements.
 The same search engine is run twice — once on plain text, once on stemmed text
 — and the two rankings are scored against the same judgements. Stemming raises
-MAP from 0.5407 to 0.6517, which is significant by both a paired t-test
-(p = 0.005) and a sign test (30 of 39 improved, p = 0.001). The three
-cutoff-10 measures improve too, none of them significantly. The gain is uneven:
-30 queries gain 6.03 MAP between them while nine lose 1.70. One suffix,
+MAP from 0.5785 to 0.6854, which is significant by both a paired t-test
+(p = 0.001) and a sign test (39 of 50 improved, p < 0.001), and recall at rank
+10 from 0.3011 to 0.3502 (p = 0.042). nDCG@10 and P@10 improve too, neither
+significantly. The gain is uneven:
+39 queries gain 7.13 MAP between them while eleven lose 1.78. One suffix,
 `‑تون`, caused the worst of those losses by merging *hospital* with *health*
 and *university* with *education*; it is now gated, which improves all four
 measures and costs 0.22 points of intrinsic accuracy — the one case where the

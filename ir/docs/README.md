@@ -7,8 +7,8 @@ Everything here is in `/home/khairullah/Documents/testing Folder/stemmer/IR`.
 | | |
 |---|---|
 | corpus | 44,814 Pashto news documents, 8.0 million words |
-| queries | 39 Pashto search queries |
-| judgements | 1,489 human decisions: does this document answer this query |
+| queries | 50 Pashto search queries |
+| judgements | 1,891 human decisions, each agreed by three native speakers |
 | what is compared | the same search engine, twice: without the stemmer and with it |
 
 ---
@@ -214,7 +214,7 @@ q001     35 |  0.4370  0.7901 +0.3530   better
 q003     26 |  0.5824  0.1189 -0.4635   much worse
 q006     34 |  0.8583  0.9691 +0.1109   better
 ...
-mean                          +0.1110   sd 0.2353
+mean                          +0.1070   sd 0.2101
 ```
 
 Then three tests:
@@ -315,20 +315,20 @@ Each of these exists because the obvious approach was wrong.
 ## 7. Current state
 
 ```
-44,814 documents · 39 queries · 1,489 judgements
+44,814 documents · 50 queries · 1,891 judgements
 ```
 
 | | unstemmed | stemmed |
 |---|---:|---:|
-| MAP | 0.5407 | **0.6517** |
-| nDCG@10 | 0.6675 | **0.7178** |
-| P@10 | 0.6359 | **0.6821** |
-| Recall@10 | 0.2946 | **0.3479** |
+| MAP | 0.5785 | **0.6854** |
+| nDCG@10 | 0.7162 | **0.7583** |
+| P@10 | 0.6780 | **0.7240** |
+| Recall@10 | 0.3011 | **0.3502** |
 
-30 of 39 queries improve with stemming. The average difference is **+0.1110
-MAP**, which **is** statistically significant (paired t = 2.95, p = 0.005;
-sign test p = 0.001). The three cutoff-10 measures all improve too, but none
-of those reaches significance on 39 queries.
+39 of 50 queries improve with stemming. The average difference is **+0.1070
+MAP**, which **is** statistically significant (paired t = 3.60, p = 0.001;
+sign test p < 0.001), and recall at rank 10 is significant too (p = 0.042).
+nDCG@10 and P@10 improve but neither reaches significance on 50 queries.
 
-Nine queries still lose, three of them heavily. For what they reveal — and for
+Eleven queries still lose, three of them heavily. For what they reveal — and for
 the one suffix that was gated because of them — see **`IR_FINDINGS.md`**.

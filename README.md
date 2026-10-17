@@ -483,20 +483,24 @@ the held-out set was never used to choose them.
 Word-type accuracy says whether the analysis is right. It does not say whether
 the analysis helps. So the stemmer was put through a retrieval experiment: the
 same BM25 search engine over 44,814 Pashto news documents, run twice, once on
-plain text and once on stemmed text, scored against 1,489 relevance judgements
-made by hand on pooled results from both runs.
+plain text and once on stemmed text, scored against 1,891 relevance judgements.
+Each document was judged by three native Pashto speakers working together, who
+read it, discussed whether it answered the query, and recorded a label only
+when all three agreed. The pool was drawn from both runs and shuffled, so no
+judge could tell which system had retrieved a document.
 
 | | no stemming | stemmed | difference | p |
 |---|---:|---:|---:|---:|
-| **MAP** | 0.5407 | **0.6517** | +0.1110 | **0.005** |
-| nDCG@10 | 0.6675 | 0.7178 | +0.0503 | 0.253 |
-| P@10 | 0.6359 | 0.6821 | +0.0462 | 0.272 |
-| Recall@10 | 0.2946 | 0.3479 | +0.0533 | 0.083 |
+| **MAP** | 0.5785 | **0.6854** | +0.1070 | **0.001** |
+| nDCG@10 | 0.7162 | 0.7583 | +0.0420 | 0.226 |
+| P@10 | 0.6780 | 0.7240 | +0.0460 | 0.165 |
+| **Recall@10** | 0.3011 | **0.3502** | +0.0490 | **0.042** |
 
-Stemming improves MAP significantly (paired t = 2.95, p = 0.005; 30 of 39
-queries improved, sign test p = 0.001; bootstrap 95% CI [+0.039, +0.184]). The
-three rank-10 measures all improve and none reaches significance on 39
-queries, which is reported as such rather than claimed.
+Stemming improves MAP significantly (paired t = 3.60, p = 0.001; 39 of 50
+queries improved, sign test p < 0.001; bootstrap 95% CI [+0.050, +0.164]), and
+recall at rank 10 as well (p = 0.042). nDCG@10 and P@10 improve by a similar
+margin and neither reaches significance on 50 queries, which is reported as
+such rather than claimed.
 
 **This experiment changed the stemmer.** The place-forming `‑تون` is a regular
 Pashto derivation, so the inventory stripped it, which merged `روغتون`
@@ -709,10 +713,12 @@ inventory was missing. The procedure is cheap and we recommend it.
   was implemented, measured and removed: across both sets it fired on seven
   types and was wrong on all seven, returning a suffix instead of a word
   (`نړۍوال → وال`, `پټرولیم → یم`).
-- **The retrieval evaluation rests on 39 queries and one assessor.** A second
-  assessor judged three of them (κ 0.244 on 132 documents). That is enough to
-  establish the effect on MAP and not the smaller effects at rank 10, and the
-  provenance of the document collection is not yet documented.
+- **The retrieval judgements are adjudicated, not independent.** Three native
+  speakers agreed on every label together, which removes the variation between
+  assessors but leaves no agreement coefficient for the labels themselves. 50
+  queries establish the effects on MAP and recall@10, not the smaller ones on
+  nDCG@10 and P@10, and the provenance of the document collection is not yet
+  documented.
 - **Agreement is measured on the development set.** Two of its three
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
   binary decision). The held-out set carries a single agreed reference, so no
@@ -738,7 +744,7 @@ inventory was missing. The procedure is cheap and we recommend it.
 | [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) | how the verbs were surveyed. Not the dictionary, twelve verbs here are not implemented; see `paper/verbs_sources.tsv` |
 | [paper/verbs_sources.tsv](paper/verbs_sources.tsv) | the 38 verbs the dictionary holds plus the 12 identified but not implemented, each with its source |
 | [docs/Aslamzai_Saad_2015_Rules.pdf](docs/Aslamzai_Saad_2015_Rules.pdf) | the baseline's nine rules, transcribed from the paper |
-| [ir/](ir/) | the retrieval evaluation: the search engine, the judging tool, the queries, the 1,489 relevance judgements and the frozen result. The 44,814-document collection itself is not tracked; `ir/data_loader.py` rebuilds it |
+| [ir/](ir/) | the retrieval evaluation: the search engine, the judging tool, the queries, the 1,891 relevance judgements and the frozen result. The 44,814-document collection itself is not tracked; `ir/data_loader.py` rebuilds it |
 | [ir/docs/IR_FINDINGS.md](ir/docs/IR_FINDINGS.md) | the full record of the retrieval experiment: results, every bug found, every decision and all the limitations |
 
 Both appendices are generated rather than written, so the documentation cannot

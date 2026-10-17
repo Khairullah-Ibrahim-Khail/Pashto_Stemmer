@@ -236,9 +236,10 @@ stemmer that modifies nothing already scores 47.77% on Pashto word types.
 On two independently annotated external word lists, 5,000 and 10,000 types
 neither produced by this project: **72.46%** and **70.37%**.
 
-On a retrieval test of 39 Pashto queries over 44,814 news documents with 1,489
-relevance judgements, stemming raises mean average precision from **0.5407** to
-**0.6517** (p = 0.005; 30 of 39 queries improved). One suffix is recorded in
+On a retrieval test of 50 Pashto queries over 44,814 news documents with 1,891
+relevance judgements adjudicated by three native speakers, stemming raises mean
+average precision from **0.5785** to **0.6854** (p = 0.001; 39 of 50 queries
+improved). One suffix is recorded in
 the inventory and never applied because of that test: stripping the
 place-forming `‑تون` merges `روغتون` *hospital* with `روغتیا` *health*.
 
@@ -247,9 +248,10 @@ Every figure is reproducible from the repository,
 
 ## Limitations
 
-- **The retrieval evaluation is small.** 39 queries, one assessor, and a
-  three-query agreement check. Enough for the MAP result, not for the
-  rank-10 measures.
+- **The retrieval judgements are adjudicated, not independent.** Three native
+  speakers agreed on each label together, so there is no agreement coefficient
+  for them. 50 queries carry the MAP and recall@10 results, not nDCG@10 or
+  P@10.
 - **The corpus lexicon is the limiting factor.** Where the right stem is not
   in the word list, the system keeps the word whole or over-strips:
   `چینایي → چینایي`, `الماني → الم`.

@@ -94,9 +94,8 @@ def main() -> int:
              "labelled as such here rather than presented as settled. The "
              "dictionary returns a lemma, so it is off by default and belongs to "
              "the lemmatization mode described in Section~\\ref{sec:scope}. This "
-             "table is generated from the dictionary by "
-             "\\texttt{paper/make\\_verb\\_appendix.py}, so it cannot claim a verb "
-             "the software does not hold.")
+             "table is generated from the dictionary itself, so it cannot claim "
+             "a verb the software does not hold.")
     L.append("")
     L.append("\\footnotesize")
     L.append("\\begin{longtable}{lllrl}")

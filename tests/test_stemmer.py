@@ -305,9 +305,9 @@ def test_place_suffix_is_gated_and_its_family_is_consistent():
 
     The suffix is a real Pashto derivation, but removing it merges a place
     with the quality it is named for: روغتون 'hospital' and روغتیا 'health'
-    both reduce to روغ, and a search for one then returns the other. On 39
-    queries and 1,489 relevance judgements gating it raised MAP from 0.6404
-    to 0.6517 and won nDCG@10, P@10 and Recall@10 as well.
+    both reduce to روغ, and a search for one then returns the other. On 50
+    queries and 1,891 relevance judgements gating it raised MAP from 0.6739
+    to 0.6854 and won nDCG@10, P@10 and Recall@10 as well.
 
     Leaving the suffix live also split the word family, because روغتون lost
     the suffix while روغتونه spent its single pass on the inflectional ‑ه and

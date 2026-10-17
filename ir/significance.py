@@ -6,7 +6,8 @@
 Reports, for each of the four metrics, both arms' means, the paired difference,
 a paired t-test, the win/loss count and an exact sign test. The sign test is
 reported beside the t-test because per-query average precision is bounded and
-skewed, so the t-test's normality assumption is not safe on 39 queries; where
+skewed, so the t-test's normality assumption is not safe at this sample size;
+where
 the two tests disagree, the sign test is the one to believe.
 
 For MAP it also reports a bootstrap confidence interval and the number of

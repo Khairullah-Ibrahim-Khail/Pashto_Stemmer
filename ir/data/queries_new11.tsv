@@ -1,0 +1,24 @@
+# Eleven queries to take the collection from 39 to 50, the TREC convention.
+#
+# Written on 2026-10-12 to fill topic areas the existing 39 do not cover.
+# None of them has been run through either retrieval system, so no query here
+# was chosen by how the stemmer performs on it.
+#
+# Each was checked against the 44,814-document collection before being kept:
+# a query was rejected if fewer than 15 documents contain all of its content
+# words (nothing to judge) or if more than 45% of the collection contains any
+# of them (matches everything, as q003 does). The "docs" column records how
+# many documents contain every content word.
+#
+# id	query	topic	docs
+q401	د کډوالو ستونزې	migration and returnees	718
+q402	د زلزلې زیانونه	earthquake and disaster	24
+q403	د کرنې محصولات	agriculture	234
+q404	د انټرنېټ خدمتونه	technology and services	84
+q405	د خبریالانو ازادي	media and press freedom	502
+q406	د محکمې پرېکړه	courts and justice	433
+q407	د کانونو استخراج	mining and natural resources	101
+q408	د هوا ککړتیا	environment	210
+q409	د بډو ضد مبارزه	governance and corruption	189
+q410	د نشه يي توکو قاچاق	crime and narcotics	294
+q411	ترافیکي پېښې	public safety	74
