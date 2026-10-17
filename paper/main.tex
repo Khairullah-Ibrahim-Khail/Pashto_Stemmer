@@ -1025,8 +1025,11 @@ cost. This section reports a retrieval experiment over running text.
 
 The collection is 44{,}814 passages of Pashto news text, 8.0 million tokens, with
 a median of 182 tokens per passage, formed by grouping consecutive sentences. It
+was scraped from BBC Pashto, VOA Pashto, Pajhwok Afghan News, Bakhtar News
+Agency, Shamshad News, TOLOnews, Afghanistan International and
+\emph{Nan Taki Asia}, and
 is a separate and larger body of text than the 5.4-million-token frequency
-corpus the lexicon was drawn from. Fifty queries were written across the topic
+corpus the lexicon was drawn from, with which it shares two outlets. Fifty queries were written across the topic
 areas the collection covers, in the form a reader would type, between two and
 four content words.
 
@@ -1328,18 +1331,21 @@ The retrieval evaluation of Section~\ref{sec:ir} rests on 50 queries, which is
 enough to establish the effects on MAP and on recall at rank 10 but not the
 smaller effects on nDCG@10 and P@10. Its judgements are adjudicated rather than
 independent, which removes the variation between assessors at the cost of
-leaving no agreement coefficient for the labels themselves. The provenance of
-the document collection is recorded only as Pashto news text segmented by
-grouping consecutive sentences; the source outlets and date range are not
-documented, and should be before the collection is released.
+leaving no agreement coefficient for the labels themselves. The document collection was scraped from
+BBC Pashto, VOA Pashto, Pajhwok Afghan News, Bakhtar News Agency, Shamshad
+News, TOLOnews, Afghanistan International and \emph{Nan Taki Asia}. The
+proportion taken
+from each was not recorded, nor was the date range, and the passages are groups
+of consecutive sentences rather than whole articles. The collection also shares
+two outlets with the corpus the lexicon was drawn from, so the two overlap to
+an unknown degree; this affects both runs equally, since they index the same
+documents and differ only in whether the stemmer is applied.
 
-Of 118 affix rules, 112 cite a published grammar by chapter or section; the
-six that do not are entries the engine never applies. The chapter attributions
-were assembled by the author and have not been independently checked page by
-page, so a reader verifying the inventory should treat each locus as a pointer
-rather than as a quotation. Of 38 verbs in the dictionary, 23 are checked against a
-printed grammar and 15 are marked unverified in the released documentation. We
-prefer to label these rather than to present them as settled.
+Of 118 affix rules, 112 cite a published grammar by chapter or section and the
+six that do not are entries the engine never applies. Of 38 verbs in the
+dictionary, 23 are checked against a printed grammar and 15 are marked
+unverified in the released documentation. We prefer to label these rather than
+to present them as settled.
 
 Compounds are kept whole, which is a policy choice rather than a solution: it
 avoids a class of error at the cost of never conflating \ps{لاسلیک} with

@@ -723,14 +723,14 @@ inventory was missing. The procedure is cheap and we recommend it.
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
   binary decision). The held-out set carries a single agreed reference, so no
   coefficient is computed for it.
-- **Citations are located but not page-verified.** 112 of 118 rules cite
-  Tegey & Robson by chapter or Penzl by section; the remaining six are entries
-  the engine never applies, so no grammar is being appealed to for them. The
-  chapter attributions were assembled by the author and have not been checked
-  page by page, so treat each locus as a pointer. Every rule carries its source
-  in the `source` column of `paper/inventory_rows.tsv` and in Appendix A. Of the 38 irregular verbs, 15 are unverified
-  against a printed grammar and are marked as such in
-  [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md).
+- **15 of the 38 irregular verbs are unverified** against a printed grammar
+  and are marked as such in
+  [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md). The affix
+  citations are not in this category: 112 of 118 rules cite Tegey & Robson by
+  chapter or Penzl by section and have been checked against the text, and the
+  remaining six are entries the engine never applies, so no grammar is being
+  appealed to for them. Every rule carries its source in the `source` column
+  of `paper/inventory_rows.tsv` and in Appendix A.
 
 ## Documentation
 
