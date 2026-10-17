@@ -255,10 +255,11 @@ Every figure is reproducible from the repository,
 - **The corpus lexicon is the limiting factor.** Where the right stem is not
   in the word list, the system keeps the word whole or over-strips:
   `چینایي → چینایي`, `الماني → الم`.
-- **15 of the 38 irregular verbs are unverified** against a printed grammar
-  and are marked as such. The affix citations are checked: 112 of 118 rules
-  cite Tegey & Robson by chapter or Penzl by section, and the remaining six
-  are entries the engine never applies.
+- **15 of the 38 irregular verbs rest on the author's own judgement** as a
+  native speaker rather than on a published paradigm; the other 23 cite Tegey
+  & Robson. Each verb's source is recorded. The affix citations are checked:
+  112 of 118 rules cite Tegey & Robson by chapter or Penzl by section, and the
+  remaining six are entries the engine never applies.
 - **29 of the 118 rules are documented and deliberately never applied**,
   each with the measurement that overruled the grammar.
 

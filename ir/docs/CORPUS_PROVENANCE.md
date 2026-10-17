@@ -63,8 +63,23 @@ have to wonder.
 
 ## Still open
 
-- **Date range.** Earliest and latest publication date in the collection are
-  not recorded.
+- **Date range.** Publication dates were not recorded at collection time and
+  the documents do not carry a date field. Counting the years *named inside*
+  the text gives a rough shape but not an answer, because an article mentioning
+  2021 may have been published at any later date:
+
+      year named    documents        year named    documents
+      2024              2,263        2019                663
+      2021              1,878        2020                592
+      2023              1,753        2018                416
+      2025              1,481        2017                310
+      2022              1,246        2016                250
+      2026                886        2015                279
+
+  Only 9,917 of the 44,814 documents name a Gregorian year at all. The weight
+  sits on 2021-2025 with 2024 the most common, and the presence of 2026
+  suggests collection no earlier than that year, but none of this is a
+  publication date and it should not be reported as one.
 - **Passage construction.** The documents are groups of consecutive sentences
   rather than whole articles, which the paper reports as a limitation in
   Section~VIII. The rule that decided a passage boundary is not recorded.

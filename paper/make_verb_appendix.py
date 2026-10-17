@@ -90,8 +90,13 @@ def main() -> int:
     L.append(f"The {len(implemented)} strong verbs the dictionary holds, with the "
              f"{forms} surface forms they map. These are the verbs whose present "
              "stem cannot be derived from the infinitive. The last column names "
-             f"the source; {unverified} entries are marked unverified and are "
-             "labelled as such here rather than presented as settled. The "
+             + ("the source of each: a published grammar, or the author's own "
+                "judgement as a native speaker where no published paradigm was "
+                "consulted. "
+                if not unverified else
+                f"the source; {unverified} entries are marked unverified and "
+                "are labelled as such here rather than presented as settled. ")
+             + "The "
              "dictionary returns a lemma, so it is off by default and belongs to "
              "the lemmatization mode described in Section~\\ref{sec:scope}. This "
              "table is generated from the dictionary itself, so it cannot claim "

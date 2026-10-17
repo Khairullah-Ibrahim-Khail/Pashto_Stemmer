@@ -723,9 +723,10 @@ inventory was missing. The procedure is cheap and we recommend it.
   independent passes are released (κ 0.969 on the exact stem, 0.965 on the
   binary decision). The held-out set carries a single agreed reference, so no
   coefficient is computed for it.
-- **15 of the 38 irregular verbs are unverified** against a printed grammar
-  and are marked as such in
-  [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md). The affix
+- **15 of the 38 irregular verbs rest on the author's own judgement** as a
+  native speaker rather than on a published paradigm, and each verb's source
+  is recorded in [docs/03_irregular_verbs.md](docs/03_irregular_verbs.md) and
+  in `paper/verbs_sources.tsv`. The affix
   citations are not in this category: 112 of 118 rules cite Tegey & Robson by
   chapter or Penzl by section and have been checked against the text, and the
   remaining six are entries the engine never applies, so no grammar is being

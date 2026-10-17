@@ -831,22 +831,31 @@ conclusion does not depend on the choice.
 
 \subsection{Held-out evaluation}
 
-Table~\ref{tab:heldout} reports the held-out set, which is the primary result:
-499 word types from news text, annotated with the reference field initially
-empty and never used during development.
+Table~\ref{tab:main} reports both evaluation sets. The held-out set is the
+primary result: 499 word types from news text, annotated with the reference
+field initially empty and never used during development. The development set is
+reported beside it for comparability with the baseline, which is scored
+identically, and because Paice's indices are more stable on the larger set.
 
 \begin{table}[t]
-\caption{Held-out evaluation, 499 word types. ``Affixed'' and ``Bare'' are
-accuracy on the types the annotation changes and leaves unchanged.}
-\label{tab:heldout}
+\caption{Both evaluation sets. ``Affixed'' and ``Bare'' are accuracy on the
+types the annotation changes and leaves unchanged; UI is Paice's
+under-stemming index, where lower is better.}
+\label{tab:main}
 \centering
 \begin{tabular}{lcccc}
 \toprule
 System & Accuracy & Affixed & Bare & UI\\
 \midrule
+\multicolumn{5}{l}{\emph{Held-out set, 499 word types}}\\
 Modifies nothing & 37.27\% & 0.0\% & 100.0\% & 1.000\\
 Aslamzai \& Saad & 40.48\% & 16.9\% & 80.1\% & 0.889\\
 \textbf{Proposed} & \textbf{72.55\%} & \textbf{72.5\%} & 72.6\% & \textbf{0.500}\\
+\midrule
+\multicolumn{5}{l}{\emph{Development set, 2{,}717 stemming types}}\\
+Modifies nothing & 47.77\% & 0.0\% & 100.0\% & 1.000\\
+Aslamzai \& Saad & 50.68\% & 12.2\% & 92.8\% & 0.919\\
+\textbf{Proposed} & \textbf{80.97\%} & \textbf{80.6\%} & 81.4\% & \textbf{0.296}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -865,28 +874,11 @@ to 0.500, and over-stemming remains below $4\times10^{-5}$.
 
 \subsection{Development set}
 
-\begin{table}[t]
-\caption{Development set, 2{,}717 stemming types.}
-\label{tab:dev}
-\centering
-\begin{tabular}{lcccc}
-\toprule
-System & Accuracy & Affixed & Bare & UI\\
-\midrule
-Modifies nothing & 47.77\% & 0.0\% & 100.0\% & 1.000\\
-Aslamzai \& Saad & 50.68\% & 12.2\% & 92.8\% & 0.919\\
-\textbf{Proposed} & \textbf{80.97\%} & \textbf{80.6\%} & 81.4\% & \textbf{0.296}\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:dev} reports the development set. The figure is higher than the
-held-out result. The revisions described in Section~\ref{sec:devset} account
-for 0.07 points of that gap, so the explanation lies elsewhere: it is
-orthographic, and Section~\ref{sec:orth} gives it. The development set is
-reported for comparability with the baseline, which is scored identically, and
-because Paice's indices are more stable on the larger set. On the types requiring a strip the margin is wider still: 80.6\%
-against 12.2\%, a factor of six.
+The development figure is higher than the held-out one. The revisions described
+in Section~\ref{sec:devset} account for 0.07 points of that gap, so the
+explanation lies elsewhere: it is orthographic, and Section~\ref{sec:orth}
+gives it. On the types requiring a strip the margin over the baseline is wider
+still than on held-out text: 80.6\% against 12.2\%, a factor of six.
 
 \subsection{Two external datasets}
 \label{sec:external}
@@ -1066,7 +1058,9 @@ safe at this sample size.
 
 \begin{table}[t]
 \caption{Retrieval over 44{,}814 documents, 50 queries and 1{,}891 relevance
-judgements. $p$ is two-tailed; ``w/l'' counts queries improved and harmed.}
+judgements. $p$ is two-tailed; ``w/l'' counts queries improved and harmed. The
+lower panel is the two place-forming suffixes of Section~\ref{sec:tun}, tested
+the same way on the same judgements.}
 \label{tab:ir}
 \centering
 \begin{tabular}{lccccc}
@@ -1077,6 +1071,12 @@ MAP       & 0.5785 & \textbf{0.6854} & $+$0.1070 & \textbf{0.001} & 39/11\\
 nDCG@10   & 0.7162 & \textbf{0.7583} & $+$0.0420 & 0.226 & 24/13\\
 P@10      & 0.6780 & \textbf{0.7240} & $+$0.0460 & 0.165 & 20/11\\
 Recall@10 & 0.3011 & \textbf{0.3502} & $+$0.0490 & \textbf{0.042} & 20/11\\
+\midrule
+\multicolumn{6}{l}{\emph{MAP under the suffix settings tested}}\\
+\multicolumn{2}{l}{Released, \ps{تون} never applied} & \textbf{0.6854} & & &\\
+\multicolumn{2}{l}{\ps{تون} stripped, as the grammar says} & 0.6739 & & &\\
+\multicolumn{2}{l}{\ps{ستان} also gated} & 0.6848 & & &\\
+\multicolumn{2}{l}{both changed} & 0.6733 & & &\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1100,6 +1100,7 @@ The gain is uneven. Thirty-nine queries gain 7.13 MAP between them while eleven
 lose 1.78, three of those accounting for 1.10.
 
 \subsection{A suffix the retrieval evaluation overruled}
+\label{sec:tun}
 
 \ps{روغتون} is \emph{hospital} and \ps{روغتیا} is \emph{health}. Both are built
 on \ps{روغ}, \emph{healthy}, the first with the place-forming \ps{تون} and the
@@ -1124,28 +1125,18 @@ the inflectional \ps{ه} and stopped, so a query for the singular no longer
 reached a document holding the plural; 430 documents hold an inflected form and
 no bare \ps{روغتون}.
 
-\begin{table}[t]
-\caption{Two place-forming suffixes, tested the same way on the same
-judgements. The released system never applies the first and strips the
-second.}
-\label{tab:gating}
-\centering
-\begin{tabular}{lcccc}
-\toprule
-Configuration & MAP & nDCG@10 & P@10 & Recall@10\\
-\midrule
-No stemming & 0.5785 & 0.7162 & 0.6780 & 0.3011\\
-\textbf{Released} & \textbf{0.6854} & \textbf{0.7583} & \textbf{0.7240} & \textbf{0.3502}\\
-\ps{تون} stripped & 0.6739 & 0.7448 & 0.7140 & 0.3475\\
-\ps{ستان} gated & 0.6848 & 0.7573 & 0.7220 & 0.3499\\
-Both changed & 0.6733 & 0.7439 & 0.7120 & 0.3473\\
-\bottomrule
-\end{tabular}
-\end{table}
+The obvious alternative is to run the pipeline twice, and we measured it rather
+than assuming. A second pass does repair this class of split, but it costs 0.99
+points on the development set and 1.81 on held-out text, and it is worse on
+every retrieval measure as well: MAP falls from 0.6854 to 0.6769, worse on 18
+of the 50 queries and better on 8. A second pass removes affixes that the first
+pass correctly left in place, and that loss outweighs the families it repairs.
+The pipeline therefore stays at one pass, and the splits that remain are
+reported in the limitations rather than fixed.
 
 The rule is therefore recorded in the inventory and marked never applied. Gating
-it is worth 0.0115 MAP and improves all four measures
-(Table~\ref{tab:gating}), the only configuration tested that does so, and it
+it is worth 0.0115 MAP and improves all four measures, the only
+configuration tested that does so (Table~\ref{tab:ir}, lower panel), and it
 makes all seven surface forms of \ps{روغتون} reduce to one stem. The cost is
 0.22 points of development accuracy and 0.20 of held-out accuracy; on the two
 external word lists of Section~\ref{sec:external} the same decision raises
@@ -1343,9 +1334,10 @@ documents and differ only in whether the stemmer is applied.
 
 Of 118 affix rules, 112 cite a published grammar by chapter or section and the
 six that do not are entries the engine never applies. Of 38 verbs in the
-dictionary, 23 are checked against a printed grammar and 15 are marked
-unverified in the released documentation. We prefer to label these rather than
-to present them as settled.
+dictionary, 23 are attributed to a printed grammar and 15 were checked by the
+author, a native speaker of Pashto, against his own judgement rather than a
+published paradigm. The source of each is recorded in Appendix~B, so the two
+groups can be told apart.
 
 Compounds are kept whole, which is a policy choice rather than a solution: it
 avoids a class of error at the cost of never conflating \ps{لاسلیک} with

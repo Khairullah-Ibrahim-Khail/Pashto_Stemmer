@@ -324,9 +324,22 @@ gating `‑تون` (Part 3): all five forms of `پوهنتون` and all seven of
 Both have the same cause as the old `‑تون` split: `max_passes = 1`. A word
 spends its single pass on whichever affix matches first, so `روغتیا` loses the
 derivational `‑تیا` while `روغتیايي` spends the pass on the adjectival ending
-and stops. Raising `max_passes` to 2 would address it, and the flag exists, but
-it moves 74 development types and re-opens every one of the 118 rules and both
-annotated sets, so it is recorded as a limitation rather than changed late.
+and stops.
+
+**Raising `max_passes` to 2 was measured, and it is worse.** It repairs the
+`روغتیا` family and leaves `ناروغ` still split four ways, and it costs:
+
+| | development | held-out | MAP | nDCG@10 | P@10 | Recall@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| one pass (released) | **80.97%** | **72.55%** | **0.6854** | **0.7583** | **0.7240** | **0.3502** |
+| two passes | 79.98% | 70.74% | 0.6769 | 0.7499 | 0.7120 | 0.3404 |
+
+Worse on every measure, intrinsic and extrinsic: 1.81 points of held-out
+accuracy and 0.0085 MAP, better on 8 of 50 queries and worse on 18. The second
+pass removes affixes the first pass correctly left alone, and that loss
+outweighs the families it repairs. The pipeline stays at one pass and the
+remaining splits are a stated limitation, now a measured one rather than an
+assumed one.
 
 The `ناروغ` family is under-stemmed, not over-stemmed: three or four stems for
 one word, which costs recall rather than precision.
