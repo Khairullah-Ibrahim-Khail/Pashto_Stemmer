@@ -72,7 +72,7 @@ On that set the proposed system reaches 72.55\% exact-match accuracy against
 from 0.889 to 0.500.
 
 We also report a retrieval experiment, which word-type evaluation alone cannot
-substitute for. On 50 Pashto queries over 44,814 news documents with 1,891
+substitute for. On 50 Pashto queries over 44{,}814 news documents with 1{,}891
 relevance judgements adjudicated by three native speakers, stemming raises mean
 average precision from 0.5785 to 0.6854 ($p = 0.001$; 39 of 50 queries
 improved). One suffix is recorded in the
@@ -111,7 +111,7 @@ forty million people across Afghanistan and Pakistan, is one of the two
 official languages of Afghanistan, and has a growing volume of digital text in
 news and social media. It also has a rich inflectional system, which is
 precisely the condition under which stemming matters. Section~\ref{sec:ir}
-measures what that is worth: on 50 queries over 44,814 news documents, stemming
+measures what that is worth: on 50 queries over 44{,}814 news documents, stemming
 recovers relevant documents an unstemmed index does not reach, though it closes
 only part of the gap. A classifier faces the same problem, treating the singular
 and plural of a key term as unrelated features and learning each from less data
@@ -182,8 +182,8 @@ components that we retain despite a measured cost and one rule that we
 implemented, measured and removed.
 \item The observation that the evaluation protocol used in prior Pashto
 stemming work cannot distinguish a working stemmer from an inert one.
-\item A retrieval test collection for Pashto: 50 queries over 44,814
-documents with 1,891 relevance judgements, pooled from both runs and
+\item A retrieval test collection for Pashto: 50 queries over 44{,}814
+documents with 1{,}891 relevance judgements, pooled from both runs and
 adjudicated by three native speakers, and the first measurement of whether
 Pashto stemming helps retrieval. One suffix is gated on the strength of that
 measurement against the word-type evidence, which is the only point where the
@@ -1023,7 +1023,7 @@ cost. This section reports a retrieval experiment over running text.
 
 \subsection{Test collection}
 
-The collection is 44,814 passages of Pashto news text, 8.0 million tokens, with
+The collection is 44{,}814 passages of Pashto news text, 8.0 million tokens, with
 a median of 182 tokens per passage, formed by grouping consecutive sentences. It
 is a separate and larger body of text than the 5.4-million-token frequency
 corpus the lexicon was drawn from. Fifty queries were written across the topic
@@ -1041,18 +1041,18 @@ favour the other.
 Each document was judged by three native Pashto speakers working together. They
 read the document, discussed whether it answered the query, and recorded a
 label only when all three agreed, so the collection carries adjudicated labels
-rather than one assessor's opinion or a majority vote. The result is 1,891
-judgements, 1,184 of them relevant, with between 26 and 57 judged documents per
+rather than one assessor's opinion or a majority vote. The result is 1{,}891
+judgements, 1{,}184 of them relevant, with between 26 and 57 judged documents per
 query.
 
 \subsection{Retrieval setup}
 
 Both runs use Okapi BM25~\cite{robertson2009} with $k_1 = 1.5$ and $b = 0.75$ in
-the \texttt{rank\_bm25} implementation~\cite{rankbm25}, retrieving 1,000
+the \texttt{rank\_bm25} implementation~\cite{rankbm25}, retrieving 1{,}000
 documents per query. They differ in one respect only: documents and queries pass
 through the stemmer in one and not in the other, with the same normalizer and
-tokenizer in both. Across the collection the stemmer reduces 114,644 word types
-to 72,173 stems, a reduction of 37.0\%.
+tokenizer in both. Across the collection the stemmer reduces 114{,}644 word types
+to 72{,}173 stems, a reduction of 37.0\%.
 
 We report MAP, nDCG@10, P@10 and Recall@10, with a paired $t$-test and an exact
 sign test over the 50 per-query scores. Both are given because per-query average
@@ -1062,7 +1062,7 @@ safe at this sample size.
 \subsection{Results}
 
 \begin{table}[t]
-\caption{Retrieval over 44,814 documents, 50 queries and 1,891 relevance
+\caption{Retrieval over 44{,}814 documents, 50 queries and 1{,}891 relevance
 judgements. $p$ is two-tailed; ``w/l'' counts queries improved and harmed.}
 \label{tab:ir}
 \centering
@@ -1106,11 +1106,11 @@ the query \ps{روغتون درملنه} becomes \ps{روغ درمل}.
 
 Whether that conflation costs anything is not obvious, since documents about
 hospitals naturally use the vocabulary of health. Counting the collection
-settles it. Of the 1,809 documents containing \ps{روغتون}, 696 (38\%) also
-contain \ps{روغتیا}; but of the 5,377 containing \ps{روغتیا}, only 696 (13\%)
+settles it. Of the 1{,}809 documents containing \ps{روغتون}, 696 (38\%) also
+contain \ps{روغتیا}; but of the 5{,}377 containing \ps{روغتیا}, only 696 (13\%)
 contain \ps{روغتون}. The overlap is one-directional. The hospital documents a
 searcher wants already contain \ps{روغتون} and are reachable without stemming,
-so the merge adds none of them; it adds the 4,681 documents that discuss health
+so the merge adds none of them; it adds the 4{,}681 documents that discuss health
 and never mention a hospital. The judgements agree: of the documents retrieved
 for this query that contain \ps{روغتون}, 32 of 43 were judged relevant, while
 of the 13 containing only \ps{روغتیا}, none were.
@@ -1368,7 +1368,7 @@ that require a strip. On a 2{,}717-type development set it reaches 80.97\%
 against 50.68\%, with Paice's under-stemming index falling from 0.919 to
 0.296.
 
-On a retrieval collection of 50 queries over 44,814 news documents with 1,891
+On a retrieval collection of 50 queries over 44{,}814 news documents with 1{,}891
 relevance judgements adjudicated by three native speakers, stemming raises mean
 average precision from 0.5785 to 0.6854 ($p = 0.001$; 39 of 50 queries improved,
 sign test $p < 0.001$) and recall at rank 10 from 0.3011 to 0.3502
