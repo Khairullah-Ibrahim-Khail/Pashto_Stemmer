@@ -144,9 +144,9 @@ Letter & Example & Function\\
 \end{center}
 
 Normalization pipelines written for Persian or Urdu routinely merge these into
-a single character. For Pashto that destroys the information a stemmer needs:
-\ps{سړی} (man) and \ps{سړي} (men) become indistinguishable. Our system
-preserves all five.
+a single character. If the information needed by a stemmer is destroyed by Pashto, for example, if
+\ps{سړی} (man) and \ps{سړي} (men) are identical, the stemmer cannot be used.
+All five are kept in our system.
 
 \subsection{Endings that are not endings}
 
@@ -205,33 +205,34 @@ word. The output of a stemmer is a class label rather than a lemma, and
 confusing the two is a recurring error in work on morphologically rich
 languages.
 
-Paice~\cite{paice1990} contributed both an algorithm and, more consequentially
-for the present work, an evaluation method~\cite{paice1994}. His
-under-stemming index counts related word pairs a system fails to conflate, and
-his over-stemming index counts unrelated pairs it wrongly merges. Because the
-two move in opposite directions, reporting both is more informative than
-accuracy alone.
+Paice~\cite{paice1990} provided an algorithm and, luckily for the present work,
+an evaluation method~\cite{paice1994}. His under-stemming index is the number
+of word pairs that his system does not conflate, and his over-stemming index is
+the number of word pairs that are conflated when the system is over-stemming.
+Prospective service providers are interested in both, since they travel in
+opposite directions, instead of just one.
 
 \subsection{Arabic-script languages}
 
-Khoja and Garside~\cite{khoja1999} built an Arabic root extractor that strips
-affixes and matches the remainder against triliteral patterns. Larkey,
-Ballesteros and Connell~\cite{larkey2002} showed that light stemming, removing
-only a short list of prefixes and suffixes, outperforms aggressive root
-extraction for retrieval. Their conclusion shaped the design adopted here:
-removing less, but removing it reliably, is preferable to removing more. For
-Persian, Sharifloo and Shamsfard~\cite{sharifloo2008} used a bottom-up parser
+Khoja and Garside~\cite{khoja1999} designed an Arabic affix remover which
+removes affixes from Arabic words and compares the leftover word stems to a set
+of triliteral patterns. Larkey, Ballesteros and Connell~\cite{larkey2002}
+demonstrated that light stemming, which removes a small set of prefixes and
+suffixes, is more successful at retrieval than aggressive root extraction.
+Here's their conclusion which influenced the design adopted here: less but
+reliable is better than more. Sharifloo and Shamsfard~\cite{sharifloo2008}
+implemented a bottom-up parser
 over a morpheme lexicon. The pattern common to these systems is that a lexicon
 resolves ambiguity that rules alone cannot.
 
 \subsection{Pashto}
 
-Work on Pashto stemming is confined, to our knowledge, to Aslamzai and
-Saad~\cite{aslamzai2015}. Because that system is the baseline for everything
-reported here, we describe it in full.
+To date, the only work reported on Pashto stemming is done by Aslamzai and
+Saad~\cite{aslamzai2015}. That is the system with which everything reported
+here is compared and, therefore, described fully here.
 
-Their algorithm applies nine rules, four removing suffixes and five removing
-prefixes, each with a length condition. Rule~1 removes one of eleven suffixes
+Their algorithm works on 9 rules, 4 of removing suffixes and 5 of removing
+prefixes, each of which has a length condition. Rule~1 removes one of eleven suffixes
 from words of five or more characters; Rule~2 replaces a final \ps{ي} with
 \ps{ه} in words of four or more; Rule~3 removes \ps{من}; Rule~4 removes
 \ps{یز} and appends \ps{ه}; Rules~5, 6, 7 and 9 remove prefixes; and Rule~8
@@ -283,9 +284,9 @@ actually fire cites a published source.
 The provenance of each rule is recorded in Appendix~A rather than summarised,
 so a reader can check any individual entry. One distinction a single citation
 count would hide is worth drawing: twenty-two of the cited rules are documented
-and never applied. For those the citation establishes that the affix exists,
-not that removing it is safe, and the decision not to strip rests on measured
-behaviour rather than on the grammar.
+and never applied. The awarding of the citation is based on the assumption that the affix is in
+place, not on the assumption that people should take it out, and the decision
+not to take it out rests on measured behaviour rather than on the grammar.
 
 \begin{table}[t]
 \caption{Sources for the affix inventory.}
@@ -309,19 +310,19 @@ Wiktionary / kaikki.org Pashto suffixes & [W]\\
 % ===========================================================================
 \section{Pashto Morphology}
 
-This section covers the parts of the morphology that bear on the design. It is
-not a complete grammatical description.
+This section addresses morphology, as it relates to the design. It is not a
+full description of the grammar.
 
 \subsection{Orthography}
 
-Beyond the Arabic inventory, Pashto adds retroflex and other consonants that
-occur in neither Arabic nor Persian: \ps{ټ ډ ړ ږ ښ ځ څ ڼ ګ}. A word containing
-any of these is certainly Pashto rather than a loan, and the system uses that
-fact.
+In addition to the Arabic inventory, Pashto also has retroflex and other
+consonants that are absent from Arabic and Persian: \ps{ټ ډ ړ ږ ښ ځ څ ڼ ګ}. The
+system relies on the fact that a word with any of these is definitely not a
+loan word but Pashto.
 
-A complication became apparent only late in this work. The same suffix is
-written with different \emph{ye} letters in different registers: dictionary
-orthography prefers \ps{لومړی} where news orthography writes \ps{لومړي}. A
+Only toward the end of this work, did a complication appear. In different
+registers, the same suffix is written with different \emph{ye} letters
+(dictionary orthography \ps{لومړی}, news orthography \ps{لومړي}). A
 rule spelled in one convention does not fire on the other. The system
 therefore compares a folded key when deciding whether a rule applies, while
 the letters it writes out are never altered. Section~\ref{sec:results}
@@ -394,22 +395,23 @@ What normalization does not do is merge the \emph{ye} letters. We verified
 that no \emph{ye} character is altered in any cell of either evaluation set.
 This holds through the whole pipeline, not only at the normalization step: the
 output is always a slice of the input token, so whichever \emph{ye} the word
-was written with is the one the stem carries. A rule spelled with \ps{ی} that
-fires on a word spelled with \ps{ي} returns \ps{ي}.
+was written with is the one the stem carries. An exception that sets a rule
+fired by \ps{ی} to \ps{ي} is set with \ps{ي}.
 The aggressive fold remains available behind a configuration flag so that the
 cost of the error reported in the literature can be measured rather than
 asserted.
 
 \subsection{The affix inventory}
 
-The inventory holds 107 suffix rules and 10 prefix rules. Each rule records
-the affix and the side it attaches to; whether it is inflectional or
-derivational; a minimum surviving stem length; the part of speech the affix
-signals, where known; its productivity (productive, restricted, lexicalized or
-borrowed); a confidence level; and whether it may be stripped at all.
+There are 107 rules in the inventory for suffix rules and 10 rules in the
+inventory for prefix rules. Each rule has an affix and the side to which it is
+attached; whether the affix is inflectional or derivational; a minimum
+surviving stem length; if known, the part of speech that the affix signals; its
+productivity: productive, restricted, lexicalized, borrowed; a confidence
+level; and whether it can be stripped at all.
 
-Table~\ref{tab:schema} gives the schema in full, with three entries written
-out. The last field does real work. Twenty-nine entries are documented but
+The schema is full as is shown in Table~\ref{tab:schema} for three entries. The
+final field is useful for doing something. Twenty-nine entries are documented but
 never applied, because applying them was measured to be harmful or because the
 grammatical source provides no attested example. The lexicalized diminutive
 \ps{وکی}, the third column of Table~\ref{tab:schema}, is one: it survives only
@@ -420,7 +422,7 @@ length does equally real work: without it the verb \ps{کېدل} reduces to the
 single letter \ps{ک}.
 
 \begin{table}[t]
-\caption{The rule schema, with three entries written out. The third is
+\caption{The rule schema with 3 entries that are written out. The third is
 documented and never applied.}
 \label{tab:schema}
 \centering
@@ -488,9 +490,9 @@ rule fired before the inventory was consulted and cut through the root.
 \subsection{Candidate generation and selection}
 
 Generation and selection are separate, which is the central design decision
-borrowed from the Persian and Urdu hybrid systems. The generator applies every
-rule that fits and returns all distinct forms reached, including the original
-word with nothing removed. For \ps{کورونو} the pool contains the untouched
+borrowed from the Persian and Urdu hybrid systems. The generator uses all
+relevant rules and returns all possible forms encountered, including the
+initial word (where no rules were applied). For \ps{کورونو} the pool contains the untouched
 form, the result of removing \ps{ونو}, and the result of removing \ps{و}
 alone. Nothing is decided at this stage, which is what allows a shallower
 analysis to displace a deeper one.
@@ -542,15 +544,16 @@ $\gamma$  & reward per character for an unattested strip & 0.20\\
 
 Two of these carry the design decisions. $A_0$ is a quarter of $A_{k>0}$
 because the unstripped word is nearly always in the corpus, and giving it the
-full bonus made inaction the default winner. And $\gamma>0$ is what lets the
-rules act on a word the lexicon has never seen: an unattested strip still
-scores above zero, so out-of-vocabulary input is stemmed rather than returned
-whole, though it loses to any attested candidate. Two corrections to this stage were necessary during
-development and are worth recording, since both are easy to get wrong.
+full bonus made inaction the default winner. And $\gamma>0$ is why a word that's not in
+the lexicon can be acted upon: If the word has never been seen before, it still
+has a positive score, so out-of-vocabulary input is stemmed, not returned as a
+single word, but it's beaten by any attested candidate. There were two
+development corrections to this stage, which are worth recording, both of which
+are easy to get wrong.
 
-First, an early version required the stem to be an attested Pashto word before
-accepting a strip. That is incorrect: the output of a stemmer is a class label,
-and Porter's \emph{relat} is not an English word either. Attestation now
+In the first item, there was a prototype which demanded that the stem be an
+attested Pashto word before accepting a strip. No, the output from a stemmer is
+a class label, and Porter's \emph{relat} is not an English word either. Attestation now
 raises a candidate's score without gating it, and the system freely produces
 stems that are not words, including \ps{ښوون}, \ps{لوبغاړ} and \ps{پوهن}.
 
@@ -683,36 +686,37 @@ constraints: a frequency of at least five, to exclude typographical noise; a
 length of at least three characters; and no overlap with the development set.
 The sample was annotated by the same three native speakers, with the reference
 field initially empty so that nothing anchored them to any system's output. All
-three agreed on the result, and it is released as a single reference column. The
+three agreed the outcome, and is presented as one reference column. The
 set was not consulted during development, and every figure reported for it comes
 from a single run of the finished system.
 
-The first pass was audited by comparing every removal against the affix
-inventory. On the released first-pass file, 73 of 327 removals, 22.3\%, match no
-documented affix: words such as \ps{مزاج} and \ps{حارث}, which carry no affix
-at all, had been shortened. Thirty rows were revised in response, and the figure
-falls to 54 of 313, or 17.3\%. The same audit on the development set leaves 108
-of 1{,}370 removals, or 7.9\%, unaccounted for.
+The first pass was audited by comparing each removal with the affix inventory.
+In the first pass file that was released, 73 of 327 removals (22.3\%) match no
+documented affix: words that do not have any affix at all, like \ps{مزاج} and
+\ps{حارث}, had been shortened. This is followed by 30 revisions, bringing the
+number down to 54 out of 313, or 17.3\%. The same audit leaves 108 of the
+1{,}370 removals on the development set, or 7.9\%, with no affix to account for
+them.
 
-That audit procedure is reusable and we recommend it. For each annotated pair,
-the material removed is compared against the affix inventory; a removal
-matching no affix is either an annotation error or evidence that the inventory
+We strongly recommend the use of that audit procedure and recommend that it be
+reusable. The case of each annotated pair is matched against the affix
+inventory; the result of the matching is either an error in the annotations or
+the inventory
 is incomplete, and inspection separates the two. Applied to the development
 set, the same procedure identified six affixes the inventory lacked.
 
-We went through all 54 removals that the audit leaves unaccounted for in the
-final held-out set, and the split is informative. Twenty-nine of them take
-material off one end of the word. Nineteen of those are gaps in the
-inventory rather than errors in the annotation, and most are variants of
-affixes already held: the oblique infinitive \ps{ولو} beside \ps{ول}, the
-oblique \ps{ګرو} beside \ps{ګر}, the feminine \ps{یزې} beside \ps{یزه}, the
-past participle \ps{ېدلې} beside \ps{ېدل}. Two more are combinations the
-engine cannot form because it strips one layer at a time: \ps{توبونو} is
-\ps{توب}~+~\ps{ونو}, and both halves are in the inventory. Eight are genuine
-annotation errors, and they cluster where one would expect: the English loans
-\ps{ایمرجینګ} and \ps{ریسایکلنګ}, where \ps{نګ} is not a Pashto affix, the
-personal name \ps{ضیالرحمان}, the place name \ps{پچیراګام}. Two are
-ambiguous.
+We ran through all 54 removals the audit doesn't account for in the last
+held-out set, and it's an informative split. Twenty nine of them take words from
+one end. Nineteen of those are gaps rather than errors in the inventory, for
+example, the oblique infinitive \ps{ولو} side by side with \ps{ول}, the
+oblique \ps{ګرو} side by side with \ps{ګر}, the feminine \ps{یزې} side by side
+with \ps{یزه}, the past participle \ps{ېدلې} side by side with \ps{ېدل}.
+Two more are combinations the engine cannot create, because it strips one layer
+at a time: \ps{توبونو} is \ps{توب}~+~\ps{ونو} which are both in the inventory.
+Eight are true annotation mistakes and they fall where one would expect, such as
+the English loans \ps{ایمرجینګ} and
+\ps{ریسایکلنګ}. The personal name \ps{ضیالرحمان} and the place name
+\ps{پچیراګام} fall into this category. Two are ambiguous.
 
 The remaining twenty-five take material off both ends at once, and all of them
 are verbs: \ps{وښيي}~$\rightarrow$~\ps{ښي},
@@ -728,7 +732,7 @@ list them at all.
 That the one-ended errors run three to one towards missing affixes rather than
 bad annotation is the useful part: it says the reference is sounder than the
 rule list, and it names the nineteen entries that would close the gap. The
-classified list is released with a verdict and a reason on every row.
+classified list, a verdict and a reason will be printed on each row.
 
 \subsection{Annotation policy}
 
@@ -930,11 +934,11 @@ About a quarter, 19.1\% on the 5{,}000-type list and 24.3\% on the larger one, a
 disagreements about stemming at all but about where stemming stops. Of the
 rest, roughly half cut deeper than we do (\ps{تنګی}~$\rightarrow$~\ps{تن}
 against our \ps{تنګ}) and about a quarter cut less
-(\ps{استازیتوب}~$\rightarrow$~\ps{استازی} against our \ps{استاز}). Only two
-disagreements in 154 come down to the spelling of a \emph{ye}. The two
-annotations differ consistently in how deep a stem should go and in whether
-verbs are reduced to a stem or to an infinitive, which is why these lists test
-generalisation rather than correctness under our policy.
+(\ps{استازیتوب}~$\rightarrow$~\ps{استازی} against our \ps{استاز}). After all
+the words are sorted out, only 2 differences are found in 154 words, which
+involves a \emph{ye}. The two annotations vary uniformly in the degree of stem
+depth they mark and in the form of verbs, so these lists do not test correctness
+per se according to our policy, but rather generalisation.
 
 \subsection{Component study}
 
@@ -957,26 +961,26 @@ $+$ verb dictionary & 79.61\% ($-$1.36) & 71.54\% ($-$1.00)\\
 \end{tabular}
 \end{table}
 
-The suffix inventory does most of the work, and removing it costs 13.8 points
-on held-out text. The length rules contribute between two and three
-points on held-out text and just under two on the development set.
+Removing the suffix inventory does most of the work and it comes down to 13.8
+points on held out text. The length rules range from 2 points on held out text,
+to close to 3 points on the development set.
 
-Three rows record decisions taken against the measured score, and we state
-them explicitly rather than quietly adopting whichever setting scored best.
+Three rows are located to record decisions taken against the measured score,
+and we state these explicitly without simply accepting the one that scored
+highest.
 
-Prefix stripping costs a few hundredths of a point on the development set. We
-retain it because \ps{هم}, \ps{بیا}, \ps{نیم} and \ps{لا} are genuine Pashto
-prefixes, and removing the rules would amount to claiming the language has
-none; the attestation guard described in Section~\ref{sec:guards} is what
-makes them safe. The small effect is itself explained by the inventory: of the
-ten prefix rules, four are documented and never stripped. \ps{نا}, \ps{بې} and
-\ps{غیر} are negation prefixes that the annotation policy keeps, because
-\ps{ناقانونه} is not an instance of \ps{قانون} but its opposite, and \ps{سر}
-is a free noun as often as it is a prefix.
+The cost of prefix stripping is a few hundredths of a point on the development
+set. We keep them because \ps{هم}, \ps{بیا}, \ps{نیم} and \ps{لا} are real
+Pashto prefixes, and the removal of the rules would be equivalent to saying that
+Pashto has no prefixes at all, which is not true; the attestation guard
+(described in Section~\ref{sec:guards}) makes them safe. Negation prefixes
+\ps{نا}, \ps{بې}, and \ps{غیر} are not stripped, since \ps{ناقانونه} is not an
+instance of \ps{قانون} but its opposite, and \ps{سر} is a free noun as
+frequent as a prefix.
 
 The corpus lexicon is worth 0.18 points on the development set and $-0.40$ on
-held-out text. Its contribution is now marginal, because the uniform-strip and
-length rules decide most cases before the scorer is consulted. We report this
+held-out text. Its role is now very limited as most cases are decided by the
+uniform strip and length rules before the scorer is called upon. We report this
 plainly: the system should not be described as lexicon-driven.
 
 Enabling the verb dictionary costs 1.36 points on the development set and 0.80
@@ -1007,8 +1011,9 @@ revealed.
 \section{Retrieval Evaluation}
 \label{sec:ir}
 
-The evaluation so far scores the stemmer against a reference stem for each word
-type. That measures whether the analysis is right, not whether it helps. A
+The evaluation so far compares the stemmer to the reference stem for each of the
+word types. That is not to say the analysis is correct, but rather if it is
+useful. A
 stemmer exists so that a query for \ps{کور} also reaches documents containing
 \ps{کورونه}, and no word-type figure can say whether that happens or at what
 cost. This section reports a retrieval experiment over running text.
@@ -1033,26 +1038,25 @@ the unstemmed run alone, so a document only the stemmed run could find was never
 judged and counted irrelevant, which scores one system against a pool built to
 favour the other.
 
-Each document was judged by three native Pashto speakers working together. They
-read the document, discussed whether it answered the query, and recorded a
-label only when all three agreed, so the collection carries adjudicated labels
-rather than one assessor's opinion or a majority vote. The result is 1{,}891
-judgements, 1{,}184 of them relevant, with between 26 and 57 judged documents per
-query.
+All documents were evaluated by three native Pashtuns together. They read the
+document, they discussed whether it answered the query and they recorded a label
+only when all three agreed, which means that the collection has adjudicated
+labels, not a single assessor's opinion or a majority vote. This produces
+1{,}891 judgements of which 1{,}184 are relevant documents, with a range from 26
+to 57 judged relevant documents per query.
 
 \subsection{Retrieval setup}
 
 Both runs use Okapi BM25~\cite{robertson2009} with $k_1 = 1.5$ and $b = 0.75$ in
 the \texttt{rank\_bm25} implementation~\cite{rankbm25}, retrieving 1{,}000
-documents per query. They differ in one respect only: documents and queries pass
-through the stemmer in one and not in the other, with the same normalizer and
-tokenizer in both. Across the collection the stemmer reduces 114{,}644 word types
+documents per query. They only differ in one way: documents and queries go
+through the stemmer, the normalizer and tokenizer are the same in both. Across the collection the stemmer reduces 114{,}644 word types
 to 72{,}173 stems, a reduction of 37.0\%.
 
-We report MAP, nDCG@10, P@10 and Recall@10, with a paired $t$-test and an exact
-sign test over the 50 per-query scores. Both are given because per-query average
-precision is bounded and skewed, so the $t$-test's normality assumption is not
-safe at this sample size.
+We report MAP, nDCG@10, P@10 and Recall@10 and use a paired $t$-test and exact
+sign test over the 50 per-query scores. Both are given as the average precision
+of the per-query model is bounded and skewed and the normality assumption of the
+$t$-test is not safe at this sample size.
 
 \subsection{Results}
 
@@ -1104,29 +1108,29 @@ lose 1.78, three of those accounting for 1.10.
 
 \ps{روغتون} is \emph{hospital} and \ps{روغتیا} is \emph{health}. Both are built
 on \ps{روغ}, \emph{healthy}, the first with the place-forming \ps{تون} and the
-second with the abstract-noun \ps{تیا}. The derivation is regular and both
-suffixes are documented, so an inventory built from the grammar strips them and
-the query \ps{روغتون درملنه} becomes \ps{روغ درمل}.
+second with the abstract-noun \ps{تیا}. The derivation is regular and both the
+suffixes are documented and an inventory is being built from the grammar where
+they are stripped and the query \ps{روغتون درملنه} results in \ps{روغ درمل}.
 
 Whether that conflation costs anything is not obvious, since documents about
-hospitals naturally use the vocabulary of health. Counting the collection
-settles it. Of the 1{,}809 documents containing \ps{روغتون}, 696 (38\%) also
+hospitals naturally use the vocabulary of health. The answer is in the number of
+pieces in the collection. Of the 1{,}809 documents containing \ps{روغتون}, 696 (38\%) also
 contain \ps{روغتیا}; but of the 5{,}377 containing \ps{روغتیا}, only 696 (13\%)
-contain \ps{روغتون}. The overlap is one-directional. The hospital documents a
-searcher wants already contain \ps{روغتون} and are reachable without stemming,
-so the merge adds none of them; it adds the 4{,}681 documents that discuss health
-and never mention a hospital. The judgements agree: of the documents retrieved
-for this query that contain \ps{روغتون}, 32 of 43 were judged relevant, while
-of the 13 containing only \ps{روغتیا}, none were.
+contain \ps{روغتون}. There is only one-way overlap. The hospital documents
+a searcher wants already contain \ps{روغتون} and are available without stemming,
+so they are not added by the merge; the 4{,}681 documents that talk about health,
+but not about hospital, do get added. The judgements agree: 32 of 43 documents
+retrieved for this query which contain \ps{روغتون} are judged relevant, while
+of the 13 that contain only \ps{روغتیا}, none are.
 
-Stripping the suffix also split the word family. Because the pipeline makes a
+Removal of the suffix also severed the word family. Because the pipeline makes a
 single pass, \ps{روغتون} lost the suffix while \ps{روغتونه} spent its pass on
 the inflectional \ps{ه} and stopped, so a query for the singular no longer
 reached a document holding the plural; 430 documents hold an inflected form and
 no bare \ps{روغتون}.
 
-The obvious alternative is to run the pipeline twice, and we measured it rather
-than assuming. A second pass does repair this class of split, but it costs 0.99
+The obvious solution was to run the pipe twice and we measured this and not
+assumed. A second pass does repair this class of split, but it costs 0.99
 points on the development set and 1.81 on held-out text, and it is worse on
 every retrieval measure as well: MAP falls from 0.6854 to 0.6769, worse on 18
 of the 50 queries and better on 8. A second pass removes affixes that the first
@@ -1503,8 +1507,8 @@ remove the affix at all; ``source'' is what backs the rule: a published grammar,
 inventory document, and \texttt{gated} for an entry that is never applied and
 appeals to no grammar. The entries marked \emph{no} under
 ``strip'' are documented and never applied, for the reasons given in
-Section~IV.B. This table is generated
-directly from the rule objects, so it cannot drift from the implementation.
+Section~IV.B. This table is created
+directly from the rule objects and should not change from the implementation.
 
 \footnotesize
 \input{appendix_inventory.tex}
